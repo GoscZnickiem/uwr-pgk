@@ -6,7 +6,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <cstdlib>
-#include <map>
 #include <string>
 
 void initializeGLFW() {
@@ -25,10 +24,12 @@ public:
 		const int width = 800;
 		const int height = 600;
 
+		glfwWindowHint(GLFW_SAMPLES, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 		ID = glfwCreateWindow(width, height, "Hello OpenGL", nullptr, nullptr);
 		if(ID == nullptr) {
@@ -36,14 +37,12 @@ public:
 			exit(2);
 		}
 
-
 		glfwMakeContextCurrent(ID);
-
+		glewExperimental = true;
 		if (glewInit() != GLEW_OK) {
 			std::cerr << "GLEW initialization failed\n";
 			exit(3);
 		}
-
 		glViewport(0, 0, width, height);
 	}
 
@@ -63,9 +62,6 @@ int main() {
 	test();
 	initializeGLFW();
 	Window window;
-
-	std::map<int, std::string> m = {{5, "lol"}, {3, "a"}};
-	if(m.contains(5)) std::cout << "a\n";
 
 	std::cout << glGetString(GL_VERSION) << "\n";
 
