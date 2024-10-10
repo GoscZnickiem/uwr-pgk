@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <cstdlib>
+#include <map>
 #include <string>
 
 void initializeGLFW() {
@@ -62,6 +63,9 @@ int main() {
 	test();
 	initializeGLFW();
 	Window window;
+
+	std::map<int, std::string> m = {{5, "lol"}, {3, "a"}};
+	if(m.contains(5)) std::cout << "a\n";
 
 	std::cout << glGetString(GL_VERSION) << "\n";
 
