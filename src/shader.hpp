@@ -13,18 +13,19 @@ public:
 	Shader &operator=(const Shader &) = delete;
 	Shader &operator=(Shader &&) = delete;
 
-	void setUniform(const std::string& name, float v0) const;
-	void setUniform(const std::string& name, float v0, float v1) const;
-	void setUniform(const std::string& name, float v0, float v1, float v2) const;
-	void setUniform(const std::string& name, float v0, float v1, float v2, float v3) const;
-	void setUniform(const std::string& name, int v0) const;
-	void setUniform(const std::string& name, int v0, int v1) const;
-	void setUniform(const std::string& name, int v0, int v1, int v2) const;
-	void setUniform(const std::string& name, int v0, int v1, int v2, int v3) const;
-	void setUniform(const std::string& name, unsigned int v0) const;
-	void setUniform(const std::string& name, unsigned int v0, unsigned int v1) const;
-	void setUniform(const std::string& name, unsigned int v0, unsigned int v1, unsigned int v2) const;
-	void setUniform(const std::string& name, unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3) const;
+	// I should really rewrite this:
+	// void setUniform(const std::string& name, float v0) const;
+	// void setUniform(const std::string& name, float v0, float v1) const;
+	// void setUniform(const std::string& name, float v0, float v1, float v2) const;
+	// void setUniform(const std::string& name, float v0, float v1, float v2, float v3) const;
+	// void setUniform(const std::string& name, int v0) const;
+	// void setUniform(const std::string& name, int v0, int v1) const;
+	// void setUniform(const std::string& name, int v0, int v1, int v2) const;
+	// void setUniform(const std::string& name, int v0, int v1, int v2, int v3) const;
+	// void setUniform(const std::string& name, unsigned int v0) const;
+	// void setUniform(const std::string& name, unsigned int v0, unsigned int v1) const;
+	// void setUniform(const std::string& name, unsigned int v0, unsigned int v1, unsigned int v2) const;
+	// void setUniform(const std::string& name, unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3) const;
 
 	void bind() const;
 	void unbind() const;

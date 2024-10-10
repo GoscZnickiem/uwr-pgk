@@ -89,6 +89,6 @@ clean:
 	@rm -fr $(OBJ_DIR) $(OBJS_DEB) 
 
 .PHONY: clear
-clean:
+clear:
 	@rm -fr $(OBJ_DIR) $(OBJS_DEB) $(TARGET) $(DEB_DIR)
 # ==================================================

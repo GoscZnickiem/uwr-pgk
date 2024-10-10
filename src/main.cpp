@@ -30,13 +30,13 @@ int main() {
 	glGenVertexArrays(1, &vao);
 
 	const std::array<float, 18> vertices = {
-		-0.5f, -0.5f, 0.0f,
+		-0.5f, -0.6f, 0.0f,
 		 0.0f,  0.0f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
+		 0.5f, -0.6f, 0.0f,
 
-		-0.5f,  0.0f, 0.0f,
+		-0.4f, -0.1f, 0.0f,
 		 0.0f,  0.5f, 0.0f,
-		 0.5f,  0.0f, 0.0f,
+		 0.4f, -0.1f, 0.0f,
 	};
 
 	glBindVertexArray(vao);
@@ -61,9 +61,8 @@ int main() {
 
         glfwPollEvents();
 
-		if(window.getKey(GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		if(window.getKey(GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			window.close();
-		}
     }
 
 	glDeleteVertexArrays(1, &vao);
