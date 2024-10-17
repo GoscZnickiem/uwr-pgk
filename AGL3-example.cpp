@@ -255,6 +255,7 @@ bool collide(float tx, float ty, float cx, float cy) {
 // ==========================================================================
 void MyWin::MainLoop() {
 	ViewportOne(0,0,wd,ht);
+	glLineWidth((GLfloat)4);
 
 	MyCross cross;
 	MyTri   trian;
