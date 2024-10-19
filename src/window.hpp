@@ -9,12 +9,12 @@ public:
 	Window();
 
 	bool ShouldClose();
-	void swapBuffers();
+	void endFrame();
 	int getKey(int key) const;
 	void close();
 
 private:
-	GLFWwindow* ID;
+	GLFWwindow* m_ID;
 };
 
 #endif

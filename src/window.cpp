@@ -12,34 +12,37 @@ Window::Window() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	ID = glfwCreateWindow(width, height, "Hello OpenGL", nullptr, nullptr);
-	if(ID == nullptr) {
+	m_ID = glfwCreateWindow(width, height, "Hello OpenGL", nullptr, nullptr);
+	if(m_ID == nullptr) {
 		std::cerr << "Window creation failed\n";
 		exit(2);
 	}
 
-	glfwMakeContextCurrent(ID);
+	glfwMakeContextCurrent(m_ID);
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
 		std::cerr << "GLEW initialization failed\n";
 		exit(3);
 	}
 	glViewport(0, 0, width, height);
-	glfwSetInputMode(ID, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetInputMode(m_ID, GLFW_STICKY_KEYS, GL_TRUE);
 }
 
 bool Window::ShouldClose() {
-	return glfwWindowShouldClose(ID) != 0;
+	return glfwWindowShouldClose(m_ID) != 0;
 }
 
-void Window::swapBuffers() {
-	glfwSwapBuffers(ID);
+void Window::endFrame() {
+	glfwSwapBuffers(m_ID);
+	glfwPollEvents();
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 int Window::getKey(int key) const {
-	return glfwGetKey(ID, key);
+	return glfwGetKey(m_ID, key);
 }
 
 void Window::close() {
-	glfwSetWindowShouldClose(ID, GL_TRUE);
+	glfwSetWindowShouldClose(m_ID, GL_TRUE);
 }

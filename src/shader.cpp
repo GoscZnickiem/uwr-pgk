@@ -36,17 +36,17 @@ Shader::Shader(const std::string& file) {
 	const uint32_t fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	compileShader(fragment, fragmentSource.c_str());
 
-	ID = glCreateProgram();
-	glAttachShader(ID, vertex);
-	glAttachShader(ID, fragment);
-	glLinkProgram(ID);
+	m_ID = glCreateProgram();
+	glAttachShader(m_ID, vertex);
+	glAttachShader(m_ID, fragment);
+	glLinkProgram(m_ID);
 	int success = 0;
-	glGetProgramiv(ID, GL_LINK_STATUS, &success);
+	glGetProgramiv(m_ID, GL_LINK_STATUS, &success);
 	if (success != GL_TRUE) {
 		int logLength = 0;
-		glGetShaderiv(ID, GL_INFO_LOG_LENGTH, &logLength);
+		glGetShaderiv(m_ID, GL_INFO_LOG_LENGTH, &logLength);
 		std::string message(static_cast<size_t>(logLength), 0);
-		glGetShaderInfoLog(ID, logLength, nullptr, message.data());
+		glGetShaderInfoLog(m_ID, logLength, nullptr, message.data());
 		std::cerr << "Linking of shaders failed. Error:\n" << message << "\n";
 		exit(13);
 	}
@@ -55,101 +55,102 @@ Shader::Shader(const std::string& file) {
 }
 
 Shader::~Shader() {
-	glDeleteProgram(ID);
+	glDeleteProgram(m_ID);
 }
 
-// void Shader::setUniform(const std::string& name, float v0) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform1f(loc, v0);
-// 	glUseProgram(currentShader);
-// }
-//
-// void Shader::setUniform(const std::string& name, float v0, float v1) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform2f(loc, v0, v1);
-// 	glUseProgram(currentShader);
-// }
-//
-// void Shader::setUniform(const std::string& name, float v0, float v1, float v2) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform3f(loc, v0, v1, v2);
-// 	glUseProgram(currentShader);
-// }
-//
-// void Shader::setUniform(const std::string& name, float v0, float v1, float v2, float v3) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform4f(loc, v0, v1, v2, v3);
-// 	glUseProgram(currentShader);
-// }
-//
-// void Shader::setUniform(const std::string& name, int v0) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform1i(loc, v0);
-// 	glUseProgram(currentShader);
-// }
-//
-// void Shader::setUniform(const std::string& name, int v0, int v1) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform2i(loc, v0, v1);
-// 	glUseProgram(currentShader);
-// }
-//
-// void Shader::setUniform(const std::string& name, int v0, int v1, int v2) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform3i(loc, v0, v1, v2);
-// 	glUseProgram(currentShader);
-// }
-//
-// void Shader::setUniform(const std::string& name, int v0, int v1, int v2, int v3) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform4i(loc, v0, v1, v2, v3);
-// 	glUseProgram(currentShader);
-// }
-//
-// void Shader::setUniform(const std::string& name, unsigned int v0) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform1ui(loc, v0);
-// 	glUseProgram(currentShader);
-// }
-//
-// void Shader::setUniform(const std::string& name, unsigned int v0, unsigned int v1) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform2ui(loc, v0, v1);
-// 	glUseProgram(currentShader);
-// }
-//
-// void Shader::setUniform(const std::string& name, unsigned int v0, unsigned int v1, unsigned int v2) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform3ui(loc, v0, v1, v2);
-// 	glUseProgram(currentShader);
-// }
-//
-// void Shader::setUniform(const std::string& name, unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3) const {
-// 	glUseProgram(ID);
-// 	const int32_t loc = glGetUniformLocation(ID, name.c_str());
-// 	glUniform4ui(loc, v0, v1, v2, v3);
-// 	glUseProgram(currentShader);
-// }
+void Shader::setUniform(const std::string& name, float v0) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform1f(loc, v0);
+	glUseProgram(s_currentShader);
+}
+
+void Shader::setUniform(const std::string& name, float v0, float v1) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform2f(loc, v0, v1);
+	glUseProgram(s_currentShader);
+}
+
+void Shader::setUniform(const std::string& name, float v0, float v1, float v2) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform3f(loc, v0, v1, v2);
+	glUseProgram(s_currentShader);
+}
+
+void Shader::setUniform(const std::string& name, float v0, float v1, float v2, float v3) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform4f(loc, v0, v1, v2, v3);
+	glUseProgram(s_currentShader);
+}
+
+void Shader::setUniform(const std::string& name, int v0) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform1i(loc, v0);
+	glUseProgram(s_currentShader);
+}
+
+void Shader::setUniform(const std::string& name, int v0, int v1) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform2i(loc, v0, v1);
+	glUseProgram(s_currentShader);
+}
+
+void Shader::setUniform(const std::string& name, int v0, int v1, int v2) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform3i(loc, v0, v1, v2);
+	glUseProgram(s_currentShader);
+}
+
+void Shader::setUniform(const std::string& name, int v0, int v1, int v2, int v3) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform4i(loc, v0, v1, v2, v3);
+	glUseProgram(s_currentShader);
+}
+
+void Shader::setUniform(const std::string& name, unsigned int v0) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform1ui(loc, v0);
+	glUseProgram(s_currentShader);
+}
+
+void Shader::setUniform(const std::string& name, unsigned int v0, unsigned int v1) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform2ui(loc, v0, v1);
+	glUseProgram(s_currentShader);
+}
+
+void Shader::setUniform(const std::string& name, unsigned int v0, unsigned int v1, unsigned int v2) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform3ui(loc, v0, v1, v2);
+	glUseProgram(s_currentShader);
+}
+
+void Shader::setUniform(const std::string& name, unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3) const {
+	glUseProgram(m_ID);
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform4ui(loc, v0, v1, v2, v3);
+	glUseProgram(s_currentShader);
+}
 
 void Shader::bind() const {
-	glUseProgram(ID);
-	currentShader = ID;
+	if(m_ID == s_currentShader) return;
+	glUseProgram(m_ID);
+	s_currentShader = m_ID;
 }
 
 void Shader::unbind() const {
 	glUseProgram(0);
-	currentShader = 0;
+	s_currentShader = 0;
 }
 
 void Shader::compileShader(uint32_t shader, const char* source) {
