@@ -52,10 +52,14 @@ Shader::Shader(const std::string& file) {
 	}
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
+
+	s_shaders.push_back(this);
+	m_thisIt = --s_shaders.end();
 }
 
 Shader::~Shader() {
 	glDeleteProgram(m_ID);
+	s_shaders.erase(m_thisIt);
 }
 
 void Shader::setUniform(const std::string& name, float v0) const {

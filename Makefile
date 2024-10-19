@@ -78,11 +78,15 @@ $(DEB_DIR)/%.o: $(SRC_DIR)/%.c*
 makedir:
 	@mkdir -p $(OBJ_DIR) $(DEB_DIR)
 
+.PHONY: copytodeb
+copytodeb:
+	@cp -r assets/ $(DEB_DIR)
+
 .PHONY: release
 release: makedir $(TARGET)
 
 .PHONY: debug
-debug: makedir $(TARGET_DEBUG)
+debug: makedir $(TARGET_DEBUG) copytodeb
 
 .PHONY: clean
 clean:

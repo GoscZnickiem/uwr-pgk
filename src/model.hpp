@@ -19,7 +19,7 @@ public:
 	void bind() const;
 	void unbind() const;
 	void render() const;
-
+	
 	const Shader* shader;
 
 private:

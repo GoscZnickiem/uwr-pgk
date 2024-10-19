@@ -1,4 +1,6 @@
 #include "window.hpp"
+#include "shader.hpp"
+
 #include <iostream>
 
 Window::Window() {
@@ -30,6 +32,12 @@ Window::Window() {
 
 	glfwSetFramebufferSizeCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int w, int h) {
 		glViewport(0, 0, w, h);
+		float winx = static_cast<float>(w);
+		float winy = static_cast<float>(h);
+		if(winx > winy)
+			Shader::setGlobalUniform("scale", winy/winx, 1.f);
+		else 
+			Shader::setGlobalUniform("scale", 1.f, winx/winy);
 	});
 }
 
