@@ -8,6 +8,10 @@
 
 struct AppData {
 
+	static constexpr unsigned int updatesPerSecond = 256;
+	static constexpr double timePerUpdate = 1./updatesPerSecond;
+	static constexpr float deltaT = static_cast<float>(timePerUpdate);
+
 	const Shader shaderBasic{"assets/shaders/shader.glsl"};
 
 	const Model modelObstacle{ {
