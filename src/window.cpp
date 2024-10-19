@@ -1,7 +1,19 @@
 #include "window.hpp"
+#include "input.hpp"
 #include "shader.hpp"
 
 #include <iostream>
+#include <map>
+#include <string>
+
+std::map<GLint, std::string> glToString = {
+	{GLFW_KEY_UP, "UP"},
+	{GLFW_KEY_DOWN, "DOWN"},
+	{GLFW_KEY_LEFT, "LEFT"},
+	{GLFW_KEY_RIGHT, "RIGHT"},
+	{GLFW_KEY_SPACE, "SPACE"},
+	{GLFW_KEY_ESCAPE, "ESCAPE"}
+};
 
 Window::Window() {
 	const int width = 800;
@@ -39,6 +51,15 @@ Window::Window() {
 		else 
 			Shader::setGlobalUniform("scale", 1.f, winx/winy);
 	});
+
+	glfwSetKeyCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int key,[[maybe_unused]] int scancode, int action,[[maybe_unused]] int mods) {
+		try {
+			Input::keys[glToString.at(key)] = action == GLFW_PRESS;
+		} catch ([[maybe_unused]] std::out_of_range& e) {
+			return;
+		}
+	});
+
 }
 
 void Window::endFrame() {
@@ -50,10 +71,6 @@ void Window::endFrame() {
 
 void Window::close() {
 	glfwSetWindowShouldClose(m_ID, GL_TRUE);
-}
-
-int Window::getKey(int key) const {
-	return glfwGetKey(m_ID, key);
 }
 
 bool Window::shouldClose() {

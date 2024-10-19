@@ -11,7 +11,6 @@ public:
 
 	void endFrame();
 	void close();
-	int getKey(int key) const; // temp
 	bool shouldClose();
 	std::pair<float, float> getWindowSize();
 

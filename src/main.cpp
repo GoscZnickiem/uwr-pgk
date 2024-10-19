@@ -1,6 +1,7 @@
+#include "window.hpp"
+#include "input.hpp"
 #include "obstacle.hpp"
 #include "player.hpp"
-#include "window.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -25,21 +26,17 @@ int main() {
 	Player player{-0.5f, -0.5f};
 
     while (!window.shouldClose()) {
-		if(window.getKey(GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		if(Input::isKeyPressed("ESCAPE"))
 			window.close();
 
-		if(window.getKey(GLFW_KEY_A) == GLFW_PRESS)
+		if(Input::isKeyPressed("LEFT"))
 			player.transform.x -= 0.01f;
-		if(window.getKey(GLFW_KEY_D) == GLFW_PRESS)
+		if(Input::isKeyPressed("RIGHT"))
 			player.transform.x += 0.01f;
-		if(window.getKey(GLFW_KEY_W) == GLFW_PRESS)
+		if(Input::isKeyPressed("UP"))
 			player.transform.y += 0.01f;
-		if(window.getKey(GLFW_KEY_S) == GLFW_PRESS)
+		if(Input::isKeyPressed("DOWN"))
 			player.transform.y -= 0.01f;
-		if(window.getKey(GLFW_KEY_Q) == GLFW_PRESS)
-			player.transform.angle += 0.05f;
-		if(window.getKey(GLFW_KEY_E) == GLFW_PRESS)
-			player.transform.angle -= 0.05f;
 
 		obs.render();
 		player.render();
