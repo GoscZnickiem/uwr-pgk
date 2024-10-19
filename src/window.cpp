@@ -10,7 +10,7 @@ Window::Window() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	m_ID = glfwCreateWindow(width, height, "Hello OpenGL", nullptr, nullptr);
 	if(m_ID == nullptr) {
@@ -26,10 +26,11 @@ Window::Window() {
 	}
 	glViewport(0, 0, width, height);
 	glfwSetInputMode(m_ID, GLFW_STICKY_KEYS, GL_TRUE);
-}
+	glfwSetInputMode(m_ID, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 
-bool Window::ShouldClose() {
-	return glfwWindowShouldClose(m_ID) != 0;
+	glfwSetFramebufferSizeCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int w, int h) {
+		glViewport(0, 0, w, h);
+	});
 }
 
 void Window::endFrame() {
@@ -39,10 +40,21 @@ void Window::endFrame() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+void Window::close() {
+	glfwSetWindowShouldClose(m_ID, GL_TRUE);
+}
+
 int Window::getKey(int key) const {
 	return glfwGetKey(m_ID, key);
 }
 
-void Window::close() {
-	glfwSetWindowShouldClose(m_ID, GL_TRUE);
+bool Window::shouldClose() {
+	return glfwWindowShouldClose(m_ID) != 0;
 }
+
+std::pair<float, float> Window::getWindowSize() {
+	int w = 0; int h = 0;
+	glfwGetWindowSize(m_ID, &w, &h);
+	return {static_cast<float>(w), static_cast<float>(h)};
+}
+

@@ -3,15 +3,17 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <utility>
 
 class Window {
 public:
 	Window();
 
-	bool ShouldClose();
 	void endFrame();
-	int getKey(int key) const;
 	void close();
+	int getKey(int key) const; // temp
+	bool shouldClose();
+	std::pair<float, float> getWindowSize();
 
 private:
 	GLFWwindow* m_ID;
