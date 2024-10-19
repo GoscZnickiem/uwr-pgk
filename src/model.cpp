@@ -2,7 +2,6 @@
 
 #include <GL/glew.h>
 
-
 Model::Model(const std::vector<float>& vertices, const std::vector<int>& indices, const Shader& sh)
 : shader(&sh), m_vertices(static_cast<int>(indices.size())) {
 	p_createBuffers(vertices, indices);
@@ -48,8 +47,10 @@ void Model::p_createBuffers(const std::vector<float>& vertices, const std::vecto
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(float)), vertices.data(), GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), reinterpret_cast<void*>(0));
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	glGenBuffers(1, &m_ebo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);

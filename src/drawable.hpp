@@ -2,19 +2,16 @@
 #define _GZN_PGK_DRAWABLE
 
 #include "model.hpp"
+#include "transform.hpp"
+
 class Drawable {
 public:
-	explicit Drawable(const Model& model);
+	Drawable(Transform& transform, const Model& model);
 
 	void render() const;
 
-	float x;
-	float y;
-	float angle;
-	float xScale;
-	float yScale;
-
 private:
+	Transform* m_transform;
 	const Model* m_model;
 };
 
