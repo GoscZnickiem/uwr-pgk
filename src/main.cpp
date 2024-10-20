@@ -46,11 +46,6 @@ struct Application {
 					static_cast<float>(i) * distance - boardSize / 2,
 					static_cast<float>(j) * distance - boardSize / 2, 
 					angle(gen), scale(gen) * stdScale, scale(gen) * stdScale * 3);
-				auto b = obstacles.back();
-				std::cout <<
-					b.transform.angle << " " <<
-					b.transform.xScale << " " <<
-					b.transform.yScale << "\n";
 			}
 		}
 	}
