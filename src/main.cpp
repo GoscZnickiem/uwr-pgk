@@ -26,26 +26,33 @@ void initializeGLFW() {
 
 struct Application {
 	Window window{};
-	std::vector<Obstacle> obstacles;
-	Player player{-0.5f, -0.5f};
 
-	Application(long unsigned int seed = static_cast<long unsigned int>(std::time(nullptr)), int size = 10) {
+	const float boardSize = 1.8f;
+	const float gridSize;
+
+	std::vector<Obstacle> obstacles;
+	Player player;
+
+	Application(long unsigned int seed = static_cast<long unsigned int>(std::time(nullptr)), int size = 100)
+		: gridSize(boardSize / static_cast<float>(size)), 
+		  player( - boardSize / 2 + gridSize / 2, - boardSize / 2 + gridSize / 2, -0.78f, gridSize * 0.1f, gridSize * 0.3f) {
+
+		std::cout << static_cast<long unsigned int>(std::time(nullptr)) << "\n";
 		obstacles.reserve(static_cast<size_t>(size) * static_cast<size_t>(size));
 		std::mt19937 gen(seed);
 
-		const float boardSize = 1.8f;
-		const float distance = boardSize / static_cast<float>(size);
 
-		std::uniform_real_distribution<float> angle(-3.14f, 3.14f);
-		std::uniform_real_distribution<float> scale(0.5f, 1.0f);
-		const float stdScale = 0.03f;
+		std::uniform_real_distribution<float> angleDis(-3.14f, 3.14f);
+		std::uniform_real_distribution<float> scaleDis(0.8f, 1.0f);
 
 		for(int i = 0; i < size; i++) {
 			for(int j = 0; j < size; j++) {
+				if((i == 0 && j == 0) || (i == size - 1 && j == size - 1)) continue;
+				const float scale = scaleDis(gen) * gridSize * 0.18f;
 				obstacles.emplace_back(
-					static_cast<float>(i) * distance - boardSize / 2,
-					static_cast<float>(j) * distance - boardSize / 2, 
-					angle(gen), scale(gen) * stdScale, scale(gen) * stdScale * 3);
+					static_cast<float>(i) * gridSize - boardSize / 2 + gridSize / 2,
+					static_cast<float>(j) * gridSize - boardSize / 2 + gridSize / 2, 
+					angleDis(gen), scale, scale * 3);
 			}
 		}
 	}
@@ -107,7 +114,7 @@ void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]]
 
 int main() {
 	initializeGLFW();
-	Application app(4);
+	Application app;
 
 	glDebugMessageCallback(MessageCallback, nullptr);
 
