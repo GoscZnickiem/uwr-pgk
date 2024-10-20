@@ -33,7 +33,6 @@ Window::Window() {
 	}
 
 	glfwMakeContextCurrent(m_ID);
-	glfwSwapInterval(0);
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
 		std::cerr << "GLEW initialization failed\n";
