@@ -15,7 +15,7 @@ ObstacleCollection::ObstacleCollection(long unsigned seed, int size, float board
 
 	std::mt19937 gen(seed);
 	std::uniform_real_distribution<float> angleDis(-3.14f, 3.14f);
-	std::uniform_real_distribution<float> scaleDis(0.8f, 1.0f);
+	std::uniform_real_distribution<float> scaleDis(1.0f, 1.0f);
 
 	for(int i = 0; i < size; i++) {
 		for(int j = 0; j < size; j++) {
@@ -25,6 +25,7 @@ ObstacleCollection::ObstacleCollection(long unsigned seed, int size, float board
 				static_cast<float>(i) * gridSize - boardSize / 2 + gridSize / 2,
 				static_cast<float>(j) * gridSize - boardSize / 2 + gridSize / 2, 
 				angleDis(gen), scale, scale * 3);
+			m_members.back().collider.update();
 		}
 	}
 

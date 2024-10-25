@@ -17,5 +17,5 @@ void Model::render() const {
 	glDrawElements(GL_TRIANGLES, m_model->vertexCount, GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
 
 	m_model->unbind();
-	// m_shader->unbind();
+	m_shader->unbind();
 }

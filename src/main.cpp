@@ -1,7 +1,6 @@
 #include "core/window.hpp"
 #include "core/input.hpp"
 #include "appdata.hpp"
-#include "obstacle.hpp"
 #include "obstacleCollection.hpp"
 #include "player.hpp"
 
@@ -11,7 +10,6 @@
 #include <iostream>
 #include <cstdlib>
 #include <chrono>
-#include <vector>
 
 void initializeGLFW() {
 	if (glfwInit() == 0) {
@@ -39,7 +37,7 @@ struct Application {
 	}
 
 	void update() {
-		player.update();
+		player.update(obstacles.getObstacles());
 		if(Input::isKeyPressed("ESCAPE"))
 			window.close();
 	}
