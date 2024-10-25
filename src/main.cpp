@@ -1,18 +1,17 @@
-#include "window.hpp"
+#include "core/window.hpp"
+#include "core/input.hpp"
 #include "appdata.hpp"
-#include "input.hpp"
 #include "obstacle.hpp"
+#include "obstacleCollection.hpp"
 #include "player.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <cstddef>
 #include <ctime>
 #include <iostream>
 #include <cstdlib>
 #include <chrono>
 #include <vector>
-#include <random>
 
 void initializeGLFW() {
 	if (glfwInit() == 0) {
@@ -30,31 +29,13 @@ struct Application {
 	const float boardSize = 1.8f;
 	const float gridSize;
 
-	std::vector<Obstacle> obstacles;
+	ObstacleCollection obstacles;
 	Player player;
 
 	Application(long unsigned int seed = static_cast<long unsigned int>(std::time(nullptr)), int size = 10)
 		: gridSize(boardSize / static_cast<float>(size)), 
+		  obstacles(seed, size, boardSize, gridSize),
 		  player( - boardSize / 2 + gridSize / 2, - boardSize / 2 + gridSize / 2, -0.78f, gridSize * 0.1f, gridSize * 0.3f) {
-
-		std::cout << static_cast<long unsigned int>(std::time(nullptr)) << "\n";
-		obstacles.reserve(static_cast<size_t>(size) * static_cast<size_t>(size));
-		std::mt19937 gen(seed);
-
-
-		std::uniform_real_distribution<float> angleDis(-3.14f, 3.14f);
-		std::uniform_real_distribution<float> scaleDis(0.8f, 1.0f);
-
-		for(int i = 0; i < size; i++) {
-			for(int j = 0; j < size; j++) {
-				if((i == 0 && j == 0) || (i == size - 1 && j == size - 1)) continue;
-				const float scale = scaleDis(gen) * gridSize * 0.18f;
-				obstacles.emplace_back(
-					static_cast<float>(i) * gridSize - boardSize / 2 + gridSize / 2,
-					static_cast<float>(j) * gridSize - boardSize / 2 + gridSize / 2, 
-					angleDis(gen), scale, scale * 3);
-			}
-		}
 	}
 
 	void update() {
@@ -64,7 +45,7 @@ struct Application {
 	}
 
 	void render() {
-		for(auto& o : obstacles) o.render();
+		obstacles.render();
 		player.render();
 
 		window.endFrame();

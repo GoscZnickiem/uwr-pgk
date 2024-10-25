@@ -1,7 +1,7 @@
 #ifndef _GZN_PGK_PLAYER_
 #define _GZN_PGK_PLAYER_
 
-#include "drawable.hpp"
+#include "model.hpp"
 
 class Player {
 public:
@@ -13,7 +13,7 @@ public:
 	void render();
 
 private:
-	Drawable m_vis;
+	Model m_vis;
 };
 
 #endif

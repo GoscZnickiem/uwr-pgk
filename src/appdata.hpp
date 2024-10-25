@@ -1,10 +1,11 @@
 #ifndef _GZN_PGK_APPDATA_
 #define _GZN_PGK_APPDATA_
 
-#include "model.hpp"
-#include "shader.hpp"
+#include "rawModel.hpp"
+#include "core/shader.hpp"
 
 #include <string>
+#include <vector>
 
 struct AppData {
 
@@ -12,19 +13,20 @@ struct AppData {
 	static constexpr double timePerUpdate = 1./updatesPerSecond;
 	static constexpr float deltaT = static_cast<float>(timePerUpdate);
 
-	const Shader shaderBasic{"assets/shaders/shader.glsl"};
+	const Shader shaderSingle{"assets/shaders/shaderSingle.glsl"};
+	const Shader shaderInstanced{"assets/shaders/shaderInstanced.glsl"};
 
-	const Model modelObstacle{ {
+	const std::vector<float> modelObstacle{
 		-1.0f, -1.0f,	0.5f, 0.1f, 0.8f,
 		 0.0f,  1.0f,	0.2f, 0.6f, 0.8f,
 		 1.0f, -1.0f,	0.5f, 0.1f, 0.8f
-	}, shaderBasic};
+	};
 
-	const Model modelPlayer{ {
+	const RawModel modelPlayer{ {
 		-1.0f, -1.0f,	0.7f, 0.7f, 0.1f,
 		 0.0f,  1.0f,	0.8f, 0.1f, 0.0f,
 		 1.0f, -1.0f,	0.7f, 0.7f, 0.1f,
-	}, shaderBasic};
+	} };
 
 	static AppData& data();
 

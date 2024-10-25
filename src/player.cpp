@@ -1,9 +1,10 @@
 #include "player.hpp"
 #include "appdata.hpp"
-#include "input.hpp"
+#include "core/input.hpp"
 
 Player::Player(float x, float y, float angle, float xScale, float yScale)
-: transform{x, y, angle, xScale, yScale}, m_vis(transform, AppData::data().modelPlayer) { }
+:	transform{x, y, angle, xScale, yScale}, 
+	m_vis(transform, AppData::data().modelPlayer, AppData::data().shaderSingle) { }
 
 void Player::update() {
 	if(Input::isKeyPressed("UP"))

@@ -30,6 +30,7 @@ public:
 	template<typename ... Args>
 	static void setGlobalUniform(const std::string& name, Args... args) {
 		for(auto* shader : s_shaders) {
+			shader->bind();
 			shader->setUniform("global_" + name, args...);
 		}
 	}

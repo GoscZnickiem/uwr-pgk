@@ -21,3 +21,6 @@
 bin/
 debug/
 app
+.cache/
+
+compile_commands.json
