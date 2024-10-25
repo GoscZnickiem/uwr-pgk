@@ -33,7 +33,7 @@ struct Application {
 	std::vector<Obstacle> obstacles;
 	Player player;
 
-	Application(long unsigned int seed = static_cast<long unsigned int>(std::time(nullptr)), int size = 100)
+	Application(long unsigned int seed = static_cast<long unsigned int>(std::time(nullptr)), int size = 10)
 		: gridSize(boardSize / static_cast<float>(size)), 
 		  player( - boardSize / 2 + gridSize / 2, - boardSize / 2 + gridSize / 2, -0.78f, gridSize * 0.1f, gridSize * 0.3f) {
 

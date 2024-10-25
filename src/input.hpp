@@ -1,17 +1,15 @@
 #ifndef _GZN_PGK_INPUT_
 #define _GZN_PGK_INPUT_
 
-#include <map>
 #include <string>
+#include <GLFW/glfw3.h>
 
-class Input {
-public:
-	static bool isKeyPressed(const std::string& key);
+namespace Input {
 
-private:
-	inline static std::map<std::string, bool> keys{};
+bool isKeyPressed(const std::string& key);
 
-	friend class Window;
+void setWindow(GLFWwindow* win);
+
 };
 
 #endif

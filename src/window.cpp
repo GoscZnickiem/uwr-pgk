@@ -2,6 +2,7 @@
 #include "input.hpp"
 #include "shader.hpp"
 
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <map>
 #include <string>
@@ -33,6 +34,7 @@ Window::Window() {
 	}
 
 	glfwMakeContextCurrent(m_ID);
+	glfwSwapInterval(1);
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
 		std::cerr << "GLEW initialization failed\n";
@@ -52,13 +54,7 @@ Window::Window() {
 			Shader::setGlobalUniform("scale", 1.f, winx/winy);
 	});
 
-	glfwSetKeyCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int key,[[maybe_unused]] int scancode, int action,[[maybe_unused]] int mods) {
-		try {
-			Input::keys[glToString.at(key)] = action == GLFW_PRESS;
-		} catch ([[maybe_unused]] std::out_of_range& e) {
-			return;
-		}
-	});
+	Input::setWindow(m_ID);
 
 }
 
