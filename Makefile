@@ -44,9 +44,9 @@ TARGET_NAME := $(APP_NAME)$(EXE)
 TARGET := $(TARGET_NAME)
 TARGET_DEBUG := $(DEB_DIR)/$(TARGET_NAME)
 
-SRCS := $(foreach x, $(SRC_DIR), $(wildcard $(addprefix $(x)/*,.c*)))
-OBJS := $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(notdir $(basename $(SRCS)))))
-OBJS_DEB := $(addprefix $(DEB_DIR)/, $(addsuffix .o, $(notdir $(basename $(SRCS)))))
+SRCS := $(shell find $(SRC_DIR) -type f -name '*.cpp')
+OBJS := $(patsubst $(SRC_DIR)/%, $(OBJ_DIR)/%, $(SRCS:.cpp=.o))
+OBJS_DEB := $(patsubst $(SRC_DIR)/%, $(DEB_DIR)/%, $(SRCS:.cpp=.o))
 # ==================================================
 
 # ==================================================
@@ -58,6 +58,7 @@ $(TARGET): $(OBJS)
 	$(COMPILER) $(OBJS) -o $@ $(LINKFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c*
+	@mkdir -p $(dir $@)
 	$(COMPILER) $(COMPILER_FLAGS) -c -o $@ $<
 # ==================================================
 
@@ -68,6 +69,7 @@ $(TARGET_DEBUG): $(OBJS_DEB)
 	$(COMPILER) $(OBJS_DEB) -o $@ $(LINKFLAGS)
 
 $(DEB_DIR)/%.o: $(SRC_DIR)/%.c*
+	@mkdir -p $(dir $@)
 	$(COMPILER) $(COMPILER_FLAGS) $(DEBUG_FLAGS) -c -o $@ $<
 # ==================================================
 
