@@ -30,7 +30,7 @@ struct Application {
 	ObstacleCollection obstacles;
 	Player player;
 
-	Application(long unsigned int seed = static_cast<long unsigned int>(std::time(nullptr)), int size = 10)
+	Application(long unsigned int seed = static_cast<long unsigned int>(std::time(nullptr)), int size = 5)
 		: gridSize(boardSize / static_cast<float>(size)), 
 		  obstacles(seed, size, boardSize, gridSize),
 		  player( - boardSize / 2 + gridSize / 2, - boardSize / 2 + gridSize / 2, -0.78f, gridSize * 0.1f, gridSize * 0.3f) {
@@ -43,7 +43,7 @@ struct Application {
 	}
 
 	void render() {
-		obstacles.render();
+		obstacles.render(player.collider);
 		player.render();
 
 		window.endFrame();

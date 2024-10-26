@@ -52,6 +52,7 @@ Window::Window() {
 			Shader::setGlobalUniform("scale", winy/winx, 1.f);
 		else 
 			Shader::setGlobalUniform("scale", 1.f, winx/winy);
+		Shader::setGlobalUniform("resolution", winx, winy);
 	});
 
 	Input::setWindow(m_ID);

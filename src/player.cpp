@@ -9,8 +9,8 @@ Player::Player(float x, float y, float angle, float xScale, float yScale)
 	m_vis(transform, AppData::data().modelPlayer, AppData::data().shaderSingle) { }
 
 void Player::update(const std::vector<Obstacle>& obstacles) {
-	static constexpr float speed = 0.3f * AppData::deltaT;
-	static constexpr float rotate = 1.5f * AppData::deltaT;
+	static const float speed = 10.0f * AppData::deltaT * transform.xScale;
+	static const float rotate = 1.5f * AppData::deltaT;
 
 	float prevX = transform.x;
 	float prevY = transform.y;
@@ -31,7 +31,6 @@ void Player::update(const std::vector<Obstacle>& obstacles) {
 
 	collider.update();
 	for(const auto& o : obstacles) {
-		if(!collider.isNear(o.collider)) continue;
 		if(!collider.collides(o.collider)) continue;
 		transform.x = prevX;
 		transform.y = prevY;

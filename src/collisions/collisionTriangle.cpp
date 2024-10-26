@@ -2,16 +2,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 CollisionTriangle::CollisionTriangle(const Transform& t) : transform(&t) { }
-
-bool CollisionTriangle::isNear(const CollisionTriangle& other) const {
-	float x = transform->x - other.transform->x;
-	float y = transform->y - other.transform->y;
-	float biggerSide = transform->yScale + other.transform->yScale;
-	float smallerSide = transform->xScale + other.transform->xScale;
-	return x * x + y * y <= smallerSide * smallerSide + biggerSide * biggerSide;
-}
 
 float crossProduct(const Point& a, const Point& b, const Point& c) {
     return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);

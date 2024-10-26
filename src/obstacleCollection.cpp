@@ -65,8 +65,11 @@ ObstacleCollection::~ObstacleCollection() {
 	return m_members;
 }
 
-void ObstacleCollection::render() {
+void ObstacleCollection::render(const CollisionTriangle& player) {
 	m_shader->bind();
 	m_model.bind();
+	m_shader->setUniform("playerPos1", player.a.x, player.a.y);
+	m_shader->setUniform("playerPos2", player.b.x, player.b.y);
+	m_shader->setUniform("playerPos3", player.c.x, player.c.y);
 	glDrawElementsInstanced(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0, static_cast<int>(m_members.size()));
 }
