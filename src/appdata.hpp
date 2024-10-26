@@ -16,16 +16,22 @@ struct AppData {
 	const Shader shaderSingle{"assets/shaders/shaderSingle.glsl"};
 	const Shader shaderInstanced{"assets/shaders/shaderInstanced.glsl"};
 
-	const std::vector<float> modelObstacle{
+	const std::vector<float> modelObstacle {
 		-1.0f, -1.0f,	0.5f, 0.1f, 0.8f,
 		 0.0f,  1.0f,	0.2f, 0.6f, 0.8f,
 		 1.0f, -1.0f,	0.5f, 0.1f, 0.8f
 	};
 
-	const RawModel modelPlayer{ {
-		-1.0f, -1.0f,	0.7f, 0.7f, 0.1f,
-		 0.0f,  1.0f,	0.8f, 0.1f, 0.0f,
-		 1.0f, -1.0f,	0.7f, 0.7f, 0.1f,
+	const RawModel modelPlayer { {
+		-1.0f, -1.0f,	1.0f, 0.7f, 0.1f,
+		 0.0f,  1.0f,	1.0f, 0.3f, 0.3f,
+		 1.0f, -1.0f,	1.0f, 0.7f, 0.1f,
+	} };
+
+	const RawModel modelFinish { {
+		-1.0f, -1.0f,	1.0f, 1.0f, 0.0f,
+		 0.0f,  1.0f,	0.0f, 1.0f, 0.0f,
+		 1.0f, -1.0f,	0.0f, 1.0f, 1.0f,
 	} };
 
 	static AppData& data();

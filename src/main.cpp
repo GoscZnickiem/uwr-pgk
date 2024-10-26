@@ -1,11 +1,13 @@
 #include "core/window.hpp"
 #include "core/input.hpp"
 #include "appdata.hpp"
-#include "obstacleCollection.hpp"
 #include "player.hpp"
+#include "finish.hpp"
+#include "obstacleCollection.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <cmath>
 #include <ctime>
 #include <iostream>
 #include <cstdlib>
@@ -21,6 +23,10 @@ void initializeGLFW() {
 	});
 }
 
+float lerp(float a, float b, float t) {
+	return std::lerp(a, b, std::clamp(t, 0.f, 1.f));
+}
+
 struct Application {
 	Window window{};
 
@@ -29,22 +35,52 @@ struct Application {
 
 	ObstacleCollection obstacles;
 	Player player;
+	Finish finish;
 
-	Application(long unsigned int seed = static_cast<long unsigned int>(std::time(nullptr)), int size = 5)
+	bool endAnimation = false;
+	float animTime = 0.0;
+	static constexpr float animDuration = 3.0;
+
+	Application(long unsigned int seed = static_cast<long unsigned int>(std::time(nullptr)), int size = 3)
 		: gridSize(boardSize / static_cast<float>(size)), 
 		  obstacles(seed, size, boardSize, gridSize),
-		  player( - boardSize / 2 + gridSize / 2, - boardSize / 2 + gridSize / 2, -0.78f, gridSize * 0.1f, gridSize * 0.3f) {
+		  player(-boardSize / 2 + gridSize / 2, -boardSize / 2 + gridSize / 2, -0.78f, gridSize * 0.1f, gridSize * 0.3f),
+		  finish( boardSize / 2 - gridSize / 2,  boardSize / 2 - gridSize / 2, 0.f, gridSize * 0.3f, gridSize * 0.3f) {
+		Shader::setGlobalUniform("special", 0);
 	}
 
 	void update() {
-		player.update(obstacles.getObstacles());
 		if(Input::isKeyPressed("ESCAPE"))
 			window.close();
+
+		if(endAnimation) {
+			animTime += AppData::deltaT / animDuration;
+			auto [winx, winy] = window.getWindowSize();
+			auto t = animTime * animTime;
+			float w, h;
+			if(winx > winy) {
+				w = lerp(winy/winx, 0.f, t);
+				h = lerp(1.f, 0.f, t);
+			} else {
+				w = lerp(1.f, 0.f, t);
+				h = lerp(winx/winy, 0.f, t);
+			}
+			Shader::setGlobalUniform("scale", w, h);
+			Shader::setGlobalUniform("special", t);
+			return;
+		}
+
+		player.update(obstacles.getObstacles());
+		finish.update();
+
+		if(player.collider.collides(finish.collider))
+			endAnimation = true;
 	}
 
 	void render() {
 		obstacles.render(player.collider);
 		player.render();
+		finish.render();
 
 		window.endFrame();
 	}
@@ -55,10 +91,6 @@ struct Application {
 		std::chrono::duration<double> timeBetweenFrames{};
 		double lag = 0.0;
 
-		const double fpsInterval = 1.;
-		double fpsTimer = 0.0;
-		uint fpsCount = 0;
-
 		const auto timePerUpdate = AppData::data().timePerUpdate;
 
 		while (!window.shouldClose()) {
@@ -67,7 +99,6 @@ struct Application {
 			lastFrameTime = std::chrono::steady_clock::now();
 
 			lag += timeBetweenFrames.count();
-			fpsTimer += timeBetweenFrames.count();
 
 			while(lag >= timePerUpdate ) {
 				lag -= timePerUpdate;
@@ -75,13 +106,6 @@ struct Application {
 			}
 
 			render();
-
-			fpsCount++;
-			if (fpsTimer >= fpsInterval) {
-				fpsTimer = 0.;
-				std::cout << "FPS: " << static_cast<uint>(static_cast<double>(fpsCount) / fpsInterval) << "\n";
-				fpsCount = 0;
-			}
 		}
 	}
 };

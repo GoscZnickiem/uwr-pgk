@@ -3,14 +3,12 @@
 
 #include <cmath>
 #include <ctime>
-#include <iostream>
 #include <random>
 #include <GL/glew.h>
 
 ObstacleCollection::ObstacleCollection(long unsigned seed, int size, float boardSize, float gridSize)
 : m_boardSize(boardSize), m_gridSize(gridSize), m_model(AppData::data().modelObstacle), m_shader(&AppData::data().shaderInstanced) {
 
-	std::cout << static_cast<long unsigned int>(std::time(nullptr)) << "\n";
 	m_members.reserve(static_cast<size_t>(size) * static_cast<size_t>(size));
 
 	std::mt19937 gen(seed);
