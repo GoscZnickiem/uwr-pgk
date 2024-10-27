@@ -62,7 +62,7 @@ struct Application {
 
 		if(end || loading) {
 			player.collider.update();
-			animTime += (loading ? -1 : 1) * AppData::deltaT;
+			animTime += (loading ? -2 : 1) * AppData::deltaT;
 			if(animTime < 0.0f) {
 				loading = false;
 				animTime = 0.0f;
@@ -133,6 +133,7 @@ void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]]
 }
 
 int main (int argc, char *argv[]) {
+	bool generatedSeed = true;
 	unsigned long seed = static_cast<long unsigned int>(std::time(nullptr));
 	int size = 10;
     if (argc > 3) {
@@ -142,6 +143,7 @@ int main (int argc, char *argv[]) {
     if (argc >= 2) {
 		try {
 			seed = std::stoul(argv[1]);
+			generatedSeed = false;
 		} catch (std::invalid_argument& e) {
 			if(argv[1][0] != 'r' || argv[1][1] != '\0') {
 				std::cerr << "Error: argument for seed value should be a non-negative integer or 'r' for random value\n";
@@ -156,7 +158,7 @@ int main (int argc, char *argv[]) {
 			return 2;
 		}
     }
-	if(argc == 1) {
+	if(generatedSeed) {
 		std::cout << "Seed: " << seed << "\n\n";
 	}
 
