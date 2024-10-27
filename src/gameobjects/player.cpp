@@ -8,7 +8,7 @@ Player::Player(float x, float y, float angle, float xScale, float yScale)
 :	transform{x, y, angle, xScale, yScale}, collider(transform),
 	m_vis(transform, AppData::data().modelPlayer, AppData::data().shaderSingle) { }
 
-void Player::update(const std::vector<Obstacle>& obstacles) {
+void Player::update(const std::vector<Obstacle>& obstacles, float bound) {
 	static const float speed = 10.0f * AppData::deltaT * transform.xScale;
 	static const float rotate = 1.5f * AppData::deltaT;
 
@@ -30,12 +30,22 @@ void Player::update(const std::vector<Obstacle>& obstacles) {
 		transform.angle -= rotate;
 
 	collider.update();
-	for(const auto& o : obstacles) {
-		if(!collider.collides(o.collider)) continue;
+
+	auto undo = [&]() {
 		transform.x = prevX;
 		transform.y = prevY;
 		transform.angle = prevAngle;
 		collider.update();
+	};
+
+	auto outOfBounds = [&](Point p) { return p.x < -bound || p.x > bound || p.y < -bound || p.y > bound; };
+	if(outOfBounds(collider.a) || outOfBounds(collider.b) || outOfBounds(collider.c)) {
+		undo();
+		return;
+	}
+	for(const auto& o : obstacles) {
+		if(!collider.collides(o.collider)) continue;
+		undo();
 		return;
 	}
 }

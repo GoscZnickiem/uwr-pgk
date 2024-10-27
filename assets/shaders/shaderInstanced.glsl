@@ -51,13 +51,9 @@ uniform vec2 playerPos2;
 uniform vec2 playerPos3;
 uniform vec2 global_scale;
 uniform vec2 global_resolution;
-uniform vec2 global_special;
+uniform float global_special;
 
 out vec4 FragColor;
-
-vec3 lerp(vec3 a, vec3 b, float t) {
-	return (1 - t) * a + t * b;
-}
 
 float distanceToSegment(vec2 p, vec2 v1, vec2 v2) {
     vec2 lineVec = v2 - v1;
@@ -80,10 +76,9 @@ void main() {
 
 	float minDistance = min(d1, min(d2, d3));
 
-	float edgeEffect = smoothstep(0.1, 0.5, 0.005 / (minDistance * minDistance + 0.01));
-	float t = clamp(edgeEffect, 0.0, 1.0);
+	float t = (0.1 + global_special) / (minDistance + 0.1);
 
-	vec3 altColor = vec3(1.0, 0.6, 0.0);
+	vec3 glowColor = vec3(2.0, 1.0, 0.5);
 
-	FragColor = vec4(lerp(color, altColor, t), 1.0);
+	FragColor = vec4(mix(color, glowColor, t), 1.0);
 }

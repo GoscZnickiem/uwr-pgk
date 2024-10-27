@@ -14,7 +14,7 @@ public:
 	Transform transform;
 	CollisionTriangle collider;
 
-	void update(const std::vector<Obstacle>& obstacles);
+	void update(const std::vector<Obstacle>& obstacles, float bound);
 	void render();
 
 private:

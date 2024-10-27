@@ -1,6 +1,7 @@
 #include "core/window.hpp"
 #include "core/input.hpp"
 #include "appdata.hpp"
+#include "gameobjects/background.hpp"
 #include "gameobjects/player.hpp"
 #include "gameobjects/finish.hpp"
 #include "gameobjects/obstacleCollection.hpp"
@@ -33,15 +34,17 @@ struct Application {
 	const float boardSize = 1.8f;
 	const float gridSize;
 
+	BackGround backGround;
 	ObstacleCollection obstacles;
 	Player player;
 	Finish finish;
 
-	bool endAnimation = false;
-	float animTime = 0.0;
-	static constexpr float animDuration = 3.0;
+	bool end = false;
+	float playTime = 0.f;
+	float animTime = 0.f;
+	static constexpr float animDuration = 3.f;
 
-	Application(long unsigned int seed = static_cast<long unsigned int>(std::time(nullptr)), int size = 3)
+	Application(long unsigned int seed, int size)
 		: gridSize(boardSize / static_cast<float>(size)), 
 		  obstacles(seed, size, boardSize, gridSize),
 		  player(-boardSize / 2 + gridSize / 2, -boardSize / 2 + gridSize / 2, -0.78f, gridSize * 0.1f, gridSize * 0.3f),
@@ -50,13 +53,14 @@ struct Application {
 	}
 
 	void update() {
-		if(Input::isKeyPressed("ESCAPE"))
+		playTime += AppData::deltaT;
+		if(Input::isKeyPressed("ESCAPE") || animTime >= animDuration + 0.3f)
 			window.close();
 
-		if(endAnimation) {
-			animTime += AppData::deltaT / animDuration;
+		if(end) {
+			animTime += AppData::deltaT;
 			auto [winx, winy] = window.getWindowSize();
-			auto t = animTime * animTime;
+			auto t = (animTime / animDuration) * (animTime / animDuration);
 			float w, h;
 			if(winx > winy) {
 				w = lerp(winy/winx, 0.f, t);
@@ -70,14 +74,15 @@ struct Application {
 			return;
 		}
 
-		player.update(obstacles.getObstacles());
+		player.update(obstacles.getObstacles(), boardSize / 2);
 		finish.update();
 
 		if(player.collider.collides(finish.collider))
-			endAnimation = true;
+			end = true;
 	}
 
 	void render() {
+		backGround.render(playTime);
 		obstacles.render(player.collider);
 		player.render();
 		finish.render();
@@ -85,13 +90,14 @@ struct Application {
 		window.endFrame();
 	}
 
-	void run() {
+	double run() {
 		std::chrono::steady_clock::time_point lastFrameTime = std::chrono::steady_clock::now();
 		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 		std::chrono::duration<double> timeBetweenFrames{};
+		const auto timePerUpdate = AppData::data().timePerUpdate;
 		double lag = 0.0;
 
-		const auto timePerUpdate = AppData::data().timePerUpdate;
+		double timer = 0.0;
 
 		while (!window.shouldClose()) {
 			now = std::chrono::steady_clock::now();
@@ -99,6 +105,7 @@ struct Application {
 			lastFrameTime = std::chrono::steady_clock::now();
 
 			lag += timeBetweenFrames.count();
+			timer += timeBetweenFrames.count();
 
 			while(lag >= timePerUpdate ) {
 				lag -= timePerUpdate;
@@ -107,6 +114,9 @@ struct Application {
 
 			render();
 		}
+
+		if(end) return timer;
+		else return 0;
 	}
 };
 
@@ -117,10 +127,12 @@ void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]]
 
 int main() {
 	initializeGLFW();
-	Application app;
+	Application app(static_cast<long unsigned int>(std::time(nullptr)), 5);
 
 	glDebugMessageCallback(MessageCallback, nullptr);
 
-	app.run();
+	double time = app.run();
+
+	if(time != 0) std::cout << "--== You win! ==--\nYour time: " << time << "s\n";
 }
 
