@@ -1,5 +1,5 @@
 #include "obstacleCollection.hpp"
-#include "appdata.hpp"
+#include "../appdata.hpp"
 
 #include <cmath>
 #include <ctime>

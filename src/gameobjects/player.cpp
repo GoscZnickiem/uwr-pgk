@@ -1,6 +1,6 @@
 #include "player.hpp"
-#include "appdata.hpp"
-#include "core/input.hpp"
+#include "../appdata.hpp"
+#include "../core/input.hpp"
 
 #include <cmath>
 

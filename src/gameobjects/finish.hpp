@@ -1,8 +1,8 @@
-#ifndef _GZN_PGK_FINISH_
-#define _GZN_PGK_FINISH_
+#ifndef _GZN_PGK_GAMEOBJECTS_FINISH_
+#define _GZN_PGK_GAMEOBJECTS_FINISH_
 
-#include "collisions/collisionTriangle.hpp"
-#include "model.hpp"
+#include "../collisions/collisionTriangle.hpp"
+#include "../model.hpp"
 
 class Finish {
 public:

@@ -1,8 +1,8 @@
-#ifndef _GZN_PGK_OBSTACLECOLLECTION_
-#define _GZN_PGK_OBSTACLECOLLECTION_
+#ifndef _GZN_PGK_GAMEOBJECTS_OBSTACLECOLLECTION_
+#define _GZN_PGK_GAMEOBJECTS_OBSTACLECOLLECTION_
 
-#include "core/shader.hpp"
-#include "rawModel.hpp"
+#include "../core/shader.hpp"
+#include "../rawModel.hpp"
 #include "obstacle.hpp"
 
 #include <cstdint>
@@ -27,4 +27,4 @@ private:
 	std::vector<Obstacle> m_members;
 };
 
-#endif // !_GZN_PGK_OBSTACLECOLLECTION_
+#endif // !_GZN_PGK_GAMEOBJECTS_OBSTACLECOLLECTION_

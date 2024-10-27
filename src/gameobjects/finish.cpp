@@ -1,5 +1,5 @@
 #include "finish.hpp"
-#include "appdata.hpp"
+#include "../appdata.hpp"
 
 #include <cmath>
 

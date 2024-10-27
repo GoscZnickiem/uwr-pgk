@@ -1,9 +1,9 @@
 #include "core/window.hpp"
 #include "core/input.hpp"
 #include "appdata.hpp"
-#include "player.hpp"
-#include "finish.hpp"
-#include "obstacleCollection.hpp"
+#include "gameobjects/player.hpp"
+#include "gameobjects/finish.hpp"
+#include "gameobjects/obstacleCollection.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
