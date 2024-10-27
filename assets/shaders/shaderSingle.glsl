@@ -22,6 +22,9 @@ void main() {
 	float ycos = sPos.y * cosv;
 	vec2 res = (vec2(xcos - ysin, ycos + xsin) + pos) * global_scale;
 
+	float angle = global_special * 5;
+	res = mat2(cos(angle), sin(angle), -sin(angle), cos(angle)) * res;
+
 	// Warping Effect
 	float distanceToCenter = length(res);
 	vec2 directionToCenter = normalize(-res);
@@ -31,9 +34,6 @@ void main() {
 		sin(res.y * 10.0 + global_special * 20.0),
 		cos(res.x * 10.0 + global_special * 20.0)
 	) * 0.1 * global_special;
-
-	float angle = global_special * 5;
-	res = mat2(cos(angle), sin(angle), -sin(angle), cos(angle)) * res;
 
 	res += radialDistortion + waveDistortion;
 

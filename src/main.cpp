@@ -40,9 +40,10 @@ struct Application {
 	Finish finish;
 
 	bool end = false;
+	bool loading = true;
 	float playTime = 0.f;
-	float animTime = 0.f;
 	static constexpr float animDuration = 3.f;
+	float animTime = animDuration;
 
 	Application(long unsigned int seed, int size)
 		: gridSize(boardSize / static_cast<float>(size)), 
@@ -57,8 +58,15 @@ struct Application {
 		if(Input::isKeyPressed("ESCAPE") || animTime >= animDuration + 0.3f)
 			window.close();
 
-		if(end) {
-			animTime += AppData::deltaT;
+		finish.update();
+
+		if(end || loading) {
+			player.collider.update();
+			animTime += (loading ? -1 : 1) * AppData::deltaT;
+			if(animTime < 0.0f) {
+				loading = false;
+				animTime = 0.0f;
+			}
 			auto [winx, winy] = window.getWindowSize();
 			auto t = (animTime / animDuration) * (animTime / animDuration);
 			float w, h;
@@ -75,7 +83,6 @@ struct Application {
 		}
 
 		player.update(obstacles.getObstacles(), boardSize / 2);
-		finish.update();
 
 		if(player.collider.collides(finish.collider))
 			end = true;
@@ -105,7 +112,7 @@ struct Application {
 			lastFrameTime = std::chrono::steady_clock::now();
 
 			lag += timeBetweenFrames.count();
-			timer += timeBetweenFrames.count();
+			if(!end && !loading) timer += timeBetweenFrames.count();
 
 			while(lag >= timePerUpdate ) {
 				lag -= timePerUpdate;
@@ -125,9 +132,36 @@ void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]]
 		std::cerr << "GL Error: " << message << "\n";
 }
 
-int main() {
+int main (int argc, char *argv[]) {
+	unsigned long seed = static_cast<long unsigned int>(std::time(nullptr));
+	int size = 10;
+    if (argc > 3) {
+        std::cerr << "Error: too many arguments. Proper usage: " << argv[0] << " [seed] [board size]\n";
+        return 1;
+    }
+    if (argc >= 2) {
+		try {
+			seed = std::stoul(argv[1]);
+		} catch (std::invalid_argument& e) {
+			if(argv[1][0] != 'r' || argv[1][1] != '\0') {
+				std::cerr << "Error: argument for seed value should be a non-negative integer or 'r' for random value\n";
+				return 1;
+			}
+		}
+    }
+    if (argc == 3) {
+		size = std::stoi(argv[2]);
+		if(size < 2) {
+			std::cerr << "Error: size parameter should be at least 2\n";
+			return 2;
+		}
+    }
+	if(argc == 1) {
+		std::cout << "Seed: " << seed << "\n\n";
+	}
+
 	initializeGLFW();
-	Application app(static_cast<long unsigned int>(std::time(nullptr)), 5);
+	Application app(seed, size);
 
 	glDebugMessageCallback(MessageCallback, nullptr);
 

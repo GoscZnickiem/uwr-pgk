@@ -21,6 +21,9 @@ void main() {
 	float ycos = sPos.y * iAngle[1];
 	vec2 res = (vec2(xcos - ysin, ycos + xsin) + iPos) * global_scale;
 
+	float angle = global_special * 5;
+	res = mat2(cos(angle), sin(angle), -sin(angle), cos(angle)) * res;
+
 	// Warping Effect
 	float distanceToCenter = length(res);
 	vec2 directionToCenter = normalize(-res);
@@ -30,9 +33,6 @@ void main() {
 		sin(res.y * 10.0 + global_special * 20.0),
 		cos(res.x * 10.0 + global_special * 20.0)
 	) * 0.1 * global_special;
-
-	float angle = global_special * 5;
-	res = mat2(cos(angle), sin(angle), -sin(angle), cos(angle)) * res;
 
 	res += radialDistortion + waveDistortion;
 
@@ -76,7 +76,7 @@ void main() {
 
 	float minDistance = min(d1, min(d2, d3));
 
-	float t = (0.1 + global_special) / (minDistance + 0.1);
+	float t = (0.1 + global_special) / (minDistance + 0.08);
 
 	vec3 glowColor = vec3(2.0, 1.0, 0.5);
 

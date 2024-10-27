@@ -49,7 +49,7 @@ void main() {
 		uv.x += 0.03 * sin(uv.y * i * i + time);
 	}
 
-	vec3 color = palette(uv.y + uv.x + time * 0.2 + global_special * 3);
+	vec3 color = palette(uv.y + uv.x + time * 0.2 + global_special * 6);
 
 	FragColor = vec4(color, 0.3) * 0.9;
 }
