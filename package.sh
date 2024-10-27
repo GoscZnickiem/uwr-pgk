@@ -10,6 +10,6 @@ ZIP_NAME="$1.zip"
 
 make clear
 
-zip -r "../$ZIP_NAME" . -x ".*" "package.sh"
+zip -r "../$ZIP_NAME" . -x ".*" -x "compile_commands.json" "package.sh"
 
 echo "Done"
