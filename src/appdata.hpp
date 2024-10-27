@@ -18,9 +18,9 @@ struct AppData {
 	const Shader shaderBackground{"assets/shaders/shaderBackground.glsl"};
 
 	const std::vector<float> modelObstacle {
-		-1.0f, -1.0f,	0.5f, 0.1f, 0.8f,
-		 0.0f,  1.0f,	0.2f, 0.6f, 0.8f,
-		 1.0f, -1.0f,	0.5f, 0.1f, 0.8f
+		-1.0f, -1.0f,	0.4f, 0.1f, 0.7f,
+		 0.0f,  1.0f,	0.1f, 0.5f, 0.7f,
+		 1.0f, -1.0f,	0.4f, 0.1f, 0.7f
 	};
 
 	const RawModel modelPlayer { {
@@ -30,9 +30,9 @@ struct AppData {
 	} };
 
 	const RawModel modelFinish { {
-		-1.0f, -1.0f,	1.0f, 1.0f, 0.0f,
-		 0.0f,  1.0f,	0.0f, 1.0f, 0.0f,
-		 1.0f, -1.0f,	0.0f, 1.0f, 1.0f,
+		-1.0f, -1.0f,	1.0f, 1.0f, 0.2f,
+		 0.0f,  1.0f,	0.3f, 0.3f, 1.0f,
+		 1.0f, -1.0f,	1.0f, 0.3f, 0.3f,
 	} };
 
 	static AppData& data();

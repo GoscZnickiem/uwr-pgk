@@ -49,7 +49,7 @@ struct Application {
 		: gridSize(boardSize / static_cast<float>(size)), 
 		  obstacles(seed, size, boardSize, gridSize),
 		  player(-boardSize / 2 + gridSize / 2, -boardSize / 2 + gridSize / 2, -0.78f, gridSize * 0.1f, gridSize * 0.3f),
-		  finish( boardSize / 2 - gridSize / 2,  boardSize / 2 - gridSize / 2, 0.f, gridSize * 0.3f, gridSize * 0.3f) {
+		  finish( boardSize / 2 - gridSize / 2,  boardSize / 2 - gridSize / 2, 0.f, gridSize * 0.3f, gridSize * 0.3f * 0.866f) {
 		Shader::setGlobalUniform("special", 0);
 	}
 
