@@ -51,5 +51,5 @@ void main() {
 
 	vec3 color = palette(uv.y + uv.x + time * 0.2 + global_special * 6);
 
-	FragColor = vec4(color, 0.3) * 0.9;
+	FragColor = vec4(color, 0.3) * 0.7;
 }

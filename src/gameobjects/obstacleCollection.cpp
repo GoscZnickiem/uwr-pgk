@@ -13,7 +13,7 @@ ObstacleCollection::ObstacleCollection(long unsigned seed, int size, float board
 
 	std::mt19937 gen(seed);
 	std::uniform_real_distribution<float> angleDis(-3.14f, 3.14f);
-	std::uniform_real_distribution<float> scaleDis(0.7f, 1.1f);
+	std::uniform_real_distribution<float> scaleDis(0.7f, 1.0f);
 
 	for(int i = 0; i < size; i++) {
 		for(int j = 0; j < size; j++) {
