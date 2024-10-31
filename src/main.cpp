@@ -55,18 +55,22 @@ struct Application {
 
 	void update() {
 		playTime += AppData::deltaT;
-		if(Input::isKeyPressed("ESCAPE") || animTime >= animDuration + 0.3f)
+
+		if(Input::isKeyPressed("ESCAPE"))
 			window.close();
 
 		finish.update();
 
 		if(end || loading) {
-			player.collider.update();
 			animTime += (loading ? -2 : 1) * AppData::deltaT;
 			if(animTime < 0.0f) {
 				loading = false;
 				animTime = 0.0f;
+			} else if(animTime >= animDuration + 0.3f) {
+				window.close();
 			}
+
+			player.collider.update();
 			auto [winx, winy] = window.getWindowSize();
 			auto t = (animTime / animDuration) * (animTime / animDuration);
 			float w, h;
