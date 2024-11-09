@@ -23,6 +23,7 @@ void Camera::update() {
 		position -= glm::normalize(glm::cross(direction, up)) * speed;
 	}
 
+	if(!Input::isMouseLocked()) return;
 	auto[mouseX, mouseY] = Input::getMousePos();
 	if(mouseX != 0) {
 		direction = glm::rotate(glm::mat4(1.f), -mouseX * sensitivity, glm::vec3(0.f, 1.f, 0.f)) * glm::vec4(direction, 1.f);

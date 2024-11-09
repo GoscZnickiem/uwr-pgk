@@ -55,6 +55,10 @@ void setMouseVisibility(bool visible) {
 	}
 }
 
+[[nodiscard]] bool isMouseLocked() {
+	return mouseLocked;
+}
+
 void setMousePosLock(bool lock) {
 	if(lock != mouseLocked) {
 		mouseLocked = lock;

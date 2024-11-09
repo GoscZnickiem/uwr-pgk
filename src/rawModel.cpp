@@ -4,7 +4,6 @@
 #include <cmath>
 #include <glm/geometric.hpp>
 #include <glm/vec3.hpp>
-#include <iostream>
 #include <unordered_map>
 
 RawModel::RawModel(const std::vector<float>& vertices, const std::vector<int>& indices)
@@ -72,9 +71,6 @@ int getMidpoint(int v1, int v2, std::vector<glm::vec3>& vertices, std::unordered
 	glm::vec3 vertex1 = vertices[static_cast<std::size_t>(v1)];
 	glm::vec3 vertex2 = vertices[static_cast<std::size_t>(v2)];
 	glm::vec3 midpoint = (vertex1 + vertex2) / 2.0f;
-	std::cout << vertex1.x << " " << vertex1.y << " " << vertex1.z << "\n";
-	std::cout << vertex2.x << " " << vertex2.y << " " << vertex2.z << "\n";
-	std::cout << midpoint.x << " " << midpoint.y << " " << midpoint.z << "\n\n";
     
 	vertices.push_back(glm::normalize(midpoint));
     int midIndex = static_cast<int>(vertices.size() - 1);

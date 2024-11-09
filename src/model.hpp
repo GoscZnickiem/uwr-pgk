@@ -1,5 +1,5 @@
-#ifndef _GZN_PGK_DRAWABLE
-#define _GZN_PGK_DRAWABLE
+#ifndef _GZN_PGK_MODEL_
+#define _GZN_PGK_MODEL_
 
 #include "core/shader.hpp"
 #include "rawModel.hpp"

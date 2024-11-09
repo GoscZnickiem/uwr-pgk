@@ -37,6 +37,8 @@ Window::Window(std::function<void(float, float)> resizeCallback)
 	glfwMakeContextCurrent(m_ID);
 	glfwSwapInterval(1);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE); 
+	glCullFace(GL_BACK);
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
 		std::cerr << "GLEW initialization failed\n";

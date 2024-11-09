@@ -31,24 +31,39 @@ float lerp(float a, float b, float t) {
 struct Application {
 	Window window;
 
+	const float boardSize = 10.0f;
+	const float gridSize;
+
 	Camera camera;
 	Player player;
+	ObstacleCollection obstacles;
 
-	Application([[maybe_unused]] long unsigned int seed,[[maybe_unused]] int size)
-	: window([this](float w, float h){ resizeCallback(w, h); }) {
+	Application(long unsigned int seed, int size)
+	: window([this](float w, float h){ resizeCallback(w, h); }),
+	gridSize(boardSize / static_cast<float>(size)),
+	obstacles(seed, size, boardSize, gridSize) {
+		const float playerCoord = -boardSize / 2 + gridSize / 2;
+		const float playerScale = gridSize * 0.2f;
+		player.transform.position = { playerCoord, playerCoord, playerCoord };
+		player.transform.scale = { playerScale, playerScale, playerScale };
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		Input::setMousePosLock(true);
 	}
 
 	void update() {
-		if(Input::isKeyPressed("ESCAPE"))
-			window.close();
 		camera.update();
+		if(Input::isKeyPressed("ESCAPE")) {
+			// window.close();
+			Input::setMousePosLock(false);
+		} else {
+			Input::setMousePosLock(true);
+			Input::getMousePos();
+		}
 	}
 
 	void render() {
 		camera.setup();
 		player.render();
+		obstacles.render(); 
 
 		window.endFrame();
 	}
@@ -83,6 +98,7 @@ struct Application {
 
 	void resizeCallback(float w, float h) {
 		std::cout << w << " " << h << "\n";
+		camera.aspectRatio = w/h;
 	}
 };
 

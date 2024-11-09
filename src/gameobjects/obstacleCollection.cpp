@@ -3,11 +3,12 @@
 
 #include <cmath>
 #include <ctime>
+#include <glm/gtc/type_ptr.hpp>
 #include <random>
 #include <GL/glew.h>
 
 ObstacleCollection::ObstacleCollection(long unsigned seed, int size, float boardSize, float gridSize)
-: m_boardSize(boardSize), m_gridSize(gridSize), m_model(AppData::data().modelObstacle), m_shader(&AppData::data().shaderInstanced) {
+: m_boardSize(boardSize), m_gridSize(gridSize), m_vis(AppData::data().modelObstacleV, AppData::data().modelObstacleI, AppData::data().shaderInstanced) {
 
 	m_members.reserve(static_cast<size_t>(size) * static_cast<size_t>(size));
 
@@ -17,42 +18,29 @@ ObstacleCollection::ObstacleCollection(long unsigned seed, int size, float board
 
 	for(int i = 0; i < size; i++) {
 		for(int j = 0; j < size; j++) {
-			if((i == 0 && j == 0) || (i == size - 1 && j == size - 1)) continue;
-			m_members.emplace_back();
-			// m_members.back().collider.update();
+			for(int k = 0; k < size; k++) {
+				if((i == 0 && j == 0 && k == 0) || (i == size - 1 && j == size - 1 && k == size - 1)) continue;
+				const float scale = scaleDis(gen) * gridSize * 0.23f;
+				auto& m = m_members.emplace_back();
+				m.transform.position = {
+					static_cast<float>(i) * gridSize - boardSize / 2 + gridSize / 2,
+					static_cast<float>(j) * gridSize - boardSize / 2 + gridSize / 2, 
+					static_cast<float>(k) * gridSize - boardSize / 2 + gridSize / 2
+				};
+				m.transform.rotation = { angleDis(gen), angleDis(gen), angleDis(gen) };
+				m.transform.scale = {scale, scale, scale * 2};
+				// m_members.back().collider.update();
+			}
 		}
 	}
 
-	std::vector<float> vboData;
-	vboData.reserve(m_members.size() * 6);
-	// for(const auto& m : m_members) {
-	// 	vboData.emplace_back(m.transform.x);
-	// 	vboData.emplace_back(m.transform.y);
-	// 	vboData.emplace_back(std::sinf(m.transform.angle));
-	// 	vboData.emplace_back(std::cosf(m.transform.angle));
-	// 	vboData.emplace_back(m.transform.xScale);
-	// 	vboData.emplace_back(m.transform.yScale);
-	// }
+	std::vector<glm::mat4> transforms;
+	transforms.reserve(m_members.size());
+	for(const auto& m : m_members) {
+		transforms.emplace_back(m.transform.getMatrix());
+	}
 
-	glGenBuffers(1, &m_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBufferData(GL_ARRAY_BUFFER, static_cast<long int>(vboData.size() * sizeof(float)), vboData.data(), GL_STATIC_DRAW);
-
-	m_model.bind();
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(0 * sizeof(float)));
-	glVertexAttribDivisor(2, 1);
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
-	glVertexAttribDivisor(3, 1);
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(4 * sizeof(float)));
-	glVertexAttribDivisor(4, 1);
-	m_model.unbind();
-}
-
-ObstacleCollection::~ObstacleCollection() {
-    glDeleteBuffers(1, &m_vbo);
+	m_vis.instantiate(transforms);
 }
 
 [[nodiscard]] const std::vector<Obstacle>& ObstacleCollection::getObstacles() const {
@@ -60,9 +48,5 @@ ObstacleCollection::~ObstacleCollection() {
 }
 
 void ObstacleCollection::render() {
-	m_shader->bind();
-	m_model.bind();
-	glDrawElementsInstanced(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0, static_cast<int>(m_members.size()));
-	m_model.unbind();
-	m_shader->unbind();
+	m_vis.render();
 }
