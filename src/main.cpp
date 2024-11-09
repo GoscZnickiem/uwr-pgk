@@ -36,7 +36,7 @@ struct Application {
 
 	Application([[maybe_unused]] long unsigned int seed,[[maybe_unused]] int size)
 	: window([this](float w, float h){ resizeCallback(w, h); }) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		Input::setMousePosLock(true);
 	}
 

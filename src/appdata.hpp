@@ -23,7 +23,7 @@ struct AppData {
 		 1.0f, -1.0f,	0.4f, 0.1f, 0.7f
 	};
 
-	const RawModel modelPlayer = RawModel::GenerateSphere(0);
+	const RawModel modelPlayer = RawModel::GenerateSphere();
 
 	const RawModel modelFinish { {
 		-1.0f, -1.0f,	1.0f, 1.0f, 0.2f,

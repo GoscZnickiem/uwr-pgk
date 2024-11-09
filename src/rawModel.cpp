@@ -2,7 +2,10 @@
 
 #include <GL/glew.h>
 #include <cmath>
+#include <glm/geometric.hpp>
 #include <glm/vec3.hpp>
+#include <iostream>
+#include <unordered_map>
 
 RawModel::RawModel(const std::vector<float>& vertices, const std::vector<int>& indices)
 : vertexCount(static_cast<int>(indices.size())) {
@@ -58,13 +61,37 @@ void RawModel::p_createBuffers(const std::vector<float>& vertices, const std::ve
 
 }
 
+int getMidpoint(int v1, int v2, std::vector<glm::vec3>& vertices, std::unordered_map<std::size_t, int>& cache) {
+	std::size_t smallerIndex = static_cast<std::size_t>(v1 < v2 ? v1 : v2);
+	std::size_t greaterIndex = static_cast<std::size_t>(v1 < v2 ? v2 : v1);
+	std::size_t key = (smallerIndex << 32) + greaterIndex;
+
+    auto it = cache.find(key);
+    if (it != cache.end()) return it->second;
+
+	glm::vec3 vertex1 = vertices[static_cast<std::size_t>(v1)];
+	glm::vec3 vertex2 = vertices[static_cast<std::size_t>(v2)];
+	glm::vec3 midpoint = (vertex1 + vertex2) / 2.0f;
+	std::cout << vertex1.x << " " << vertex1.y << " " << vertex1.z << "\n";
+	std::cout << vertex2.x << " " << vertex2.y << " " << vertex2.z << "\n";
+	std::cout << midpoint.x << " " << midpoint.y << " " << midpoint.z << "\n\n";
+    
+	vertices.push_back(glm::normalize(midpoint));
+    int midIndex = static_cast<int>(vertices.size() - 1);
+    cache[key] = midIndex;
+    return midIndex;
+}
+
 RawModel RawModel::GenerateSphere([[maybe_unused]] std::size_t subdivisions) {
 	const float t = (1.0f + std::sqrtf(5.0f)) / 2.0f;
 	std::vector<glm::vec3> vertices = {
         {-1,  t,  0}, { 1,  t,  0}, {-1, -t,  0}, { 1, -t,  0},
         { 0, -1,  t}, { 0,  1,  t}, { 0, -1, -t}, { 0,  1, -t},
         { t,  0, -1}, { t,  0,  1}, {-t,  0, -1}, {-t,  0,  1}
-    };
+    }; // icosahedron
+	for(auto& v : vertices) {
+		v = glm::normalize(v);
+	}
 
 	std::vector<int> indices = {
         0, 11, 5, 0, 5, 1, 0, 1, 7, 0, 7, 10, 0, 10, 11,
@@ -73,6 +100,25 @@ RawModel RawModel::GenerateSphere([[maybe_unused]] std::size_t subdivisions) {
         4, 9, 5, 2, 4, 11, 6, 2, 10, 8, 6, 7, 9, 8, 1
     };
 
+	std::unordered_map<std::size_t, int> midpointCache;
+    for (std::size_t i = 0; i < subdivisions; i++) {
+        std::vector<int> newIndices;
+        for (size_t j = 0; j < indices.size(); j += 3) {
+            int v1 = indices[j];
+            int v2 = indices[j + 1];
+            int v3 = indices[j + 2];
+
+            int a = getMidpoint(v1, v2, vertices, midpointCache);
+            int b = getMidpoint(v2, v3, vertices, midpointCache);
+            int c = getMidpoint(v3, v1, vertices, midpointCache);
+
+            newIndices.push_back(v1); newIndices.push_back(a); newIndices.push_back(c);
+            newIndices.push_back(v2); newIndices.push_back(b); newIndices.push_back(a);
+            newIndices.push_back(v3); newIndices.push_back(c); newIndices.push_back(b);
+            newIndices.push_back(a); newIndices.push_back(b); newIndices.push_back(c);
+        }
+        indices = newIndices;
+    }
 
 	std::vector<float> resVertices;
 	for(const auto& v : vertices) {

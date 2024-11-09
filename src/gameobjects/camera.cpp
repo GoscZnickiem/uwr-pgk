@@ -7,21 +7,23 @@
 #include <glm/trigonometric.hpp>
 
 void Camera::update() {
+	constexpr float speed = 2.0f * AppData::deltaT;
+	constexpr float sensitivity = 0.01f;
+
 	if(Input::isKeyPressed("UP")) {
-		position += direction * AppData::deltaT;
+		position += direction * speed;
 	}
 	if(Input::isKeyPressed("DOWN")) {
-		position -= direction * AppData::deltaT;
+		position -= direction * speed;
 	}
 	if(Input::isKeyPressed("RIGHT")) {
-		position += glm::normalize(glm::cross(direction, up)) * AppData::deltaT;
+		position += glm::normalize(glm::cross(direction, up)) * speed;
 	}
 	if(Input::isKeyPressed("LEFT")) {
-		position -= glm::normalize(glm::cross(direction, up)) * AppData::deltaT;
+		position -= glm::normalize(glm::cross(direction, up)) * speed;
 	}
 
 	auto[mouseX, mouseY] = Input::getMousePos();
-	constexpr float sensitivity = 0.01f;
 	if(mouseX != 0) {
 		direction = glm::rotate(glm::mat4(1.f), -mouseX * sensitivity, glm::vec3(0.f, 1.f, 0.f)) * glm::vec4(direction, 1.f);
 	}
