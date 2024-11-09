@@ -1,7 +1,7 @@
 #include "core/window.hpp"
 #include "core/input.hpp"
 #include "appdata.hpp"
-#include "gameobjects/background.hpp"
+#include "gameobjects/camera.hpp"
 #include "gameobjects/player.hpp"
 #include "gameobjects/finish.hpp"
 #include "gameobjects/obstacleCollection.hpp"
@@ -29,74 +29,26 @@ float lerp(float a, float b, float t) {
 }
 
 struct Application {
-	Window window{};
+	Window window;
 
-	const float boardSize = 1.8f;
-	const float gridSize;
-
-	BackGround backGround;
-	ObstacleCollection obstacles;
+	Camera camera;
 	Player player;
-	Finish finish;
 
-	bool end = false;
-	bool loading = true;
-	float playTime = 0.f;
-	static constexpr float animDuration = 3.f;
-	float animTime = animDuration;
-
-	Application(long unsigned int seed, int size)
-		: gridSize(boardSize / static_cast<float>(size)), 
-		  obstacles(seed, size, boardSize, gridSize),
-		  player(-boardSize / 2 + gridSize / 2, -boardSize / 2 + gridSize / 2, -0.78f, gridSize * 0.1f, gridSize * 0.3f),
-		  finish( boardSize / 2 - gridSize / 2,  boardSize / 2 - gridSize / 2, 0.f, gridSize * 0.3f, gridSize * 0.3f * 0.866f) {
-		Shader::setGlobalUniform("special", 0);
+	Application([[maybe_unused]] long unsigned int seed,[[maybe_unused]] int size)
+	: window([this](float w, float h){ resizeCallback(w, h); }) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		Input::setMousePosLock(true);
 	}
 
 	void update() {
-		playTime += AppData::deltaT;
-
 		if(Input::isKeyPressed("ESCAPE"))
 			window.close();
-
-		finish.update();
-
-		if(end || loading) {
-			animTime += (loading ? -2 : 1) * AppData::deltaT;
-			if(animTime < 0.0f) {
-				loading = false;
-				animTime = 0.0f;
-			} else if(animTime >= animDuration + 0.3f) {
-				window.close();
-			}
-
-			player.collider.update();
-			auto [winx, winy] = window.getWindowSize();
-			auto t = (animTime / animDuration) * (animTime / animDuration);
-			float w, h;
-			if(winx > winy) {
-				w = lerp(winy/winx, 0.f, t);
-				h = lerp(1.f, 0.f, t);
-			} else {
-				w = lerp(1.f, 0.f, t);
-				h = lerp(winx/winy, 0.f, t);
-			}
-			Shader::setGlobalUniform("scale", w, h);
-			Shader::setGlobalUniform("special", t);
-			return;
-		}
-
-		player.update(obstacles.getObstacles(), boardSize / 2);
-
-		if(player.collider.collides(finish.collider))
-			end = true;
+		camera.update();
 	}
 
 	void render() {
-		backGround.render(playTime);
-		obstacles.render(player.collider);
+		camera.setup();
 		player.render();
-		finish.render();
 
 		window.endFrame();
 	}
@@ -116,7 +68,7 @@ struct Application {
 			lastFrameTime = std::chrono::steady_clock::now();
 
 			lag += timeBetweenFrames.count();
-			if(!end && !loading) timer += timeBetweenFrames.count();
+			timer += timeBetweenFrames.count();
 
 			while(lag >= timePerUpdate ) {
 				lag -= timePerUpdate;
@@ -126,8 +78,11 @@ struct Application {
 			render();
 		}
 
-		if(end) return timer;
-		else return 0;
+		return timer;
+	}
+
+	void resizeCallback(float w, float h) {
+		std::cout << w << " " << h << "\n";
 	}
 };
 

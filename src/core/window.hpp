@@ -3,11 +3,12 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <functional>
 #include <utility>
 
 class Window {
 public:
-	Window();
+	Window(std::function<void(float, float)> resizeCallback);
 
 	void endFrame();
 	void close();
@@ -16,6 +17,8 @@ public:
 
 private:
 	GLFWwindow* m_ID;
+
+	std::function<void(float, float)> m_resizeCallback;
 };
 
 #endif

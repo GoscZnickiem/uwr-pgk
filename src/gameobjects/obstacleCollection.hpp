@@ -15,7 +15,7 @@ public:
 
 	[[nodiscard]] const std::vector<Obstacle>& getObstacles() const;
 
-	void render(const CollisionTriangle& player);
+	void render();
 
 private:
 	const float m_boardSize;

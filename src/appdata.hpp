@@ -15,7 +15,7 @@ struct AppData {
 
 	const Shader shaderSingle{"assets/shaders/shaderSingle.glsl"};
 	const Shader shaderInstanced{"assets/shaders/shaderInstanced.glsl"};
-	const Shader shaderBackground{"assets/shaders/shaderBackground.glsl"};
+	// const Shader shaderBackground{"assets/shaders/shaderBackground.glsl"};
 
 	const std::vector<float> modelObstacle {
 		-1.0f, -1.0f,	0.4f, 0.1f, 0.7f,
@@ -23,11 +23,7 @@ struct AppData {
 		 1.0f, -1.0f,	0.4f, 0.1f, 0.7f
 	};
 
-	const RawModel modelPlayer { {
-		-1.0f, -1.0f,	1.0f, 0.8f, 0.0f,
-		 0.0f,  1.0f,	1.0f, 0.2f, 0.0f,
-		 1.0f, -1.0f,	1.0f, 0.8f, 0.0f,
-	} };
+	const RawModel modelPlayer = RawModel::GenerateSphere(0);
 
 	const RawModel modelFinish { {
 		-1.0f, -1.0f,	1.0f, 1.0f, 0.2f,

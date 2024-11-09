@@ -1,5 +1,6 @@
 #include "shader.hpp"
 #include <GL/glew.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <cstddef>
 #include <iostream>
@@ -55,6 +56,9 @@ Shader::Shader(const std::string& file) {
 
 	s_shaders.push_back(this);
 	m_thisIt = --s_shaders.end();
+
+	const uint32_t blockIndex = glGetUniformBlockIndex(m_ID, "Camera");
+	glUniformBlockBinding(m_ID, blockIndex, 0);
 }
 
 Shader::~Shader() {
@@ -122,6 +126,43 @@ void Shader::setUniform(const std::string& name, unsigned int v0, unsigned int v
 	glUniform4ui(loc, v0, v1, v2, v3);
 }
 
+void Shader::setUniform(const std::string& name,const glm::vec2& v) const {
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform2fv(loc, 1, &v[0]);
+}
+
+void Shader::setUniform(const std::string& name,const glm::vec3& v) const {
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform3fv(loc, 1, &v[0]);
+}
+
+void Shader::setUniform(const std::string& name,const glm::vec4& v) const {
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniform4fv(loc, 1, &v[0]);
+}
+
+void Shader::setUniform(const std::string& name,const glm::mat2& v) const {
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniformMatrix2fv(loc, 1, GL_FALSE, glm::value_ptr(v));
+}
+
+void Shader::setUniform(const std::string& name,const glm::mat3& v) const {
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniformMatrix3fv(loc, 1, GL_FALSE, glm::value_ptr(v));
+}
+
+void Shader::setUniform(const std::string& name,const glm::mat4& v) const {
+	const int32_t loc = glGetUniformLocation(m_ID, name.c_str());
+	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(v));
+}
+
+void Shader::SetCameraUniform(const glm::mat4 &view, const glm::mat4 &projection) {
+	glBindBuffer(GL_UNIFORM_BUFFER, s_cameraUBO);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 void Shader::bind() const {
 	if(m_ID == s_currentShader) return;
 	glUseProgram(m_ID);
@@ -131,6 +172,14 @@ void Shader::bind() const {
 void Shader::unbind() const {
 	glUseProgram(0);
 	s_currentShader = 0;
+}
+
+void Shader::CreateCameraUBO() {
+	glGenBuffers(1, &s_cameraUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, s_cameraUBO);
+	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, s_cameraUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Shader::compileShader(uint32_t shader, const char* source) {

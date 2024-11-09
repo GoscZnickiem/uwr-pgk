@@ -18,25 +18,21 @@ ObstacleCollection::ObstacleCollection(long unsigned seed, int size, float board
 	for(int i = 0; i < size; i++) {
 		for(int j = 0; j < size; j++) {
 			if((i == 0 && j == 0) || (i == size - 1 && j == size - 1)) continue;
-			const float scale = scaleDis(gen) * gridSize * 0.18f;
-			m_members.emplace_back(
-				static_cast<float>(i) * gridSize - boardSize / 2 + gridSize / 2,
-				static_cast<float>(j) * gridSize - boardSize / 2 + gridSize / 2, 
-				angleDis(gen), scale, scale * 3);
-			m_members.back().collider.update();
+			m_members.emplace_back();
+			// m_members.back().collider.update();
 		}
 	}
 
 	std::vector<float> vboData;
 	vboData.reserve(m_members.size() * 6);
-	for(const auto& m : m_members) {
-		vboData.emplace_back(m.transform.x);
-		vboData.emplace_back(m.transform.y);
-		vboData.emplace_back(std::sinf(m.transform.angle));
-		vboData.emplace_back(std::cosf(m.transform.angle));
-		vboData.emplace_back(m.transform.xScale);
-		vboData.emplace_back(m.transform.yScale);
-	}
+	// for(const auto& m : m_members) {
+	// 	vboData.emplace_back(m.transform.x);
+	// 	vboData.emplace_back(m.transform.y);
+	// 	vboData.emplace_back(std::sinf(m.transform.angle));
+	// 	vboData.emplace_back(std::cosf(m.transform.angle));
+	// 	vboData.emplace_back(m.transform.xScale);
+	// 	vboData.emplace_back(m.transform.yScale);
+	// }
 
 	glGenBuffers(1, &m_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
@@ -63,12 +59,9 @@ ObstacleCollection::~ObstacleCollection() {
 	return m_members;
 }
 
-void ObstacleCollection::render(const CollisionTriangle& player) {
+void ObstacleCollection::render() {
 	m_shader->bind();
 	m_model.bind();
-	m_shader->setUniform("playerPos1", player.a.x, player.a.y);
-	m_shader->setUniform("playerPos2", player.b.x, player.b.y);
-	m_shader->setUniform("playerPos3", player.c.x, player.c.y);
 	glDrawElementsInstanced(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0, static_cast<int>(m_members.size()));
 	m_model.unbind();
 	m_shader->unbind();

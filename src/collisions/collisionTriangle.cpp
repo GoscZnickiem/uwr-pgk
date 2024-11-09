@@ -1,4 +1,5 @@
 #include "collisionTriangle.hpp"
+/*
 
 #include <algorithm>
 #include <cmath>
@@ -75,3 +76,4 @@ void CollisionTriangle::update() {
 	b = updatePoint(rawB);
 	c = updatePoint(rawC);
 }
+*/

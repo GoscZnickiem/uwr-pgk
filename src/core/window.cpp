@@ -16,7 +16,8 @@ std::map<GLint, std::string> glToString = {
 	{GLFW_KEY_ESCAPE, "ESCAPE"}
 };
 
-Window::Window() {
+Window::Window(std::function<void(float, float)> resizeCallback)
+	: m_resizeCallback(resizeCallback) {
 	const int width = 800;
 	const int height = 600;
 
@@ -35,6 +36,7 @@ Window::Window() {
 
 	glfwMakeContextCurrent(m_ID);
 	glfwSwapInterval(1);
+	glEnable(GL_DEPTH_TEST);
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
 		std::cerr << "GLEW initialization failed\n";
@@ -44,18 +46,23 @@ Window::Window() {
 	glfwSetInputMode(m_ID, GLFW_STICKY_KEYS, GL_TRUE);
 	glfwSetInputMode(m_ID, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 
+	glfwSetWindowUserPointer(m_ID, &m_resizeCallback);
+
 	glfwSetFramebufferSizeCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int w, int h) {
 		glViewport(0, 0, w, h);
 		float winx = static_cast<float>(w);
 		float winy = static_cast<float>(h);
-		if(winx > winy)
-			Shader::setGlobalUniform("scale", winy/winx, 1.f);
-		else 
-			Shader::setGlobalUniform("scale", 1.f, winx/winy);
-		Shader::setGlobalUniform("resolution", winx, winy);
+		auto* callback = reinterpret_cast<std::function<void(float, float)>*>(glfwGetWindowUserPointer(window));
+		(*callback)(winx, winy);
+		// if(winx > winy)
+		// 	Shader::setGlobalUniform("scale", winy/winx, 1.f);
+		// else 
+		// 	Shader::setGlobalUniform("scale", 1.f, winx/winy);
+		// Shader::setGlobalUniform("resolution", winx, winy);
 	});
 
 	Input::setWindow(m_ID);
+	Shader::CreateCameraUBO();
 
 }
 

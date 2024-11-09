@@ -25,6 +25,8 @@ public:
 
 	inline static uint32_t s_currentVAO = 0;
 
+	static RawModel GenerateSphere(std::size_t subdivisions = 3);
+
 private:
 	void p_createBuffers(const std::vector<float>& vertices, const std::vector<int>& indices);
 };

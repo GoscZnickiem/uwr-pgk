@@ -15,7 +15,7 @@ ifeq      (${UNAMES},GNU/Linux)
 	EXE = 
 else ifeq (${UNAMES},Msys)
 	COMPILER_FLAGS = -I /msys64/mingw64/include/
-	LINKFLAGS = -L /msys64/mingw64/lib/ -lopengl32 -lglfw3 -lglew32
+	LINKFLAGS = -L /msys64/mingw64/lib/ -lopengl32 -lglfw3 -lglew32 -lglm
 	EXE = .exe
 	COMPILER_FLAGS += -DARCH_MSYS=${UNAMES}
 else

@@ -6,7 +6,10 @@
 
 namespace Input {
 
-bool isKeyPressed(const std::string& key);
+[[nodiscard]] bool isKeyPressed(const std::string& key);
+[[nodiscard]] std::pair<float, float> getMousePos();
+void setMouseVisibility(bool visible);
+void setMousePosLock(bool lock);
 
 void setWindow(GLFWwindow* win);
 
