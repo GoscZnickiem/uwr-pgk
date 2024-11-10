@@ -18,15 +18,15 @@ struct AppData {
 	// const Shader shaderBackground{"assets/shaders/shaderBackground.glsl"};
 
 	const std::vector<float> modelObstacleV {
-		-1.0f, -1.0f, -1.f,		1.0f, 0.0f, 0.0f,
-		 0.0f,  1.0f, -1.f,		0.0f, 0.8f, 0.0f,
-		 1.0f, -1.0f, -1.f,		0.2f, 0.3f, 1.0f,
-		 0.0f,  0.0f,  1.f,		1.0f, 1.0f, 0.0f
+		-1.f, -1.f, -1.f,		0.2f, 0.70f, 0.2f,
+		 0.f,  1.f, -1.f,		0.4f, 0.85f, 0.3f,
+		 1.f, -1.f, -1.f,		0.2f, 0.80f, 0.3f,
+		 0.f,  0.f,  1.f,		0.1f, 0.65f, 0.2f
 	};
 	const std::vector<int> modelObstacleI {
 		0, 1, 2,
-		0, 3, 1,
-		2, 1, 3,
+		3, 1, 0,
+		3, 2, 1,
 		0, 2, 3
 	};
 

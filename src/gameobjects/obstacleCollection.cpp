@@ -10,7 +10,7 @@
 ObstacleCollection::ObstacleCollection(long unsigned seed, int size, float boardSize, float gridSize)
 : m_boardSize(boardSize), m_gridSize(gridSize), m_vis(AppData::data().modelObstacleV, AppData::data().modelObstacleI, AppData::data().shaderInstanced) {
 
-	m_members.reserve(static_cast<size_t>(size) * static_cast<size_t>(size));
+	m_members.reserve(static_cast<size_t>(size) * static_cast<size_t>(size) * static_cast<size_t>(size));
 
 	std::mt19937 gen(seed);
 	std::uniform_real_distribution<float> angleDis(-3.14f, 3.14f);
@@ -29,14 +29,14 @@ ObstacleCollection::ObstacleCollection(long unsigned seed, int size, float board
 				};
 				m.transform.rotation = { angleDis(gen), angleDis(gen), angleDis(gen) };
 				m.transform.scale = {scale, scale, scale * 2};
-				// m_members.back().collider.update();
+				m.collider.update();
 			}
 		}
 	}
 
 	std::vector<glm::mat4> transforms;
 	transforms.reserve(m_members.size());
-	for(const auto& m : m_members) {
+	for(auto& m : m_members) {
 		transforms.emplace_back(m.transform.getMatrix());
 	}
 

@@ -128,7 +128,6 @@ struct Application {
 	}
 
 	void resizeCallback(float w, float h) {
-		std::cout << w << " " << h << "\n";
 		camera.aspectRatio = w/h;
 	}
 };

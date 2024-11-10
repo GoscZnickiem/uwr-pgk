@@ -11,7 +11,7 @@ layout(std140) uniform Camera {
     mat4 projection;
 };
 
-out vec3 color;
+flat out vec3 color;
 
 void main() {
 	gl_Position = projection * view * iModel * vec4(aPos, 1.0);
@@ -22,7 +22,7 @@ void main() {
 
 #version 460 core
 
-in vec3 color;
+flat in vec3 color;
 
 out vec4 FragColor;
 
