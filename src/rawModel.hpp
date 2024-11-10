@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <glm/vec3.hpp>
 
 class RawModel {
 public:
@@ -25,7 +26,7 @@ public:
 
 	inline static uint32_t s_currentVAO = 0;
 
-	static RawModel GenerateSphere(std::size_t subdivisions = 3);
+	static RawModel GenerateSphere(std::size_t subdivisions, const glm::vec3& gradIn, const glm::vec3& gradOut);
 
 private:
 	void p_createBuffers(const std::vector<float>& vertices, const std::vector<int>& indices);

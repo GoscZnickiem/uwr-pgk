@@ -30,13 +30,9 @@ struct AppData {
 		0, 2, 3
 	};
 
-	const RawModel modelPlayer = RawModel::GenerateSphere();
+	const RawModel modelPlayer = RawModel::GenerateSphere(3, {1.f, 0.f, 0.f}, {1.f, 1.f, 0.f});
 
-	const RawModel modelFinish { {
-		-1.0f, -1.0f,	1.0f, 1.0f, 0.2f,
-		 0.0f,  1.0f,	0.3f, 0.3f, 1.0f,
-		 1.0f, -1.0f,	1.0f, 0.3f, 0.3f,
-	} };
+	const RawModel modelFinish = RawModel::GenerateSphere(3, {0.f, 1.f, 1.f}, {0.5f, 0.f, 1.f});
 
 	static AppData& data();
 

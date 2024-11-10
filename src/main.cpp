@@ -37,8 +37,10 @@ struct Application {
 	Camera camera;
 	Player player;
 	ObstacleCollection obstacles;
+	Finish finish;
 
 	bool paused = false;
+	bool visibilityMode = false;
 
 	Application(long unsigned int seed, int size)
 	: window([this](float w, float h){ resizeCallback(w, h); }),
@@ -48,7 +50,8 @@ struct Application {
 		const float playerScale = gridSize * 0.3f;
 		player.transform.position = { playerCoord, playerCoord, playerCoord };
 		player.transform.scale = { playerScale, playerScale, playerScale };
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		finish.transform.position = { -playerCoord, -playerCoord, -playerCoord };
+		finish.transform.scale = { playerScale, playerScale, playerScale };
 
 		Input::setMousePosLock(true);
 		camera.update(player.transform.position);
@@ -57,10 +60,22 @@ struct Application {
 	void update() {
 		if(!paused) {
 			camera.update(player.transform.position);
-			player.update(obstacles.getObstacles(), boardSize / 2);
+			player.update(obstacles.getObstacles(), boardSize / 2, camera.direction);
+			finish.update();
+
+			if(camera.outsideMode && camera.ortoMode && !visibilityMode) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				visibilityMode = true;
+			} else if((!camera.outsideMode || !camera.ortoMode) && visibilityMode) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				visibilityMode = false;
+			}
+
+			if(glm::length(player.transform.position - finish.transform.position) <= player.transform.scale.x + player.transform.scale.x / 1.5f) {
+				window.close();
+			}
 
 			if(Input::isKeyClicked("ESCAPE")) {
-				// window.close();
 				Input::setMousePosLock(false);
 				paused = true;
 			}
@@ -71,7 +86,7 @@ struct Application {
 				paused = false;
 			}
 		}
-
+	
 		Input::update();
 	}
 
@@ -79,6 +94,7 @@ struct Application {
 		camera.setup();
 		player.render();
 		obstacles.render(); 
+		finish.render();
 
 		window.endFrame();
 	}

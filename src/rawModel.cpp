@@ -78,7 +78,11 @@ int getMidpoint(int v1, int v2, std::vector<glm::vec3>& vertices, std::unordered
     return midIndex;
 }
 
-RawModel RawModel::GenerateSphere([[maybe_unused]] std::size_t subdivisions) {
+static glm::vec3 lerp(const glm::vec3& a, const glm::vec3& b, float t) {
+	return (1 - t) * a + t * b;
+}
+
+RawModel RawModel::GenerateSphere(std::size_t subdivisions, const glm::vec3& gradIn, const glm::vec3& gradOut) {
 	const float t = (1.0f + std::sqrtf(5.0f)) / 2.0f;
 	std::vector<glm::vec3> vertices = {
         {-1,  t,  0}, { 1,  t,  0}, {-1, -t,  0}, { 1, -t,  0},
@@ -118,12 +122,13 @@ RawModel RawModel::GenerateSphere([[maybe_unused]] std::size_t subdivisions) {
 
 	std::vector<float> resVertices;
 	for(const auto& v : vertices) {
+		glm::vec3 color = lerp(gradIn, gradOut, (v.y + 1.f)/2);
 		resVertices.push_back(v.x);
 		resVertices.push_back(v.y);
 		resVertices.push_back(v.z);
-		resVertices.push_back(1.f);
-		resVertices.push_back((v.y + 1.f)/2);
-		resVertices.push_back(0.f);
+		resVertices.push_back(color.r);
+		resVertices.push_back(color.g);
+		resVertices.push_back(color.b);
 	}
 
 	return RawModel(resVertices, indices);
