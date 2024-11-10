@@ -63,6 +63,14 @@ Window::Window(std::function<void(float, float)> resizeCallback)
 		// Shader::setGlobalUniform("resolution", winx, winy);
 	});
 
+	glfwSetKeyCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int key,[[maybe_unused]] int scancode, int action,[[maybe_unused]] int mods) {
+		Input::processKeyCallback(key, action);
+	});
+
+	glfwSetScrollCallback(m_ID, []([[maybe_unused]] GLFWwindow* window,[[maybe_unused]] double xOffset, double yOffset) {
+		Input::processScrollCallback(yOffset);
+	});
+
 	Input::setWindow(m_ID);
 	Shader::CreateCameraUBO();
 

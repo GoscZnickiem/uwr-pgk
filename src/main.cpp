@@ -38,26 +38,41 @@ struct Application {
 	Player player;
 	ObstacleCollection obstacles;
 
+	bool paused = false;
+
 	Application(long unsigned int seed, int size)
 	: window([this](float w, float h){ resizeCallback(w, h); }),
 	gridSize(boardSize / static_cast<float>(size)),
 	obstacles(seed, size, boardSize, gridSize) {
 		const float playerCoord = -boardSize / 2 + gridSize / 2;
-		const float playerScale = gridSize * 0.2f;
+		const float playerScale = gridSize * 0.3f;
 		player.transform.position = { playerCoord, playerCoord, playerCoord };
 		player.transform.scale = { playerScale, playerScale, playerScale };
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		Input::setMousePosLock(true);
+		camera.update(player.transform.position);
 	}
 
 	void update() {
-		camera.update();
-		if(Input::isKeyPressed("ESCAPE")) {
-			// window.close();
-			Input::setMousePosLock(false);
+		if(!paused) {
+			camera.update(player.transform.position);
+			player.update(obstacles.getObstacles(), boardSize / 2);
+
+			if(Input::isKeyClicked("ESCAPE")) {
+				// window.close();
+				Input::setMousePosLock(false);
+				paused = true;
+			}
 		} else {
-			Input::setMousePosLock(true);
-			Input::getMousePos();
+			if(Input::isKeyClicked("ESCAPE")) {
+				Input::setMousePosLock(true);
+				Input::getMousePos();
+				paused = false;
+			}
 		}
+
+		Input::update();
 	}
 
 	void render() {
@@ -110,7 +125,7 @@ void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]]
 int main (int argc, char *argv[]) {
 	bool generatedSeed = true;
 	unsigned long seed = static_cast<long unsigned int>(std::time(nullptr));
-	int size = 10;
+	int size = 5;
     if (argc > 3) {
         std::cerr << "Error: too many arguments. Proper usage: " << argv[0] << " [seed] [board size]\n";
         return 1;
