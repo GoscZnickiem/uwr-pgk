@@ -60,7 +60,7 @@ float Pseudo3dNoise(vec3 pos) {
 }
 
 void main() {
-	const float SMOOTHSTEP_WIDTH = 0.015;
+	const float SMOOTHSTEP_WIDTH = 0.03;
 	const float BAND_WIDTH = 0.25;
 	const float LOWER_BAND_START = 0.5 - BAND_WIDTH;
 	const float UPPER_BAND_START = 0.5 + BAND_WIDTH;
