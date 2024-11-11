@@ -78,5 +78,5 @@ void main() {
 
 	vec3 w = vec3(waves);
 
-	FragColor = vec4(w * 0.04 + color, 1.0);
+	FragColor = vec4(w * 0.04 + color, 0.9);
 }

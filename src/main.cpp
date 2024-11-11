@@ -51,6 +51,7 @@ struct Application {
 
 	bool paused = false;
 	bool outside = false;
+	bool finished = false;
 	int visibilityMode = 1;
 
 	Application(long unsigned int seed, int size)
@@ -73,7 +74,7 @@ struct Application {
 			enemies.back().transform.scale = { playerScale, playerScale, playerScale };
 		}
 
-		const std::size_t powerupCount = static_cast<std::size_t>((size - 2) * 4);
+		const std::size_t powerupCount = static_cast<std::size_t>((size - 3) * (size - 3));
 		powerups.reserve(powerupCount);
 		for(std::size_t i = 0; i < powerupCount; i++) {
 			powerups.emplace_back();
@@ -124,6 +125,7 @@ struct Application {
 
 			if(glm::length(player.transform.position - finish.transform.position) <= player.transform.scale.x + player.transform.scale.x / 1.5f) {
 				window.close();
+				finished = true;
 			}
 
 			for(auto& p : powerups)
@@ -146,10 +148,26 @@ struct Application {
 				Input::getMousePos();
 				paused = false;
 			}
+
+			if(Input::isKeyClicked("R")) {
+				Input::setMousePosLock(true);
+				Input::getMousePos();
+				paused = false;
+				reset();
+			}
 		}
 	
 		time += AppData::deltaT;
 		Input::update();
+	}
+
+	void renderObjects() {
+		player.render();
+		finish.render();
+		box.render(time);
+		for(auto& p : powerups) p.render();
+		for(auto& e : enemies) e.render();
+		obstacles.render(time); 
 	}
 
 	void render() {
@@ -157,24 +175,14 @@ struct Application {
 		if(!outside) {
 			camera.setup();
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			player.render();
-			obstacles.render(time); 
-			finish.render();
-			box.render(time);
-			for(auto& p : powerups) p.render();
-			for(auto& e : enemies) e.render();
+			renderObjects();
 		}
 
 		if(visibilityMode != 0) {
 			minicamera.setup();
 			glPolygonMode(GL_FRONT_AND_BACK, visibilityMode == 2 ? GL_LINE : GL_FILL);
 			glClear(GL_DEPTH_BUFFER_BIT);
-			player.render();
-			obstacles.render(time); 
-			finish.render();
-			box.render(time);
-			for(auto& p : powerups) p.render();
-			for(auto& e : enemies) e.render();
+			renderObjects();
 		}
 
 		window.endFrame();
@@ -216,7 +224,8 @@ struct Application {
 			render();
 		}
 
-		return timer;
+		if(finished) return timer;
+		return 0;
 	}
 
 	void resizeCallback(int w, int h) {
@@ -231,6 +240,7 @@ void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]]
 }
 
 int main (int argc, char *argv[]) {
+	srand(static_cast<unsigned>(time(0)));
 	bool generatedSeed = true;
 	unsigned long seed = static_cast<long unsigned int>(std::time(nullptr));
 	int size = 5;
