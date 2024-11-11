@@ -16,7 +16,7 @@ std::map<GLint, std::string> glToString = {
 	{GLFW_KEY_ESCAPE, "ESCAPE"}
 };
 
-Window::Window(std::function<void(float, float)> resizeCallback)
+Window::Window(std::function<void(int, int)> resizeCallback)
 	: m_resizeCallback(resizeCallback) {
 	const int width = 800;
 	const int height = 600;
@@ -51,16 +51,8 @@ Window::Window(std::function<void(float, float)> resizeCallback)
 	glfwSetWindowUserPointer(m_ID, &m_resizeCallback);
 
 	glfwSetFramebufferSizeCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int w, int h) {
-		glViewport(0, 0, w, h);
-		float winx = static_cast<float>(w);
-		float winy = static_cast<float>(h);
-		auto* callback = reinterpret_cast<std::function<void(float, float)>*>(glfwGetWindowUserPointer(window));
-		(*callback)(winx, winy);
-		// if(winx > winy)
-		// 	Shader::setGlobalUniform("scale", winy/winx, 1.f);
-		// else 
-		// 	Shader::setGlobalUniform("scale", 1.f, winx/winy);
-		// Shader::setGlobalUniform("resolution", winx, winy);
+		auto* callback = reinterpret_cast<std::function<void(int, int)>*>(glfwGetWindowUserPointer(window));
+		(*callback)(w, h);
 	});
 
 	glfwSetKeyCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int key,[[maybe_unused]] int scancode, int action,[[maybe_unused]] int mods) {

@@ -14,13 +14,13 @@ ObstacleCollection::ObstacleCollection(long unsigned seed, int size, float board
 
 	std::mt19937 gen(seed);
 	std::uniform_real_distribution<float> angleDis(-3.14f, 3.14f);
-	std::uniform_real_distribution<float> scaleDis(0.7f, 1.0f);
+	std::uniform_real_distribution<float> scaleDis(0.6f, 1.0f);
 
 	for(int i = 0; i < size; i++) {
 		for(int j = 0; j < size; j++) {
 			for(int k = 0; k < size; k++) {
 				if((i == 0 && j == 0 && k == 0) || (i == size - 1 && j == size - 1 && k == size - 1)) continue;
-				const float scale = scaleDis(gen) * gridSize * 0.23f;
+				const float scale = scaleDis(gen) * gridSize * 0.4f;
 				auto& m = m_members.emplace_back();
 				m.transform.position = {
 					static_cast<float>(i) * gridSize - boardSize / 2 + gridSize / 2,
@@ -47,6 +47,8 @@ ObstacleCollection::ObstacleCollection(long unsigned seed, int size, float board
 	return m_members;
 }
 
-void ObstacleCollection::render() {
+void ObstacleCollection::render(float time) {
+	m_vis.m_shader->bind();
+	m_vis.m_shader->setUniform("time", time);
 	m_vis.render();
 }

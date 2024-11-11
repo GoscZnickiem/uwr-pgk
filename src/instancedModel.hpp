@@ -13,9 +13,9 @@ public:
 	void instantiate(const std::vector<glm::mat4>& transforms);
 	void render() const;
 
-private:
 	const RawModel m_model;
 	const Shader* m_shader;
+private:
 	uint32_t m_vbo;
 	int m_instances{0};
 };

@@ -19,19 +19,8 @@ void Camera::update(const glm::vec3 playerPos) {
 	auto[mouseX, mouseY] = Input::getMousePos();
 	if(mouseX != 0) rotateYaw(-mouseX * sensitivity);
 	if(mouseY != 0) rotatePitch(-mouseY * sensitivity);
-
-	if(Input::isKeyClicked("C")) {
-		outsideMode = outsideMode ? false : true;
-		zoom = 20.f;
-		targetZoom = 20.f;
-		zoomTimer = 1.f;
-	}
-
+	
 	if(outsideMode) {
-		if(Input::isKeyClicked("SPACE")) {
-			ortoMode = ortoMode ? false : true;
-		}
-
 		position = direction * (-zoom);
 		if (Input::getScroll() >= 1) {
 			targetZoom *= 0.8f;
@@ -52,6 +41,7 @@ void Camera::update(const glm::vec3 playerPos) {
 }
 
 void Camera::setup() {
+	glViewport(viewPosP.first, viewPosP.second, viewSizeP.first, viewSizeP.second);
 	Shader::SetCameraUniform(getViewMatrix(), getProjectionMatrix());
 }
 
@@ -73,4 +63,10 @@ void Camera::rotatePitch(float rad) {
 
 void Camera::rotateYaw(float rad) {
 	direction = glm::rotate(glm::mat4(1.f), rad, glm::vec3(0.f, 1.f, 0.f)) * glm::vec4(direction, 1.f);
+}
+
+void Camera::updateResolution(int w, int h) {
+	aspectRatio = static_cast<float>(w) / static_cast<float>(h);
+	viewSizeP = { static_cast<int>(w * viewSize.first), static_cast<int>(h * viewSize.first) };
+	viewPosP = { static_cast<int>(w * viewPos.first), static_cast<int>(h * viewPos.first) };
 }

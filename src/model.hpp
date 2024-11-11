@@ -11,7 +11,6 @@ public:
 
 	void render() const;
 
-private:
 	Transform* m_transform;
 	const RawModel* m_model;
 	const Shader* m_shader;

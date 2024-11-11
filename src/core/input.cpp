@@ -12,6 +12,10 @@ static std::map<std::string, char> keys = {
 	{"ESCAPE", 0},
 	{"W", 0},
 	{"S", 0},
+	{"A", 0},
+	{"D", 0},
+	{"R", 0},
+	{"F", 0},
 	{"C", 0},
 	{"+", 0},
 	{"-", 0}
@@ -26,6 +30,10 @@ static const std::map<GLint, std::string> glToString = {
 	{GLFW_KEY_ESCAPE, "ESCAPE"},
 	{GLFW_KEY_W, "W"},
 	{GLFW_KEY_S, "S"},
+	{GLFW_KEY_A, "A"},
+	{GLFW_KEY_D, "D"},
+	{GLFW_KEY_R, "R"},
+	{GLFW_KEY_F, "F"},
 	{GLFW_KEY_C, "C"},
 	{GLFW_KEY_EQUAL, "+"},
 	{GLFW_KEY_MINUS, "-"}

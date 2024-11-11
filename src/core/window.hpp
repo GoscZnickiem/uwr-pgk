@@ -8,7 +8,7 @@
 
 class Window {
 public:
-	Window(std::function<void(float, float)> resizeCallback);
+	Window(std::function<void(int, int)> resizeCallback);
 
 	void endFrame();
 	void close();
@@ -18,7 +18,7 @@ public:
 private:
 	GLFWwindow* m_ID;
 
-	std::function<void(float, float)> m_resizeCallback;
+	std::function<void(int, int)> m_resizeCallback;
 };
 
 #endif

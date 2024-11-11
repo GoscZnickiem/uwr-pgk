@@ -4,6 +4,7 @@
 #include "gameobjects/camera.hpp"
 #include "gameobjects/player.hpp"
 #include "gameobjects/finish.hpp"
+#include "gameobjects/box.hpp"
 #include "gameobjects/obstacleCollection.hpp"
 
 #include <GL/glew.h>
@@ -35,17 +36,24 @@ struct Application {
 	const float gridSize;
 
 	Camera camera;
-	Player player;
+	Camera minicamera;
 	ObstacleCollection obstacles;
+	Player player;
 	Finish finish;
+	Box box;
+
+	float time = 0.f;
 
 	bool paused = false;
-	bool visibilityMode = false;
+	bool outside = false;
+	int visibilityMode = 1;
 
 	Application(long unsigned int seed, int size)
-	: window([this](float w, float h){ resizeCallback(w, h); }),
-	gridSize(boardSize / static_cast<float>(size)),
-	obstacles(seed, size, boardSize, gridSize) {
+		: window([this](int w, int h){ resizeCallback(w, h); }),
+		gridSize(boardSize / static_cast<float>(size)),
+		obstacles(seed, size, boardSize, gridSize),
+		player(obstacles.getObstacles()) {
+
 		const float playerCoord = -boardSize / 2 + gridSize / 2;
 		const float playerScale = gridSize * 0.3f;
 		player.transform.position = { playerCoord, playerCoord, playerCoord };
@@ -53,23 +61,45 @@ struct Application {
 		finish.transform.position = { -playerCoord, -playerCoord, -playerCoord };
 		finish.transform.scale = { playerScale, playerScale, playerScale };
 
-		Input::setMousePosLock(true);
 		camera.update(player.transform.position);
+
+		minicamera.viewSize = { 0.16f * 2, 0.9f * 2};
+		minicamera.viewPos = { 0.7f, 0.8f };
+		minicamera.outsideMode = true;
+		minicamera.update(player.transform.position);
+
+		Input::setMousePosLock(true);
 	}
 
 	void update() {
 		if(!paused) {
-			camera.update(player.transform.position);
-			player.update(obstacles.getObstacles(), boardSize / 2, camera.direction);
+			if(outside) minicamera.update(player.transform.position);
+			else camera.update(player.transform.position);
+			player.update(boardSize/2, camera.direction, camera.up);
 			finish.update();
 
-			if(camera.outsideMode && camera.ortoMode && !visibilityMode) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				visibilityMode = true;
-			} else if((!camera.outsideMode || !camera.ortoMode) && visibilityMode) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-				visibilityMode = false;
+			if(Input::isKeyClicked("SPACE")) {
+				visibilityMode = (visibilityMode + 1) % 3;
+				minicamera.ortoMode = visibilityMode == 2;
 			}
+
+			if(Input::isKeyClicked("C")) {
+				auto miniSizeP = minicamera.viewSizeP;
+				auto miniPosP = minicamera.viewPosP;
+				auto miniSize = minicamera.viewSize;
+				auto miniPos = minicamera.viewPos;
+				minicamera.viewSizeP = camera.viewSizeP;
+				minicamera.viewPosP = camera.viewPosP;
+				minicamera.viewSize = camera.viewSize;
+				minicamera.viewPos = camera.viewPos;
+				camera.viewSizeP = miniSizeP;
+				camera.viewPosP = miniPosP;
+				camera.viewSize = miniSize;
+				camera.viewPos = miniPos;
+				outside = !outside;
+			}
+
+			if(outside && visibilityMode == 0) visibilityMode = 1; 
 
 			if(glm::length(player.transform.position - finish.transform.position) <= player.transform.scale.x + player.transform.scale.x / 1.5f) {
 				window.close();
@@ -87,14 +117,30 @@ struct Application {
 			}
 		}
 	
+		time += AppData::deltaT;
 		Input::update();
 	}
 
 	void render() {
-		camera.setup();
-		player.render();
-		obstacles.render(); 
-		finish.render();
+
+		if(!outside) {
+			camera.setup();
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			player.render();
+			obstacles.render(time); 
+			finish.render();
+			box.render(time);
+		}
+
+		if(visibilityMode != 0) {
+			minicamera.setup();
+			glPolygonMode(GL_FRONT_AND_BACK, visibilityMode == 2 ? GL_LINE : GL_FILL);
+			glClear(GL_DEPTH_BUFFER_BIT);
+			player.render();
+			obstacles.render(time); 
+			finish.render();
+			box.render(time);
+		}
 
 		window.endFrame();
 	}
@@ -127,8 +173,9 @@ struct Application {
 		return timer;
 	}
 
-	void resizeCallback(float w, float h) {
-		camera.aspectRatio = w/h;
+	void resizeCallback(int w, int h) {
+		camera.updateResolution(w, h);
+		minicamera.updateResolution(w, h);
 	}
 };
 

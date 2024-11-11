@@ -12,7 +12,7 @@ public:
 
 	[[nodiscard]] const std::vector<Obstacle>& getObstacles() const;
 
-	void render();
+	void render(float time);
 
 private:
 	const float m_boardSize;

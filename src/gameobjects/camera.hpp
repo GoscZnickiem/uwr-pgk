@@ -3,6 +3,7 @@
 
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
+#include <utility>
 
 class Camera {
 public:
@@ -20,7 +21,7 @@ public:
 	glm::vec3 up{0.f, 1.f, 0.f};
 	float fov{70.f};
 	float aspectRatio{1.f};
-	float nearPlane{0.1f};
+	float nearPlane{0.001f};
 	float farPlane{1000.f};
 
 	bool ortoMode{false};
@@ -29,6 +30,13 @@ public:
 	float zoom{20.f};
 	float targetZoom{20.f};
 	float zoomTimer{1.f};
+
+	void updateResolution(int w, int h);
+
+	std::pair<double, double> viewSize{1., 1.};
+	std::pair<double, double> viewPos{0., 0.};
+	std::pair<int, int> viewSizeP{1, 1};
+	std::pair<int, int> viewPosP{0, 0};
 };
 
 #endif
