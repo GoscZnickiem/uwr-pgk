@@ -1,11 +1,12 @@
-#ifndef _GZN_PGK_GAMEOBJECTS_FINISH_
-#define _GZN_PGK_GAMEOBJECTS_FINISH_
+
+#ifndef _GZN_PGK_GAMEOBJECTS_POWERUP_
+#define _GZN_PGK_GAMEOBJECTS_POWERUP_
 
 #include "../model.hpp"
 
-class Finish {
+class PowerUp {
 public:
-	explicit Finish();
+	explicit PowerUp();
 
 	Transform transform;
 

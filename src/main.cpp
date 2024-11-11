@@ -2,10 +2,12 @@
 #include "core/input.hpp"
 #include "appdata.hpp"
 #include "gameobjects/camera.hpp"
+#include "gameobjects/enemy.hpp"
 #include "gameobjects/player.hpp"
 #include "gameobjects/finish.hpp"
 #include "gameobjects/box.hpp"
 #include "gameobjects/obstacleCollection.hpp"
+#include "gameobjects/powerUp.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -14,6 +16,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <chrono>
+#include <vector>
 
 void initializeGLFW() {
 	if (glfwInit() == 0) {
@@ -41,6 +44,8 @@ struct Application {
 	Player player;
 	Finish finish;
 	Box box;
+	std::vector<Enemy> enemies;
+	std::vector<PowerUp> powerups;
 
 	float time = 0.f;
 
@@ -61,6 +66,20 @@ struct Application {
 		finish.transform.position = { -playerCoord, -playerCoord, -playerCoord };
 		finish.transform.scale = { playerScale, playerScale, playerScale };
 
+		const std::size_t enemyCount = static_cast<std::size_t>((size - 2) * (size - 2));
+		enemies.reserve(enemyCount);
+		for(std::size_t i = 0; i < enemyCount; i++) {
+			enemies.emplace_back();
+			enemies.back().transform.scale = { playerScale, playerScale, playerScale };
+		}
+
+		const std::size_t powerupCount = static_cast<std::size_t>((size - 2) * 4);
+		powerups.reserve(powerupCount);
+		for(std::size_t i = 0; i < powerupCount; i++) {
+			powerups.emplace_back();
+			powerups.back().transform.scale = { playerScale * 0.7f, playerScale * 0.7f, playerScale * 0.7f };
+		}
+
 		camera.update(player.transform.position);
 
 		minicamera.viewSize = { 0.16f * 2, 0.9f * 2};
@@ -77,6 +96,8 @@ struct Application {
 			else camera.update(player.transform.position);
 			player.update(boardSize/2, camera.direction, camera.up);
 			finish.update();
+			for(auto& p : powerups) p.update();
+			for(auto& e : enemies) e.update();
 
 			if(Input::isKeyClicked("SPACE")) {
 				visibilityMode = (visibilityMode + 1) % 3;
@@ -105,6 +126,16 @@ struct Application {
 				window.close();
 			}
 
+			for(auto& p : powerups)
+				if(glm::length(player.transform.position - p.transform.position) <= player.transform.scale.x + p.transform.scale.x / 1.5f) {
+					player.poweredUp = 3.f;
+					p.transform.position.x += 99999.f;
+				}
+
+			for(auto& e : enemies)
+				if(glm::length(player.transform.position - e.transform.position) <= player.transform.scale.x + e.transform.scale.x / 1.8f)
+					reset();
+
 			if(Input::isKeyClicked("ESCAPE")) {
 				Input::setMousePosLock(false);
 				paused = true;
@@ -130,6 +161,8 @@ struct Application {
 			obstacles.render(time); 
 			finish.render();
 			box.render(time);
+			for(auto& p : powerups) p.render();
+			for(auto& e : enemies) e.render();
 		}
 
 		if(visibilityMode != 0) {
@@ -140,9 +173,22 @@ struct Application {
 			obstacles.render(time); 
 			finish.render();
 			box.render(time);
+			for(auto& p : powerups) p.render();
+			for(auto& e : enemies) e.render();
 		}
 
 		window.endFrame();
+	}
+
+	void reset() {
+		const float playerCoord = -boardSize / 2 + gridSize / 2;
+		player.transform.position = { playerCoord, playerCoord, playerCoord };
+		player.poweredUp = 0;
+
+		for(auto& p : powerups)
+		if(p.transform.position.x >= 99990.f) {
+			p.transform.position.x -= 99999.f;
+		}
 	}
 
 	double run() {

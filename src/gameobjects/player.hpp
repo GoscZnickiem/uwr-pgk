@@ -14,13 +14,14 @@ public:
 	~Player();
 
 	Transform transform;
-	// CollisionTriangle collider;
 
 	void update(float bound, const glm::vec3& direction, const glm::vec3& up);
 	void render();
 
+	float poweredUp = 0;
 private:
 	Model m_vis;
+
 
 	KDTree* tree;
 	const std::vector<Obstacle>* obstacles;

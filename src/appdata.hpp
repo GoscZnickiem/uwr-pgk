@@ -31,8 +31,9 @@ struct AppData {
 	};
 
 	const RawModel modelPlayer = RawModel::GenerateSphere(3, {1.f, 0.f, 0.f}, {1.f, 1.f, 0.f});
-
 	const RawModel modelFinish = RawModel::GenerateSphere(3, {0.f, 1.f, 1.f}, {0.5f, 0.f, 1.f});
+	const RawModel modelPowerUp = RawModel::GenerateSphere(1, {0.1f, 1.0f, 0.1f}, {0.2f, 0.2f, 1.0f});
+	const RawModel modelEnemy = RawModel::GenerateSphere(1, {1.f, 0.f, 0.f}, {1.0f, 0.3f, 0.6f});
 
 	const RawModel modelBox = {
 		{

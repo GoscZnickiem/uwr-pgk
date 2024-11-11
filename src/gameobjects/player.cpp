@@ -193,6 +193,13 @@ void Player::update(float bound, const glm::vec3& direction, const glm::vec3& up
 	if(transform.position.z <= -limit) transform.position.z = -limit;
 	else if(transform.position.z >= limit) transform.position.z = limit;
 
+	if(poweredUp > 0) {
+		poweredUp -= AppData::deltaT;
+		return;
+	} else {
+		poweredUp = 0;
+	}
+
 	Point3D p{transform.position, 0};
 
 	auto obsIndexes = tree->kNearestNeighborIDs(p, 8);
