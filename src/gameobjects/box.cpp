@@ -3,10 +3,11 @@
 
 #include <cmath>
 
-Box::Box()
+Box::Box(float size, glm::vec3 center)
 :	m_transform{},
 	m_vis(m_transform, AppData::data().modelBox, AppData::data().shaderBackground) { 
-	m_transform.scale = {10.f, 10.f, 10.f};
+	m_transform.position = center;
+	m_transform.scale = {size, size, size};
 }
 
 void Box::render(float time) {

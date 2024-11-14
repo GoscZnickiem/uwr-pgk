@@ -5,7 +5,7 @@
 
 class Box {
 public:
-	Box();
+	Box(float size, glm::vec3 center);
 
 	void render(float time);
 private:

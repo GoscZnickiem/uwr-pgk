@@ -27,9 +27,12 @@ public:
 	bool ortoMode{false};
 
 	bool outsideMode{false};
-	float zoom{20.f};
-	float targetZoom{20.f};
+	float minZoom{1.f};
+	float maxZoom{100.f};
+	float zoom{1.f};
+	float targetZoom{1.f};
 	float zoomTimer{1.f};
+	glm::vec3 lookat{0.f, 0.f, 0.f};
 
 	void updateResolution(int w, int h);
 

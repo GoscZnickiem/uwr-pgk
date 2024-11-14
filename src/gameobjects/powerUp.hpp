@@ -6,7 +6,7 @@
 
 class PowerUp {
 public:
-	explicit PowerUp();
+	PowerUp(long unsigned int seed, float boardSize, glm::vec3 boardCenter);
 
 	Transform transform;
 

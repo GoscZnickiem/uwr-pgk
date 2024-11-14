@@ -15,7 +15,7 @@ public:
 
 	Transform transform;
 
-	void update(float bound, const glm::vec3& direction, const glm::vec3& up);
+	void update(float bound, const glm::vec3& boardCenter, const glm::vec3& direction, const glm::vec3& up);
 	void render();
 
 	float poweredUp = 0;

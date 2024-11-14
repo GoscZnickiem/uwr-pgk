@@ -8,7 +8,7 @@
 
 class ObstacleCollection {
 public:
-	explicit ObstacleCollection(long unsigned seed, int size, float boardSize, float gridSize);
+	explicit ObstacleCollection(long unsigned seed, int size, float boardSize, glm::vec3 boardCenter, float gridSize);
 
 	[[nodiscard]] const std::vector<Obstacle>& getObstacles() const;
 
@@ -16,6 +16,7 @@ public:
 
 private:
 	const float m_boardSize;
+	const glm::vec3 m_boardCenter;
 	const float m_gridSize;
 	InstancedModel m_vis;
 

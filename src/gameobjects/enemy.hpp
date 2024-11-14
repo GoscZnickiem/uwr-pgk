@@ -5,7 +5,7 @@
 
 class Enemy {
 public:
-	explicit Enemy();
+	Enemy(long unsigned int seed, float boardSize, glm::vec3 boardCenter);
 
 	Transform transform;
 

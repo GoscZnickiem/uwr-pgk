@@ -11,12 +11,15 @@ layout(std140) uniform Camera {
     mat4 projection;
 };
 
+uniform float boardSize;
+uniform vec3 boardCenter;
+
 flat out vec3 color;
 out vec2 uv;
 
 void main() {
 	gl_Position = projection * view * iModel * vec4(aPos, 1.0);
-	color = aColor * (iModel[3].xyz + vec3(7.0, 7.0, 7.0))/4;
+	color = aColor * (iModel[3].xyz - boardCenter + boardSize/2) / boardSize * 2.0 + 0.3;
 	uv = aPos.xy;
 }
 
@@ -78,5 +81,5 @@ void main() {
 
 	vec3 w = vec3(waves);
 
-	FragColor = vec4(w * 0.04 + color, 0.9);
+	FragColor = vec4(w * 0.04 + color, 1.0);
 }

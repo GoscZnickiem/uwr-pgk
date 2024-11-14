@@ -162,7 +162,7 @@ Player::~Player() {
 	delete tree;
 }
 
-void Player::update(float bound, const glm::vec3& direction, const glm::vec3& up) {
+void Player::update(float bound, const glm::vec3& boardCenter, const glm::vec3& direction, const glm::vec3& up) {
 	const float radius = transform.scale.x;
 	const float speed = 4.0f * AppData::deltaT * radius;
 
@@ -186,12 +186,12 @@ void Player::update(float bound, const glm::vec3& direction, const glm::vec3& up
 	}
 
 	const float limit = bound - radius;
-	if(transform.position.x <= -limit) transform.position.x = -limit;
-	else if(transform.position.x >= limit) transform.position.x = limit;
-	if(transform.position.y <= -limit) transform.position.y = -limit;
-	else if(transform.position.y >= limit) transform.position.y = limit;
-	if(transform.position.z <= -limit) transform.position.z = -limit;
-	else if(transform.position.z >= limit) transform.position.z = limit;
+	if(transform.position.x <= -limit + boardCenter.x) transform.position.x = -limit + boardCenter.x;
+	else if(transform.position.x >= limit + boardCenter.x) transform.position.x = limit + boardCenter.x;
+	if(transform.position.y <= -limit + boardCenter.y) transform.position.y = -limit + boardCenter.y;
+	else if(transform.position.y >= limit + boardCenter.y) transform.position.y = limit + boardCenter.y;
+	if(transform.position.z <= -limit + boardCenter.z) transform.position.z = -limit + boardCenter.z;
+	else if(transform.position.z >= limit + boardCenter.z) transform.position.z = limit + boardCenter.z;
 
 	if(poweredUp > 0) {
 		poweredUp -= AppData::deltaT;

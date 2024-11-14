@@ -35,7 +35,8 @@ float lerp(float a, float b, float t) {
 struct Application {
 	Window window;
 
-	const float boardSize = 10.0f;
+	const float boardSize = 1.0f;
+	const glm::vec3 boardCenter = { 0.5f, 0.5f, 0.5f };
 	const float gridSize;
 
 	Camera camera;
@@ -57,36 +58,40 @@ struct Application {
 	Application(long unsigned int seed, int size)
 		: window([this](int w, int h){ resizeCallback(w, h); }),
 		gridSize(boardSize / static_cast<float>(size)),
-		obstacles(seed, size, boardSize, gridSize),
-		player(obstacles.getObstacles()) {
+		obstacles(seed, size, boardSize, boardCenter, gridSize),
+		player(obstacles.getObstacles()),
+		box(boardSize, boardCenter) {
 
 		const float playerCoord = -boardSize / 2 + gridSize / 2;
 		const float playerScale = gridSize * 0.3f;
-		player.transform.position = { playerCoord, playerCoord, playerCoord };
+		player.transform.position = glm::vec3{ playerCoord, playerCoord, playerCoord } + boardCenter;
 		player.transform.scale = { playerScale, playerScale, playerScale };
-		finish.transform.position = { -playerCoord, -playerCoord, -playerCoord };
+		finish.transform.position = glm::vec3{ -playerCoord, -playerCoord, -playerCoord } + boardCenter;
 		finish.transform.scale = { playerScale, playerScale, playerScale };
 
 		const std::size_t enemyCount = static_cast<std::size_t>((size - 2) * (size - 2));
 		enemies.reserve(enemyCount);
 		for(std::size_t i = 0; i < enemyCount; i++) {
-			enemies.emplace_back();
-			enemies.back().transform.scale = { playerScale, playerScale, playerScale };
+			auto& e = enemies.emplace_back(seed, boardSize, boardCenter);
+			e.transform.scale = { playerScale, playerScale, playerScale };
 		}
 
 		const std::size_t powerupCount = static_cast<std::size_t>((size - 3) * (size - 3));
 		powerups.reserve(powerupCount);
 		for(std::size_t i = 0; i < powerupCount; i++) {
-			powerups.emplace_back();
-			powerups.back().transform.scale = { playerScale * 0.7f, playerScale * 0.7f, playerScale * 0.7f };
+			auto& p = powerups.emplace_back(seed, boardSize, boardCenter);
+			p.transform.scale = { playerScale * 0.7f, playerScale * 0.7f, playerScale * 0.7f };
 		}
 
-		camera.update(player.transform.position);
-
-		minicamera.viewSize = { 0.16f * 2, 0.9f * 2};
-		minicamera.viewPos = { 0.7f, 0.8f };
+		minicamera.zoom = minicamera.targetZoom = boardSize * 1.5f;
+		minicamera.minZoom = boardSize * 1.1f;
+		minicamera.maxZoom = boardSize * 2;
+		minicamera.viewSize = { 0.25f, 0.25f };
+		minicamera.viewPos = { 0.7f, 0.7f };
 		minicamera.outsideMode = true;
+		minicamera.lookat = boardCenter;
 		minicamera.update(player.transform.position);
+		camera.update(player.transform.position);
 
 		Input::setMousePosLock(true);
 	}
@@ -95,7 +100,7 @@ struct Application {
 		if(!paused) {
 			if(outside) minicamera.update(player.transform.position);
 			else camera.update(player.transform.position);
-			player.update(boardSize/2, camera.direction, camera.up);
+			player.update(boardSize/2, boardCenter, camera.direction, camera.up);
 			finish.update();
 			for(auto& p : powerups) p.update();
 			for(auto& e : enemies) e.update();
@@ -240,7 +245,6 @@ void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]]
 }
 
 int main (int argc, char *argv[]) {
-	srand(static_cast<unsigned>(time(0)));
 	bool generatedSeed = true;
 	unsigned long seed = static_cast<long unsigned int>(std::time(nullptr));
 	int size = 5;

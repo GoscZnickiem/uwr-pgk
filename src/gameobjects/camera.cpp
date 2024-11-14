@@ -21,7 +21,7 @@ void Camera::update(const glm::vec3 playerPos) {
 	if(mouseY != 0) rotatePitch(-mouseY * sensitivity);
 	
 	if(outsideMode) {
-		position = direction * (-zoom);
+		position = direction * (-zoom) + lookat;
 		if (Input::getScroll() >= 1) {
 			targetZoom *= 0.8f;
 			zoomTimer = 0;
@@ -30,7 +30,7 @@ void Camera::update(const glm::vec3 playerPos) {
 			targetZoom *= 1.25f;
 			zoomTimer = 0;
 		}
-		targetZoom = std::clamp(targetZoom, 8.0f, 30.f);
+		targetZoom = std::clamp(targetZoom, minZoom, maxZoom);
 		zoomTimer += AppData::deltaT * 2.0f; 
 		zoomTimer = std::min(zoomTimer, 1.f);
 		zoom = std::lerp(zoom, targetZoom, zoomTimer);

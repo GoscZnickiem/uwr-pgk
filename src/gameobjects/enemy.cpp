@@ -2,20 +2,22 @@
 #include "../appdata.hpp"
 
 #include <cmath>
+#include <random>
 
-inline float randomFloat(float min, float max) {
-    return min + static_cast<float>(rand()) / (RAND_MAX / (max - min));
-}
-
-Enemy::Enemy()
+Enemy::Enemy(long unsigned int seed, float boardSize, glm::vec3 boardCenter)
 :	transform{},
 	m_vis(transform, AppData::data().modelEnemy, AppData::data().shaderSingle) {
+
+	const float board = boardSize / 2;
+	static std::mt19937 gen(seed);
+	std::uniform_real_distribution<float> dis(-board, board);
 	do {
-        direction.x = randomFloat(-5.0f, 5.0f);
-        direction.y = randomFloat(-5.0f, 5.0f);
-        direction.z = randomFloat(-5.0f, 5.0f);
-    } while (glm::length(direction - glm::vec3(-5.f, -5.f, -5.f)) <= 3 || glm::length(direction - glm::vec3(5.f, 5.f, 5.f)) <= 3);
-	transform.position = -direction;
+        direction.x = dis(gen);
+        direction.y = dis(gen);
+        direction.z = dis(gen);
+    } while (glm::length(direction - glm::vec3(-board, -board, -board)) <= board/3 || 
+			 glm::length(direction - glm::vec3(board, board, board)) <=  board/3);
+	transform.position = -direction + boardCenter;
 	direction = glm::normalize(direction);
 }
 
@@ -25,13 +27,13 @@ void Enemy::update() {
 	transform.rotation.z += rotate;
 	transform.rotation.y += rotate * 1.1f;
 
-	static const float speed = 0.4f * AppData::deltaT;
+	static const float speed = 0.1f * AppData::deltaT;
 	moveCycle += AppData::deltaT;
 	if(moveCycle < 2.f) {
 		transform.position += direction * speed;
-	} else if(moveCycle >= 7.f && moveCycle < 9.f) {
+	} else if(moveCycle >= 4.f && moveCycle < 6.f) {
 		transform.position -= direction * speed;
-	} else if(moveCycle >= 14.f) {
+	} else if(moveCycle >= 8.f) {
 		moveCycle = 0;
 	}
 }
