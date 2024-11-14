@@ -44,5 +44,5 @@ Sterowanie:
 Celem gry jest przejście do niebieskiej kuli (mety) po przeciwnej stronie labiryntu 3D.
 
 Na planszy znajdują się (oprócz statycznych przeszkód): 
- - poruszający się wrogowie (czerwone kulki) resetujące progress gracza,
+ - poruszający się wrogowie (czerwone kulki) resetujące postęp gracza,
  - wzmocnienia (niebiesko-zielone kulki), które po zebraniu na krótki czas ułatwiają przedostawanie się przez labirynt.
