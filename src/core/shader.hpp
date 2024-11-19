@@ -1,5 +1,5 @@
-#ifndef _GZN_PGK_SHADER_
-#define _GZN_PGK_SHADER_
+#ifndef _GZN_PGK_CORE_SHADER_
+#define _GZN_PGK_CORE_SHADER_
 
 #include <cstdint>
 #include <glm/vec2.hpp>

@@ -1,3 +1,4 @@
+#include "appdata.hpp"
 #include "window.hpp"
 #include "input.hpp"
 #include "shader.hpp"
@@ -16,8 +17,7 @@ std::map<GLint, std::string> glToString = {
 	{GLFW_KEY_ESCAPE, "ESCAPE"}
 };
 
-Window::Window(std::function<void(int, int)> resizeCallback)
-	: m_resizeCallback(resizeCallback) {
+Window::Window() {
 	const int width = 800;
 	const int height = 600;
 
@@ -50,11 +50,8 @@ Window::Window(std::function<void(int, int)> resizeCallback)
 	glfwSetInputMode(m_ID, GLFW_STICKY_KEYS, GL_TRUE);
 	glfwSetInputMode(m_ID, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 
-	glfwSetWindowUserPointer(m_ID, &m_resizeCallback);
-
 	glfwSetFramebufferSizeCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int w, int h) {
-		auto* callback = reinterpret_cast<std::function<void(int, int)>*>(glfwGetWindowUserPointer(window));
-		(*callback)(w, h);
+		AppData::Data().window.atResize(w, h);
 	});
 
 	glfwSetKeyCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int key,[[maybe_unused]] int scancode, int action,[[maybe_unused]] int mods) {
@@ -67,6 +64,10 @@ Window::Window(std::function<void(int, int)> resizeCallback)
 
 	Input::setWindow(m_ID);
 	Shader::CreateCameraUBO();
+
+}
+
+void setWindowResizeCallback(std::function<void(int, int)> resizeCallback) {
 
 }
 

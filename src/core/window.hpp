@@ -1,5 +1,5 @@
-#ifndef _GZN_PGK_WINDOW_
-#define _GZN_PGK_WINDOW_
+#ifndef _GZN_PGK_CORE_WINDOW_
+#define _GZN_PGK_CORE_WINDOW_
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -8,7 +8,7 @@
 
 class Window {
 public:
-	Window(std::function<void(int, int)> resizeCallback);
+	Window();
 
 	void endFrame();
 	void close();

@@ -1,5 +1,5 @@
-#ifndef _GZN_PGK_INPUT_
-#define _GZN_PGK_INPUT_
+#ifndef _GZN_PGK_CORE_INPUT_
+#define _GZN_PGK_CORE_INPUT_
 
 #include <string>
 #include <GLFW/glfw3.h>
