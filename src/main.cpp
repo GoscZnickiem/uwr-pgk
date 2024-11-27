@@ -1,4 +1,4 @@
-#include "core/application.hpp"
+#include "core/appdata.hpp"
 #include "core/window.hpp"
 
 #include <GL/glew.h>
@@ -43,10 +43,11 @@ int main (int argc, char *argv[]) {
 		std::cout << "Seed: " << seed << "\n\n";
 	}
 
-	Application app;
+	AppData::Init();
 
 	glDebugMessageCallback(MessageCallback, nullptr);
 
-	app.run();
-}
+	AppData::Data().application.run();
 
+	AppData::Terminate();
+}

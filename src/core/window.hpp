@@ -14,6 +14,7 @@ public:
 	void close();
 	bool shouldClose();
 	std::pair<float, float> getWindowSize();
+	void atResize(int width, int height);
 
 private:
 	GLFWwindow* m_ID;

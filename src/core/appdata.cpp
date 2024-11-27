@@ -10,20 +10,19 @@ AppData& AppData::Data() {
 }
 
 void AppData::Init() {
+	if (glfwInit() == 0) {
+		std::cerr << "GLFW initialization failed\n";
+		exit(1);
+	}
 	intance = std::make_unique<AppData>();
 }
 
 void AppData::Terminate() {
 	intance.reset();
-}
-
-AppData::AppData() {
-	if (glfwInit() == 0) {
-		std::cerr << "GLFW initialization failed\n";
-		exit(1);
-	}
-}
-
-AppData::~AppData() {
 	glfwTerminate();
+}
+
+
+void AppData::atResize(int width, int height) {
+	std::cout << "Resize: " << width << ", " << height << "\n";
 }

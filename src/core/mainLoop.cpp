@@ -1,29 +1,20 @@
-#include "application.hpp"
+#include "mainLoop.hpp"
 
 #include "window.hpp"
 #include "input.hpp"
 #include "appdata.hpp"
 
 #include <chrono>
-#include <iostream>
 
-Application::Application() {
-	AppData::Init();
-}
-
-Application::~Application() {
-	AppData::Terminate();
-}
-
-void update() {
+void MainLoop::update() {
 	Input::update();
 }
 
-void render() {
+void MainLoop::render() {
 	AppData::Data().window.endFrame();
 }
 
-void run() {
+void MainLoop::run() {
 	std::chrono::steady_clock::time_point lastFrameTime = std::chrono::steady_clock::now();
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 	std::chrono::duration<double> timeBetweenFrames{};
@@ -47,8 +38,4 @@ void run() {
 
 		render();
 	}
-}
-
-void atResize(int width, int height) {
-	std::cout << "Resize: " << width << ", " << height << "\n";
 }

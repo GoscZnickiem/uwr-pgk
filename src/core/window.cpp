@@ -67,10 +67,6 @@ Window::Window() {
 
 }
 
-void setWindowResizeCallback(std::function<void(int, int)> resizeCallback) {
-
-}
-
 void Window::endFrame() {
 	glfwSwapBuffers(m_ID);
 	glfwPollEvents();
@@ -92,3 +88,6 @@ std::pair<float, float> Window::getWindowSize() {
 	return {static_cast<float>(w), static_cast<float>(h)};
 }
 
+void Window::atResize(int width, int height) {
+	std::cout << "resize: " << width << " " << height << "\n";
+}
