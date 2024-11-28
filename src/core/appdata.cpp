@@ -22,7 +22,7 @@ void AppData::Terminate() {
 	glfwTerminate();
 }
 
-
 void AppData::atResize(int width, int height) {
-	std::cout << "Resize: " << width << ", " << height << "\n";
+	glViewport(0, 0, width, height);
+	sceneManager.atWindowResize(width, height);
 }

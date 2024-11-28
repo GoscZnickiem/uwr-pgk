@@ -7,10 +7,12 @@
 #include <chrono>
 
 void MainLoop::update() {
+	AppData::Data().sceneManager.update();
 	Input::update();
 }
 
 void MainLoop::render() {
+	AppData::Data().sceneManager.render();
 	AppData::Data().window.endFrame();
 }
 

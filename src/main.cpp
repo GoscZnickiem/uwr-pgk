@@ -1,8 +1,7 @@
 #include "core/appdata.hpp"
 #include "core/window.hpp"
+#include "scenes/testScene.hpp"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <cmath>
 #include <ctime>
 #include <iostream>
@@ -47,7 +46,9 @@ int main (int argc, char *argv[]) {
 
 	glDebugMessageCallback(MessageCallback, nullptr);
 
-	AppData::Data().application.run();
+	AppData::Data().sceneManager.pushScene<TestScene>();
+	AppData::Data().sceneManager.switchToNextScene();
+	AppData::Data().mainLoop.run();
 
 	AppData::Terminate();
 }

@@ -3,7 +3,6 @@
 #include "input.hpp"
 #include "shader.hpp"
 
-#include <GLFW/glfw3.h>
 #include <iostream>
 #include <map>
 #include <string>
@@ -51,7 +50,7 @@ Window::Window() {
 	glfwSetInputMode(m_ID, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 
 	glfwSetFramebufferSizeCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int w, int h) {
-		AppData::Data().window.atResize(w, h);
+		AppData::Data().atResize(w, h);
 	});
 
 	glfwSetKeyCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int key,[[maybe_unused]] int scancode, int action,[[maybe_unused]] int mods) {
@@ -86,8 +85,4 @@ std::pair<float, float> Window::getWindowSize() {
 	int w = 0; int h = 0;
 	glfwGetWindowSize(m_ID, &w, &h);
 	return {static_cast<float>(w), static_cast<float>(h)};
-}
-
-void Window::atResize(int width, int height) {
-	std::cout << "resize: " << width << " " << height << "\n";
 }

@@ -128,7 +128,7 @@ RawModel RawModel::GenerateSphere(std::size_t subdivisions, const glm::vec3& gra
 		resVertices.push_back(v.z);
 		resVertices.push_back(color.r);
 		resVertices.push_back(color.g);
-		resVertices.push_back(color.b);
+		resVertices.push_back(0.f);
 	}
 
 	return RawModel(resVertices, indices);
