@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../core/scene.hpp"
-#include "../graphics/mesh.hpp"
+#include "../graphics/renderable.hpp"
 
 class TestScene : public Scene {
 public:
@@ -10,5 +10,8 @@ public:
 	void update() override;
 	void render() override;
 
-	Mesh testMesh;
+	Transform testT;
+	Renderable test;
+	Transform testT2;
+	Renderable test2;
 };

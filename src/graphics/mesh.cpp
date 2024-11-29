@@ -11,16 +11,13 @@ Mesh::Mesh(const std::vector<float>& vertexData, const std::vector<int>& indices
 	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertexData.size() * sizeof(float)), vertexData.data(), GL_STATIC_DRAW);
 
 	// positions
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), reinterpret_cast<void*>(0));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(0));
 	glEnableVertexAttribArray(0);
 	// normals
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-	// colors
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 12 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
 	// uvs
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 12 * sizeof(float), reinterpret_cast<void*>(10 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
 	// indices
@@ -32,7 +29,7 @@ Mesh::Mesh(const std::vector<float>& vertexData, const std::vector<int>& indices
 	glGenBuffers(1, &m_instanceVbo);
 	glBindBuffer(GL_ARRAY_BUFFER, m_instanceVbo);
 	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(static_cast<std::size_t>(m_instances) * sizeof(glm::mat4)), nullptr, GL_STATIC_DRAW);
-	GLuint location = 4;
+	GLuint location = 3;
 	for (GLuint i = 0; i < 4; i++) {
 		glEnableVertexAttribArray(location + i);
 		glVertexAttribPointer(location + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), reinterpret_cast<void*>(i * 4 * sizeof(float)));
@@ -51,10 +48,12 @@ Mesh::~Mesh() {
 	glDeleteVertexArrays(1, &m_vao);
 }
 
-void Mesh::render() {
+void Mesh::bind() {
 	glBindVertexArray(m_vao);
+}
+
+void Mesh::render() {
 	glDrawElementsInstanced(GL_TRIANGLES, m_modelSize, GL_UNSIGNED_INT, reinterpret_cast<void*>(0), m_instances);
-	glBindVertexArray(0);
 }
 
 void Mesh::setTransforms(glm::mat4* transforms, std::size_t count) {
@@ -95,11 +94,7 @@ static int getMidpoint(int v1, int v2, std::vector<glm::vec3>& vertices, std::un
     return midIndex;
 }
 
-static glm::vec4 lerp(const glm::vec4& a, const glm::vec4& b, float t) {
-	return (1 - t) * a + t * b;
-}
-
-Mesh Mesh::CreateSphereMesh(std::size_t subdivisions, const glm::vec4& gradIn, const glm::vec4& gradOut) {
+Mesh Mesh::CreateSphereMesh(std::size_t subdivisions) {
 	const float t = (1.0f + std::sqrtf(5.0f)) / 2.0f;
 	std::vector<glm::vec3> vertices = {
         {-1,  t,  0}, { 1,  t,  0}, {-1, -t,  0}, { 1, -t,  0},
@@ -139,17 +134,12 @@ Mesh Mesh::CreateSphereMesh(std::size_t subdivisions, const glm::vec4& gradIn, c
 
 	std::vector<float> vertexData;
 	for(const auto& v : vertices) {
-		glm::vec4 color = lerp(gradIn, gradOut, (v.y + 1.f)/2);
 		vertexData.push_back(v.x);
 		vertexData.push_back(v.y);
 		vertexData.push_back(v.z);
 		vertexData.push_back(v.x);
 		vertexData.push_back(v.y);
 		vertexData.push_back(v.z);
-		vertexData.push_back(color.r);
-		vertexData.push_back(color.g);
-		vertexData.push_back(color.b);
-		vertexData.push_back(color.a);
 		vertexData.push_back(0.f);
 		vertexData.push_back(0.f);
 	}

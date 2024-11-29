@@ -17,6 +17,7 @@ public:
 	Mesh(const Mesh& other) = delete;
 	Mesh& operator=(const Mesh& other) = delete;
 
+	void bind();
 	void render();
 
 	void setTransforms(glm::mat4* transforms, std::size_t count);
@@ -32,7 +33,7 @@ private:
 	std::size_t m_instancesReservedMemory{64};
 
 public:
-	static Mesh CreateSphereMesh(std::size_t subdivisions, const glm::vec4& gradIn, const glm::vec4& gradOut);
+	static Mesh CreateSphereMesh(std::size_t subdivisions);
 };
 
 #endif

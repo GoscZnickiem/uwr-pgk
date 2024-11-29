@@ -1,17 +1,22 @@
 #include "testScene.hpp"
 #include "../core/appdata.hpp"
 #include "../core/input.hpp"
-#include "../transform.hpp"
 
-TestScene::TestScene()
-: testMesh(Mesh::CreateSphereMesh(3, {1.f, 0.f, 0.f, 0.7f}, {1.f, 1.f, 0.f, 0.7f})) {
+TestScene::TestScene() {
 	cameras.emplace_back();
 	cameras[0].direction = {-1.f, 0.f, 0.f};
 	cameras[0].position = {2.f, 0.f, 0.f};
 	cameras[0].outsideMode = true;
-	// Input::setMousePosLock(true);
-	std::vector<glm::mat4> t = { Transform().getMatrix() };
-	testMesh.setTransforms(t);
+	Input::setMousePosLock(true);
+
+	test.mesh = &AppData::Data().ball;
+	test.material = &AppData::Data().ballMat;
+	test.transform = &testT;
+
+	test2.mesh = &AppData::Data().ball;
+	test2.material = &AppData::Data().ballMat;
+	test2.transform = &testT2;
+	testT2.position = {1.f, 0.f, 0.3f};
 }
 
 void TestScene::update() {
@@ -20,6 +25,7 @@ void TestScene::update() {
 
 void TestScene::render() {
 	cameras[0].setup();
-	AppData::Data().shader.bind();
-	testMesh.render();
+	AppData::Data().renderer.addRender(test);
+	AppData::Data().renderer.addRender(test2);
+	AppData::Data().renderer.render();
 }

@@ -41,6 +41,7 @@ void Camera::update(const glm::vec3 playerPos) {
 
 void Camera::setup() {
 	Shader::SetCameraUniform(getViewMatrix(), getProjectionMatrix());
+	AppData::Data().renderer.setCameraPos(position);
 }
 
 glm::mat4 Camera::getViewMatrix() const {
