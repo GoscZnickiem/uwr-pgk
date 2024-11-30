@@ -14,4 +14,6 @@ public:
 	Renderable test;
 	Transform testT2;
 	Renderable test2;
+
+	Light globalLight;
 };

@@ -12,6 +12,8 @@ struct Material {
 	float shininess{32.f};
 	float opacity{1.f};
 	unsigned int textureID{0};
+
+	void setup() const;
 };
 
 #endif

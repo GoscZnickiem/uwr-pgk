@@ -14,9 +14,13 @@ TestScene::TestScene() {
 	test.transform = &testT;
 
 	test2.mesh = &AppData::Data().ball;
-	test2.material = &AppData::Data().ballMat;
+	test2.material = &AppData::Data().ballMat2;
 	test2.transform = &testT2;
-	testT2.position = {1.f, 0.f, 0.3f};
+	testT2.position = {1.f, 1.f, 1.0f};
+
+	globalLight.direction = glm::normalize(glm::vec3{0.2f, -1.f, 0.1f});
+	globalLight.color = {1.f, 1.f, 1.f};
+	globalLight.intensity = 0.5f;
 }
 
 void TestScene::update() {
@@ -25,6 +29,8 @@ void TestScene::update() {
 
 void TestScene::render() {
 	cameras[0].setup();
+	Shader::SetLightDirectional(globalLight);
+	Shader::SetLightsUniform();
 	AppData::Data().renderer.addRender(test);
 	AppData::Data().renderer.addRender(test2);
 	AppData::Data().renderer.render();

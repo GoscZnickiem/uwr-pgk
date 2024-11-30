@@ -1,6 +1,9 @@
 #include "shader.hpp"
+
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 #include <fstream>
 #include <cstddef>
 #include <iostream>
@@ -54,16 +57,14 @@ Shader::Shader(const std::string& file) {
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 
-	s_shaders.push_back(this);
-	m_thisIt = --s_shaders.end();
-
-	const uint32_t blockIndex = glGetUniformBlockIndex(m_ID, "Camera");
-	glUniformBlockBinding(m_ID, blockIndex, 0);
+	const uint32_t camBlockIndex = glGetUniformBlockIndex(m_ID, "Camera");
+	glUniformBlockBinding(m_ID, camBlockIndex, 0);
+	const uint32_t lightBlockIndex = glGetUniformBlockIndex(m_ID, "Lights");
+	glUniformBlockBinding(m_ID, lightBlockIndex, 1);
 }
 
 Shader::~Shader() {
 	glDeleteProgram(m_ID);
-	s_shaders.erase(m_thisIt);
 }
 
 void Shader::setUniform(const std::string& name, float v0) const {
@@ -156,29 +157,56 @@ void Shader::setUniform(const std::string& name,const glm::mat4& v) const {
 	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(v));
 }
 
-void Shader::SetCameraUniform(const glm::mat4 &view, const glm::mat4 &projection) {
+void Shader::SetCameraUniform(const Camera& camera) {
 	glBindBuffer(GL_UNIFORM_BUFFER, s_cameraUBO);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(view));
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection));
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(camera.getViewMatrix()));
+	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.getProjectionMatrix()));
+	glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera.position));
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+void Shader::SetLightDirectional(const Light& light) {
+	s_lights[0] = light;
+}
+
+void Shader::SetLightPoint(const Light& light) {
+	if(s_currentLightIndex > LIGHTS_NUM) return;
+	s_lights[s_currentLightIndex++] = light;
+}
+
+void Shader::SetLightsUniform() {
+	glBindBuffer(GL_UNIFORM_BUFFER, s_lightsUBO);
+	s_lights.fill({{glm::vec3{1.f, 1.f, 1.f}},glm::vec3{1.f, 1.f, 1.f}, 1.f});
+	// glBufferSubData(GL_UNIFORM_BUFFER, 0, (1 + LIGHTS_NUM) * sizeof(glm::vec3), glm::value_ptr(s_lights.data()->direction));
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec3), glm::value_ptr(s_lights.data()->direction));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	std::cout << glm::to_string(s_lights[0].direction) << "\n";
+	s_currentLightIndex = 0;
+	// s_lights.fill({{},{},0.f});
+}
+
 void Shader::bind() const {
-	if(m_ID == s_currentShader) return;
 	glUseProgram(m_ID);
-	s_currentShader = m_ID;
 }
 
 void Shader::unbind() const {
 	glUseProgram(0);
-	s_currentShader = 0;
 }
 
 void Shader::CreateCameraUBO() {
 	glGenBuffers(1, &s_cameraUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, s_cameraUBO);
-	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + sizeof(glm::vec3), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, s_cameraUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void Shader::CreateLightUBO() {
+	glGenBuffers(1, &s_lightsUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, s_lightsUBO);
+	// glBufferData(GL_UNIFORM_BUFFER, (1 + LIGHTS_NUM) * sizeof(Light), nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec3), nullptr, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, s_lightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 

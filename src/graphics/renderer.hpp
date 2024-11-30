@@ -17,13 +17,15 @@ public:
 	void setCameraPos(const glm::vec3& pos);
 
 private:
-	struct RenderDataIndex {
+	struct OpaqueRenderIndex {
 		Mesh* mesh;
 		Material* material;
-		RenderDataIndex(const Renderable& renderData);
-		bool operator<(const RenderDataIndex& other) const;
+		OpaqueRenderIndex(const Renderable& renderData);
+		bool operator<(const OpaqueRenderIndex& other) const;
 	};
-	std::map<RenderDataIndex, std::vector<glm::mat4>> batches;
+	std::map<OpaqueRenderIndex, std::vector<glm::mat4>> opaqueBatches;
+	std::vector<Renderable> translucentQueue;
+	std::vector<glm::mat4> translucentArray;
 	glm::vec3 cameraPosition;
 };
 

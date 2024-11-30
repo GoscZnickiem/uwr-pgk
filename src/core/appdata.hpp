@@ -22,7 +22,12 @@ struct AppData {
 
 	Mesh ball = Mesh::CreateSphereMesh(3);
 
-	Material ballMat{.shader = &shader };
+	Material ballMat{
+		.shader = &shader, .opacity = 0.8f 
+	};
+	Material ballMat2{
+		.shader = &shader, .opacity = 1.0f 
+	};
 
 	void atResize(int width, int height);
 
