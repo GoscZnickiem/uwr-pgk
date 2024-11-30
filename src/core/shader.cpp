@@ -2,8 +2,6 @@
 
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/string_cast.hpp>
 #include <fstream>
 #include <cstddef>
 #include <iostream>
@@ -176,13 +174,10 @@ void Shader::SetLightPoint(const Light& light) {
 
 void Shader::SetLightsUniform() {
 	glBindBuffer(GL_UNIFORM_BUFFER, s_lightsUBO);
-	s_lights.fill({{glm::vec3{1.f, 1.f, 1.f}},glm::vec3{1.f, 1.f, 1.f}, 1.f});
-	// glBufferSubData(GL_UNIFORM_BUFFER, 0, (1 + LIGHTS_NUM) * sizeof(glm::vec3), glm::value_ptr(s_lights.data()->direction));
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec3), glm::value_ptr(s_lights.data()->direction));
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, (1 + LIGHTS_NUM) * sizeof(Light), s_lights.data());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	std::cout << glm::to_string(s_lights[0].direction) << "\n";
 	s_currentLightIndex = 0;
-	// s_lights.fill({{},{},0.f});
+	s_lights.fill({{},0.f,{},0.f});
 }
 
 void Shader::bind() const {
@@ -204,8 +199,7 @@ void Shader::CreateCameraUBO() {
 void Shader::CreateLightUBO() {
 	glGenBuffers(1, &s_lightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, s_lightsUBO);
-	// glBufferData(GL_UNIFORM_BUFFER, (1 + LIGHTS_NUM) * sizeof(Light), nullptr, GL_DYNAMIC_DRAW);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec3), nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, (1 + LIGHTS_NUM) * sizeof(Light), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, s_lightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

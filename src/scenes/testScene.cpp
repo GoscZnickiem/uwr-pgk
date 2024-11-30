@@ -10,7 +10,7 @@ TestScene::TestScene() {
 	Input::setMousePosLock(true);
 
 	test.mesh = &AppData::Data().ball;
-	test.material = &AppData::Data().ballMat;
+	test.material = &AppData::Data().ballMat2;
 	test.transform = &testT;
 
 	test2.mesh = &AppData::Data().ball;
@@ -20,7 +20,7 @@ TestScene::TestScene() {
 
 	globalLight.direction = glm::normalize(glm::vec3{0.2f, -1.f, 0.1f});
 	globalLight.color = {1.f, 1.f, 1.f};
-	globalLight.intensity = 0.5f;
+	globalLight.intensity = 1.0f;
 }
 
 void TestScene::update() {

@@ -23,10 +23,10 @@ struct AppData {
 	Mesh ball = Mesh::CreateSphereMesh(3);
 
 	Material ballMat{
-		.shader = &shader, .opacity = 0.8f 
+		.shader = &shader, .specular = glm::vec3{1.f, 0.f, 0.f}, .shininess = 32.f, .opacity = 0.8f
 	};
 	Material ballMat2{
-		.shader = &shader, .opacity = 1.0f 
+		.shader = &shader, .shininess = 32.f, .opacity = 1.0f
 	};
 
 	void atResize(int width, int height);

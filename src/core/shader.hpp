@@ -57,7 +57,7 @@ private:
 	inline static uint32_t s_cameraUBO = 0;
 	inline static uint32_t s_lightsUBO = 0;
 	inline static uint32_t s_currentLightIndex = 0;
-	static constexpr std::size_t LIGHTS_NUM = 0;
+	static constexpr std::size_t LIGHTS_NUM = 15;
 	inline static std::array<Light, LIGHTS_NUM + 1> s_lights;
 
 	void compileShader(uint32_t shader, const char* source);

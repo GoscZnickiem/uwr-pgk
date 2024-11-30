@@ -28,15 +28,17 @@ void main() {
 
 struct DirectionalLight {
 	vec3 direction;
+	float padding;
 	vec3 color;
 	float intensity;
 };
 struct PointLight {
 	vec3 position;
+	float padding;
 	vec3 color;
 	float intensity;
 };
-#define NUM_LIGHTS 3
+#define NUM_LIGHTS 15
 
 in vec3 fragPosition;
 in vec3 fragNormal;
@@ -48,9 +50,8 @@ layout(std140, binding = 0) uniform Camera {
 };
 
 layout(std140, binding = 1) uniform Lights {
-	vec3 test;
-	// DirectionalLight directionalLight;
-	// PointLight pointLights[NUM_LIGHTS];
+	DirectionalLight directionalLight;
+	PointLight pointLights[NUM_LIGHTS];
 };
 
 uniform vec3 ambient;
@@ -66,10 +67,10 @@ vec3 dirLight(DirectionalLight light, vec3 normal, vec3 viewDir) {
 	vec3 halfway = normalize(lightDir + viewDir);
 
 	float diff = max(dot(normal, lightDir), 0.0);
-	vec3 diffuseLight = diff * light.color * light.intensity;
+	vec3 diffuseLight = diff * light.intensity * light.color * diffuse;
 
 	float spec = pow(max(dot(normal, halfway), 0.0), shininess);
-	vec3 specularLight = spec * light.color * light.intensity;
+	vec3 specularLight = spec * light.intensity * light.color * specular;
 
 	return diffuseLight + specularLight;
 }
@@ -91,14 +92,14 @@ vec3 pointLight(PointLight light, vec3 fragPos, vec3 normal, vec3 viewDir) {
 }
 
 void main() {
-	// vec3 viewDir = normalize(cameraPosition - fragPosition);
-	// vec3 normal = normalize(fragNormal);
-	//
-	// vec3 color = ambient * 0.1f;
-	// color += dirLight(directionalLight, normal, viewDir);
+	vec3 viewDir = normalize(cameraPosition - fragPosition);
+	vec3 normal = normalize(fragNormal);
+
+	vec3 color = ambient * 0.1f;
+	color += dirLight(directionalLight, normal, viewDir);
 	// for(int i = 0; i < NUM_LIGHTS; i++) {
 	// 	color += pointLight(pointLights[i], fragPosition, normal, viewDir);
 	// }
 
-	FragColor = vec4(test + vec3(0.1, 0.1, 0.1), opacity);
+	FragColor = vec4(color, opacity);
 }

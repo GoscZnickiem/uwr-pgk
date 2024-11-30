@@ -63,7 +63,7 @@ Window::Window() {
 
 	Input::setWindow(m_ID);
 	Shader::CreateCameraUBO();
-
+	Shader::CreateLightUBO();
 }
 
 void Window::endFrame() {
