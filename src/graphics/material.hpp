@@ -11,6 +11,7 @@ struct Material {
 	glm::vec3 specular{1.f, 1.f, 1.f};
 	float shininess{16.f};
 	float opacity{1.f};
+	float alpha{1.f};
 	unsigned int textureID{0};
 
 	void setup() const;

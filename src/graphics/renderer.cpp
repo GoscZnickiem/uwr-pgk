@@ -66,7 +66,7 @@ void Renderer::render() {
 }
 
 void Renderer::addRender(Renderable renderData) {
-	if(renderData.material->opacity == 1.f)
+	if(renderData.material->opacity == 1.f && renderData.material->alpha == 1.f)
 		opaqueBatches[{renderData}].push_back(renderData.transform->getMatrix());
 	else
 		translucentQueue.push_back(renderData);

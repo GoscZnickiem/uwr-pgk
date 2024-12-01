@@ -18,22 +18,32 @@ struct AppData {
 	static constexpr double timePerUpdate = 1./updatesPerSecond;
 	static constexpr float deltaT = static_cast<float>(timePerUpdate);
 
-	const Shader shader{"assets/shaders/shader.glsl"};
+	struct {
+		const Shader standard;
+	} shaders;
 
-	Mesh ball = Mesh::CreateSphereMesh(3);
+	struct {
+		Mesh ball;
+		Mesh cube;
+		Mesh plane;
+	} models;
 
-	Material ballMat{
-		.shader = &shader, .specular = glm::vec3{1.f, 0.f, 0.f}, .shininess = 32.f, .opacity = 0.8f
-	};
-	Material ballMat2{
-		.shader = &shader, .shininess = 32.f, .opacity = 1.0f
-	};
+	struct {
+		Material bubble;
+		Material test;
+		Material glass;
+		Material wood;
+		Material aquariumBase;
+		Material gravel;
+	} materials;
 
 	void atResize(int width, int height);
 
 	static AppData& Data();
 	static void Init();
 	static void Terminate();
+
+	AppData();
 
 };
 

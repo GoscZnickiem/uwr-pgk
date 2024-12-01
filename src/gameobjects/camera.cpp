@@ -21,7 +21,7 @@ void Camera::update(const glm::vec3 playerPos) {
 	if(mouseY != 0) rotatePitch(-mouseY * sensitivity);
 	
 	if(outsideMode) {
-		position = -4.f * direction + lookat;
+		position = -20.f * direction + lookat;
 		if (Input::getScroll() >= 1 || Input::isKeyClicked("+")) {
 			targetFov -= 10.f;
 			fovTimer = 0;

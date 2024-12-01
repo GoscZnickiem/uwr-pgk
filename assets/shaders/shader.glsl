@@ -59,47 +59,60 @@ uniform vec3 diffuse;
 uniform vec3 specular;
 uniform float shininess;
 uniform float opacity;
+uniform float alpha;
 
 out vec4 FragColor;
 
-vec3 dirLight(DirectionalLight light, vec3 normal, vec3 viewDir) {
+vec3 dirLightDiff(DirectionalLight light, vec3 normal, vec3 viewDir) {
+	vec3 lightDir = normalize(-light.direction);
+
+	float diff = max(dot(normal, lightDir), 0.0);
+	return diff * light.intensity * light.color * diffuse;
+}
+
+vec4 dirLightSpec(DirectionalLight light, vec3 normal, vec3 viewDir) {
 	vec3 lightDir = normalize(-light.direction);
 	vec3 halfway = normalize(lightDir + viewDir);
 
-	float diff = max(dot(normal, lightDir), 0.0);
-	vec3 diffuseLight = diff * light.intensity * light.color * diffuse;
-
 	float spec = pow(max(dot(normal, halfway), 0.0), shininess);
-	vec3 specularLight = spec * light.intensity * light.color * specular;
-
-	return diffuseLight + specularLight;
+	return spec * vec4(light.intensity * light.color * specular, 1.0);
 }
 
-vec3 pointLight(PointLight light, vec3 fragPos, vec3 normal, vec3 viewDir) {
-	vec3 lightDir = normalize(light.position - fragPos);
-    float distance = length(light.position - fragPos);
-	float attenuation = 1.0 / (1.0 + light.intensity * 5.0 * distance * distance);
+// vec4 pointLight(PointLight light, vec3 fragPos, vec3 normal, vec3 viewDir) {
+// 	vec3 lightDir = normalize(light.position - fragPos);
+//     float distance = length(light.position - fragPos);
+// 	float attenuation = 1.0 / (1.0 + light.intensity * 5.0 * distance * distance);
+//
+//     vec3 halfway = normalize(lightDir + viewDir);
+//
+//     float diff = max(dot(normal, lightDir), 0.0);
+//     vec3 diffuseLight = diff * light.color * light.intensity * attenuation;
+//
+//     float spec = pow(max(dot(normal, halfway), 0.0), shininess);
+//     vec3 specularLight = spec * light.color * light.intensity * attenuation;
+//
+//     return diffuseLight + specularLight;
+// }
 
-    vec3 halfway = normalize(lightDir + viewDir);
-
-    float diff = max(dot(normal, lightDir), 0.0);
-    vec3 diffuseLight = diff * light.color * light.intensity * attenuation;
-
-    float spec = pow(max(dot(normal, halfway), 0.0), shininess);
-    vec3 specularLight = spec * light.color * light.intensity * attenuation;
-
-    return diffuseLight + specularLight;
+vec4 lighten(vec4 a, vec4 b) {
+	float alp = a.a + (1.0 - a.a) * b.a;
+	float red = (a.r * a.a + b.r * b.a) / alp;
+	float green = (a.g * a.a + b.g * b.a) / alp;
+	float blue = (a.b * a.a + b.b * b.a) / alp;
+	return vec4(red, green, blue, alp);
 }
 
 void main() {
 	vec3 viewDir = normalize(cameraPosition - fragPosition);
 	vec3 normal = normalize(fragNormal);
 
-	vec3 color = ambient * 0.1f;
-	color += dirLight(directionalLight, normal, viewDir);
+	vec3 ambientLight = ambient * 0.1f * opacity;
+	vec3 diffuseLight = dirLightDiff(directionalLight, normal, viewDir);
+	vec4 specularLight = dirLightSpec(directionalLight, normal, viewDir);
 	// for(int i = 0; i < NUM_LIGHTS; i++) {
 	// 	color += pointLight(pointLights[i], fragPosition, normal, viewDir);
 	// }
 
-	FragColor = vec4(color, opacity);
+	vec4 res = lighten(specularLight, vec4(ambientLight + diffuseLight, opacity));
+	FragColor = vec4(res.rgb, res.a * alpha);
 }

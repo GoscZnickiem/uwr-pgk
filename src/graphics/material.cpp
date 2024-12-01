@@ -6,4 +6,5 @@ void Material::setup() const {
 	shader->setUniform("specular", specular.r, specular.g, specular.b);
 	shader->setUniform("shininess", shininess);
 	shader->setUniform("opacity", opacity);
+	shader->setUniform("alpha", alpha);
 }
