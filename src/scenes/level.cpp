@@ -28,7 +28,7 @@ Level::Level(std::size_t bubbleCount)
 		b.startSize = random(0.5f, 1.5f);
 		b.endSize = b.startSize * 1.5f;
 		b.speed = random(1.3f, 1.6f);
-		b.transform.position = {random(-aqDepth, aqDepth), random(-aqHeight - 1.f, aqHeight - 2.f), random(-aqWidth, aqWidth)};
+		b.transform.position = {random(-aqDepth + b.startSize, aqDepth - b.startSize), random(-aqHeight - 1.f, aqHeight - 2.f), random(-aqWidth + b.startSize, aqWidth - b.startSize)};
 	}
 }
 

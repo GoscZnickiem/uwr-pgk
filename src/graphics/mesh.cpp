@@ -32,7 +32,7 @@ Mesh::Mesh(const std::vector<float>& vertexData, const std::vector<int>& indices
 	// instance transforms buffer
 	glGenBuffers(1, &m_instanceVbo);
 	glBindBuffer(GL_ARRAY_BUFFER, m_instanceVbo);
-	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(static_cast<std::size_t>(m_instances) * sizeof(glm::mat4)), nullptr, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(m_instancesReservedMemory/4), nullptr, GL_STATIC_DRAW);
 	GLuint location = 3;
 	for (GLuint i = 0; i < 4; i++) {
 		glEnableVertexAttribArray(location + i);
@@ -58,12 +58,12 @@ void Mesh::bind() {
 }
 
 void Mesh::render() {
-	if(aaaa)
-		std::cout << "render these " << m_instances << "\n";
+	// if(aaaa) std::cout << "render these " << m_instances << "\n";
 	glDrawElementsInstanced(GL_TRIANGLES, m_modelSize, GL_UNSIGNED_INT, reinterpret_cast<void*>(0), m_instances);
 }
 
 void Mesh::setTransforms(glm::mat4* transforms, std::size_t count) {
+	if(count == 0) return;
 	glBindBuffer(GL_ARRAY_BUFFER, m_instanceVbo);
 	bool resized = false;
 	m_instances = static_cast<GLsizei>(count);
@@ -71,14 +71,8 @@ void Mesh::setTransforms(glm::mat4* transforms, std::size_t count) {
 		resized = true;
 		m_instancesReservedMemory *= 2;
 	}
-	if(resized) glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(glm::mat4)), nullptr, GL_STATIC_DRAW);
+	if(resized) glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(m_instancesReservedMemory), nullptr, GL_DYNAMIC_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(count * sizeof(glm::mat4)), transforms);
-	if(aaaa) {
-		std::cout << resized << ":\n";
-		for(int i = 0; i < count; i++) {
-			std::cout << glm::to_string(transforms[i]) << "\n";
-		}
-	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
