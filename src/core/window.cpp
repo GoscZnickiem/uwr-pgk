@@ -27,7 +27,7 @@ Window::Window() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-	m_ID = glfwCreateWindow(width, height, "Hello OpenGL", nullptr, nullptr);
+	m_ID = glfwCreateWindow(width, height, "PGK", nullptr, nullptr);
 	if(m_ID == nullptr) {
 		std::cerr << "Window creation failed\n";
 		exit(2);

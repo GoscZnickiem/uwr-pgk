@@ -16,19 +16,19 @@ Aquarium::Aquarium(float width, float height, float depth) {
 	wall1T.scale = {wallWidth, height, width};
 
 	wall2.mesh = &AppData::Data().models.cube;
-	wall2.material = &AppData::Data().materials.glass0;
+	wall2.material = &AppData::Data().materials.glass;
 	wall2.transform = &wall2T;
 	wall2T.position = {depth + wallWidth, 0.0f, 0.0f};
 	wall2T.scale = {wallWidth, height, width};
 
 	wall3.mesh = &AppData::Data().models.cube;
-	wall3.material = &AppData::Data().materials.glass1;
+	wall3.material = &AppData::Data().materials.glass;
 	wall3.transform = &wall3T;
 	wall3T.position = {0.0f, 0.0f, width + wallWidth};
 	wall3T.scale = {depth + wallWidth * 2, height, wallWidth};
 
 	wall4.mesh = &AppData::Data().models.cube;
-	wall4.material = &AppData::Data().materials.glass2;
+	wall4.material = &AppData::Data().materials.glass;
 	wall4.transform = &wall4T;
 	wall4T.position = {0.0f, 0.0f, -width - wallWidth};
 	wall4T.scale = {depth + wallWidth * 2, height, wallWidth};
@@ -38,12 +38,6 @@ Aquarium::Aquarium(float width, float height, float depth) {
 	water.transform = &waterT;
 	waterT.position = {0.0f, -waterGap, 0.0f};
 	waterT.scale = {depth, height - waterGap, width};
-
-	waterS.mesh = &AppData::Data().models.plane;
-	waterS.material = &AppData::Data().materials.bubble;
-	waterS.transform = &waterST;
-	waterST.position = {0.0f, height - waterGap * 2, 0.0f};
-	waterST.scale = {depth, 0.01f, width};
 
 	floor.mesh = &AppData::Data().models.plane;
 	floor.material = &AppData::Data().materials.test;
@@ -70,8 +64,7 @@ void Aquarium::render() {
 	AppData::Data().renderer.addRender(wall3);
 	AppData::Data().renderer.addRender(wall4);
 
-	AppData::Data().renderer.addRender(waterS);
-	AppData::Data().renderer.addRender(water);
+	// AppData::Data().renderer.addRender(water);
 
 	AppData::Data().renderer.addRender(floor);
 	AppData::Data().renderer.addRender(base);

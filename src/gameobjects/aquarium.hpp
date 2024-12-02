@@ -21,8 +21,6 @@ private:
 
 	Renderable water;
 	Transform waterT;
-	Renderable waterS;
-	Transform waterST;
 
 	Renderable floor;
 	Transform floorT;

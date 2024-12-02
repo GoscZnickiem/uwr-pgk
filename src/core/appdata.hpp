@@ -33,9 +33,6 @@ struct AppData {
 		Material bubble;
 		Material test;
 		Material glass;
-		Material glass0;
-		Material glass1;
-		Material glass2;
 		Material wood;
 		Material aquariumBase;
 		Material gravel;
@@ -47,7 +44,11 @@ struct AppData {
 	static void Init();
 	static void Terminate();
 
-	AppData();
+private:
+	struct Token {};
+public:
+
+	AppData(Token t);
 
 };
 

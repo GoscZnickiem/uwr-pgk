@@ -3,8 +3,12 @@
 
 #include "../core/scene.hpp"
 #include "../graphics/light.hpp"
+#include "../gameobjects/aquarium.hpp"
+#include "../gameobjects/bubble.hpp"
+#include <vector>
 
 class Level : public Scene {
+public:
 	Level(std::size_t bubbleCount);
 
 	void update() override;
@@ -12,6 +16,10 @@ class Level : public Scene {
 
 private:
 	Light globalLight;
+
+	Aquarium aquarium;
+
+	std::vector<Bubble> bubbles;
 };
 
 #endif

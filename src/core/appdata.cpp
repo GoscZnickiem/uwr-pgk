@@ -14,7 +14,7 @@ void AppData::Init() {
 		std::cerr << "GLFW initialization failed\n";
 		exit(1);
 	}
-	intance = std::make_unique<AppData>();
+	intance = std::make_unique<AppData>(Token{});
 }
 
 void AppData::Terminate() {
@@ -27,7 +27,7 @@ void AppData::atResize(int width, int height) {
 	sceneManager.atWindowResize(width, height);
 }
 
-AppData::AppData() :
+AppData::AppData([[maybe_unused]] Token t) :
 	shaders {
 		.standard {"assets/shaders/shader.glsl"}
 	}, models {
@@ -131,7 +131,7 @@ AppData::AppData() :
 			.ambient  = glm::vec3{1.0f, 1.0f, 1.3f}, 
 			.diffuse  = glm::vec3{0.7f, 0.8f, 1.4f}, 
 			.specular = glm::vec3{1.0f, 1.0f, 1.2f}, 
-			.shininess = 32.f, .opacity = 0.7f, .alpha = 1.0f
+			.shininess = 32.f, .opacity = 0.5f, .alpha = 1.0f
 		},
 		.test {
 			.shader = &shaders.standard, 
@@ -144,27 +144,6 @@ AppData::AppData() :
 			.shader = &shaders.standard, 
 			.ambient  = glm::vec3{1.0f, 1.3f, 1.1f}, 
 			.diffuse  = glm::vec3{1.0f, 1.3f, 1.1f}, 
-			.specular = glm::vec3{2.0f, 2.0f, 2.0f}, 
-			.shininess = 128.f, .opacity = 0.2f, .alpha = 0.9f
-		},
-		.glass0 {
-			.shader = &shaders.standard, 
-			.ambient  = glm::vec3{5.0f, 1.3f, 1.1f}, 
-			.diffuse  = glm::vec3{5.0f, 1.3f, 1.1f}, 
-			.specular = glm::vec3{2.0f, 2.0f, 2.0f}, 
-			.shininess = 128.f, .opacity = 0.2f, .alpha = 0.9f
-		},
-		.glass1 {
-			.shader = &shaders.standard, 
-			.ambient  = glm::vec3{1.0f, 5.3f, 1.1f}, 
-			.diffuse  = glm::vec3{1.0f, 5.3f, 1.1f}, 
-			.specular = glm::vec3{2.0f, 2.0f, 2.0f}, 
-			.shininess = 128.f, .opacity = 0.2f, .alpha = 0.9f
-		},
-		.glass2 {
-			.shader = &shaders.standard, 
-			.ambient  = glm::vec3{5.0f, 5.3f, 1.1f}, 
-			.diffuse  = glm::vec3{5.0f, 5.3f, 1.1f}, 
 			.specular = glm::vec3{2.0f, 2.0f, 2.0f}, 
 			.shininess = 128.f, .opacity = 0.2f, .alpha = 0.9f
 		},

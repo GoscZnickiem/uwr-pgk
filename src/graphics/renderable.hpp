@@ -9,7 +9,6 @@ struct Renderable {
 	Transform* transform;
 	Mesh* mesh;
 	Material* material;
-	std::string debugName = "unnamed";
 };
 
 #endif

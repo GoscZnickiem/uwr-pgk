@@ -1,6 +1,6 @@
 #include "core/appdata.hpp"
 #include "core/window.hpp"
-#include "scenes/testScene.hpp"
+#include "scenes/level.hpp"
 
 #include <cmath>
 #include <ctime>
@@ -46,7 +46,7 @@ int main (int argc, char *argv[]) {
 
 	glDebugMessageCallback(MessageCallback, nullptr);
 
-	AppData::Data().sceneManager.pushScene<TestScene>();
+	AppData::Data().sceneManager.pushScene<Level>(15);
 	AppData::Data().sceneManager.switchToNextScene();
 	AppData::Data().mainLoop.run();
 

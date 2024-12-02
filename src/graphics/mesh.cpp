@@ -1,5 +1,9 @@
 #include "mesh.hpp"
+#include <iostream>
 #include <unordered_map>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
 
 Mesh::Mesh(const std::vector<float>& vertexData, const std::vector<int>& indices)
 : m_modelSize(static_cast<GLsizei>(indices.size())) {
@@ -50,9 +54,12 @@ Mesh::~Mesh() {
 
 void Mesh::bind() {
 	glBindVertexArray(m_vao);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
 }
 
 void Mesh::render() {
+	if(aaaa)
+		std::cout << "render these " << m_instances << "\n";
 	glDrawElementsInstanced(GL_TRIANGLES, m_modelSize, GL_UNSIGNED_INT, reinterpret_cast<void*>(0), m_instances);
 }
 
@@ -66,6 +73,12 @@ void Mesh::setTransforms(glm::mat4* transforms, std::size_t count) {
 	}
 	if(resized) glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(glm::mat4)), nullptr, GL_STATIC_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(count * sizeof(glm::mat4)), transforms);
+	if(aaaa) {
+		std::cout << resized << ":\n";
+		for(int i = 0; i < count; i++) {
+			std::cout << glm::to_string(transforms[i]) << "\n";
+		}
+	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 

@@ -34,6 +34,8 @@ private:
 
 public:
 	static Mesh CreateSphereMesh(std::size_t subdivisions);
+
+	inline static bool aaaa = false;
 };
 
 #endif
