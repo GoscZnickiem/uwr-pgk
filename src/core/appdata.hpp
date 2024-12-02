@@ -20,6 +20,8 @@ struct AppData {
 
 	struct {
 		const Shader standard;
+		const Shader waterDepth;
+		const Shader quad;
 	} shaders;
 
 	struct {

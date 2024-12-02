@@ -25,11 +25,14 @@ void AppData::Terminate() {
 void AppData::atResize(int width, int height) {
 	glViewport(0, 0, width, height);
 	sceneManager.atWindowResize(width, height);
+	renderer.updateFrameBuffers(width, height);
 }
 
 AppData::AppData([[maybe_unused]] Token t) :
 	shaders {
-		.standard {"assets/shaders/shader.glsl"}
+		.standard {"assets/shaders/shader.glsl"},
+		.waterDepth {"assets/shaders/waterDepth.glsl"},
+		.quad {"assets/shaders/quad.glsl"}
 	}, models {
 		.ball {Mesh::CreateSphereMesh(4)},
 		.cube {

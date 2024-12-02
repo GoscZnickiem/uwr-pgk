@@ -61,6 +61,8 @@ uniform float shininess;
 uniform float opacity;
 uniform float alpha;
 
+uniform sampler2D depthTexture;
+
 out vec4 FragColor;
 
 vec3 dirLightDiff(DirectionalLight light, vec3 normal, vec3 viewDir) {
@@ -113,6 +115,9 @@ void main() {
 	// 	color += pointLight(pointLights[i], fragPosition, normal, viewDir);
 	// }
 
+	vec2 ndcCoords = gl_FragCoord.xy / vec2(textureSize(depthTexture, 0));
+	vec2 depths = texture(depthTexture, ndcCoords).rg;
+
 	vec4 res = lighten(specularLight, vec4(ambientLight + diffuseLight, opacity));
-	FragColor = vec4(res.rgb, res.a * alpha);
+	FragColor = vec4(depths, res.b, res.a * alpha);
 }

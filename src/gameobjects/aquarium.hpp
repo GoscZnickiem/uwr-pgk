@@ -19,8 +19,18 @@ private:
 	Renderable wall4;
 	Transform wall4T;
 
-	Renderable water;
-	Transform waterT;
+	Renderable water1;
+	Transform water1T;
+	Renderable water2;
+	Transform water2T;
+	Renderable water3;
+	Transform water3T;
+	Renderable water4;
+	Transform water4T;
+	Renderable waterA;
+	Transform waterAT;
+	Renderable waterB;
+	Transform waterBT;
 
 	Renderable floor;
 	Transform floorT;

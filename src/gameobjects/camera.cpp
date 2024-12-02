@@ -38,7 +38,7 @@ void Camera::update(const glm::vec3 playerPos, const glm::vec3 playerDir) {
 		position = -50.f * direction + lookat;
 	} else {
 		position = playerPos;
-		direction = playerDir;
+		// direction = playerDir;
 	}
 }
 

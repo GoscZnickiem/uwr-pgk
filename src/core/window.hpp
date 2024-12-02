@@ -13,7 +13,7 @@ public:
 	void endFrame();
 	void close();
 	bool shouldClose();
-	std::pair<float, float> getWindowSize();
+	std::pair<int, int> getWindowSize();
 
 private:
 	GLFWwindow* m_ID;

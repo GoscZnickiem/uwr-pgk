@@ -4,21 +4,43 @@
 #include "shader.hpp"
 
 #include <iostream>
-#include <map>
-#include <string>
 
-std::map<GLint, std::string> glToString = {
-	{GLFW_KEY_UP, "UP"},
-	{GLFW_KEY_DOWN, "DOWN"},
-	{GLFW_KEY_LEFT, "LEFT"},
-	{GLFW_KEY_RIGHT, "RIGHT"},
-	{GLFW_KEY_SPACE, "SPACE"},
-	{GLFW_KEY_ESCAPE, "ESCAPE"}
-};
+void APIENTRY OpenGLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity,
+                                  GLsizei length, const GLchar* message, const void* userParam) {
+    std::cout << "OpenGL Debug Message:\n";
+    std::cout << "Source: ";
+    switch (source) {
+        case GL_DEBUG_SOURCE_API:             std::cout << "API"; break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   std::cout << "Window System"; break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER: std::cout << "Shader Compiler"; break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:     std::cout << "Third Party"; break;
+        case GL_DEBUG_SOURCE_APPLICATION:     std::cout << "Application"; break;
+        case GL_DEBUG_SOURCE_OTHER:           std::cout << "Other"; break;
+    }
+    std::cout << "\nType: ";
+    switch (type) {
+        case GL_DEBUG_TYPE_ERROR:               std::cout << "Error"; break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cout << "Deprecated Behavior"; break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  std::cout << "Undefined Behavior"; break;
+        case GL_DEBUG_TYPE_PORTABILITY:         std::cout << "Portability Issue"; break;
+        case GL_DEBUG_TYPE_PERFORMANCE:         std::cout << "Performance Issue"; break;
+        case GL_DEBUG_TYPE_MARKER:              std::cout << "Marker"; break;
+        case GL_DEBUG_TYPE_OTHER:               std::cout << "Other"; break;
+    }
+    std::cout << "\nID: " << id;
+    std::cout << "\nSeverity: ";
+    switch (severity) {
+        case GL_DEBUG_SEVERITY_HIGH:         std::cout << "High"; break;
+        case GL_DEBUG_SEVERITY_MEDIUM:       std::cout << "Medium"; break;
+        case GL_DEBUG_SEVERITY_LOW:          std::cout << "Low"; break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Notification"; break;
+    }
+    std::cout << "\nMessage: " << message << "\n" << std::endl;
+}
 
 Window::Window() {
-	const int width = 800;
-	const int height = 600;
+	constexpr int width = 800;
+	constexpr int height = 600;
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -48,6 +70,13 @@ Window::Window() {
 	glViewport(0, 0, width, height);
 	glfwSetInputMode(m_ID, GLFW_STICKY_KEYS, GL_TRUE);
 	glfwSetInputMode(m_ID, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
+
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback(OpenGLDebugCallback, nullptr);
+	GLint maxUniformBufferBindings;
+	glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &maxUniformBufferBindings);
+	std::cout << maxUniformBufferBindings << "\n";
 
 	glfwSetFramebufferSizeCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int w, int h) {
 		AppData::Data().atResize(w, h);
@@ -81,8 +110,8 @@ bool Window::shouldClose() {
 	return glfwWindowShouldClose(m_ID) != 0;
 }
 
-std::pair<float, float> Window::getWindowSize() {
+std::pair<int, int> Window::getWindowSize() {
 	int w = 0; int h = 0;
 	glfwGetWindowSize(m_ID, &w, &h);
-	return {static_cast<float>(w), static_cast<float>(h)};
+	return {w, h};
 }

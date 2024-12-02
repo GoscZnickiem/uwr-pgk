@@ -54,11 +54,6 @@ Shader::Shader(const std::string& file) {
 	}
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
-
-	const uint32_t camBlockIndex = glGetUniformBlockIndex(m_ID, "Camera");
-	glUniformBlockBinding(m_ID, camBlockIndex, 0);
-	const uint32_t lightBlockIndex = glGetUniformBlockIndex(m_ID, "Lights");
-	glUniformBlockBinding(m_ID, lightBlockIndex, 1);
 }
 
 Shader::~Shader() {

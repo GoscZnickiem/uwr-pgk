@@ -10,11 +10,16 @@
 
 class Renderer {
 public:
+	Renderer();
+
 	void render();
+	void writeDepth();
 
 	void addRender(Renderable renderData);
 
 	void setCameraPos(const glm::vec3& pos);
+
+	void updateFrameBuffers(int width, int height);
 
 private:
 	struct OpaqueRenderIndex {
@@ -27,6 +32,9 @@ private:
 	std::vector<Renderable> translucentQueue;
 	std::vector<glm::mat4> translucentArray;
 	glm::vec3 cameraPosition;
+
+	GLuint waterDepthTexture;
+	GLuint frameBuffer;
 };
 
 #endif

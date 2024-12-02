@@ -33,11 +33,46 @@ Aquarium::Aquarium(float width, float height, float depth) {
 	wall4T.position = {0.0f, 0.0f, -width - wallWidth};
 	wall4T.scale = {depth + wallWidth * 2, height, wallWidth};
 
-	water.mesh = &AppData::Data().models.cubeInv;
-	water.material = &AppData::Data().materials.bubble;
-	water.transform = &waterT;
-	waterT.position = {0.0f, -waterGap, 0.0f};
-	waterT.scale = {depth, height - waterGap, width};
+	water1.mesh = &AppData::Data().models.plane;
+	water1.material = &AppData::Data().materials.bubble;
+	water1.transform = &water1T;
+	water1T.position = {-depth, 0.0f, 0.0f};
+	water1T.rotation = {glm::half_pi<float>(), glm::half_pi<float>(), 0.0f};
+	water1T.scale = {width, 1.0f, height - waterGap};
+
+	water2.mesh = &AppData::Data().models.plane;
+	water2.material = &AppData::Data().materials.bubble;
+	water2.transform = &water2T;
+	water2T.position = {depth, 0.0f, 0.0f};
+	water2T.rotation = {-glm::half_pi<float>(), glm::half_pi<float>(), 0.0f};
+	water2T.scale = {width, 1.0f, height - waterGap};
+
+	water3.mesh = &AppData::Data().models.plane;
+	water3.material = &AppData::Data().materials.bubble;
+	water3.transform = &water3T;
+	water3T.position = {0.0f, 0.0f, -width};
+	water3T.rotation = {0.0f, glm::half_pi<float>(), 0.0f};
+	water3T.scale = {depth, 1.0f, height - waterGap};
+
+	water4.mesh = &AppData::Data().models.plane;
+	water4.material = &AppData::Data().materials.bubble;
+	water4.transform = &water4T;
+	water4T.position = {0.0f, 0.0f, width};
+	water4T.rotation = {glm::pi<float>(), glm::half_pi<float>(), 0.0f};
+	water4T.scale = {depth, 1.0f, height - waterGap};
+
+	waterA.mesh = &AppData::Data().models.plane;
+	waterA.material = &AppData::Data().materials.bubble;
+	waterA.transform = &waterAT;
+	waterAT.position = {0.0f, height - waterGap, 0.0f};
+	waterAT.scale = {depth, 1.0f, width};
+
+	waterB.mesh = &AppData::Data().models.plane;
+	waterB.material = &AppData::Data().materials.bubble;
+	waterB.transform = &waterBT;
+	waterBT.position = {0.0f, height - waterGap, 0.0f};
+	waterBT.rotation = {0.0f, glm::pi<float>(), 0.0f};
+	waterBT.scale = {depth, 1.0f, width};
 
 	floor.mesh = &AppData::Data().models.plane;
 	floor.material = &AppData::Data().materials.test;
@@ -59,12 +94,26 @@ Aquarium::Aquarium(float width, float height, float depth) {
 }
 
 void Aquarium::render() {
+	AppData::Data().renderer.addRender(water1);
+	AppData::Data().renderer.addRender(water2);
+	AppData::Data().renderer.addRender(water3);
+	AppData::Data().renderer.addRender(water4);
+	AppData::Data().renderer.addRender(waterB);
+	AppData::Data().renderer.addRender(floor);
+
+	AppData::Data().renderer.writeDepth();
+
 	AppData::Data().renderer.addRender(wall1);
 	AppData::Data().renderer.addRender(wall2);
 	AppData::Data().renderer.addRender(wall3);
 	AppData::Data().renderer.addRender(wall4);
 
-	// AppData::Data().renderer.addRender(water);
+	// AppData::Data().renderer.addRender(water1);
+	// AppData::Data().renderer.addRender(water2);
+	// AppData::Data().renderer.addRender(water3);
+	// AppData::Data().renderer.addRender(water4);
+	// AppData::Data().renderer.addRender(waterA);
+	// AppData::Data().renderer.addRender(waterB);
 
 	AppData::Data().renderer.addRender(floor);
 	AppData::Data().renderer.addRender(base);

@@ -58,8 +58,10 @@ void Mesh::bind() {
 }
 
 void Mesh::render() {
-	// if(aaaa) std::cout << "render these " << m_instances << "\n";
 	glDrawElementsInstanced(GL_TRIANGLES, m_modelSize, GL_UNSIGNED_INT, reinterpret_cast<void*>(0), m_instances);
+	// GLenum err = glGetError();
+	// if (err != GL_NO_ERROR)
+	// 	std::cerr << "OpenGL Error: " << err << "\n";
 }
 
 void Mesh::setTransforms(glm::mat4* transforms, std::size_t count) {
