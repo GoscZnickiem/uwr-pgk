@@ -28,10 +28,10 @@ void Renderer::render() {
 	std::sort(translucentQueue.begin(), translucentQueue.end(), [&](const Renderable& a, const Renderable& b){
 		auto da = a.transform->position - cameraPosition;
 		auto db = b.transform->position - cameraPosition;
-		return da.x * da.x + da.y * da.y + da.z * da.z > db.x * db.x + db.y * db.y + db.z * db.z;
-		// na moim komputerze glm/gtx/norm.hpp nie działa więc nie mam dostępu do glm::lenght2
+		return glm::length(da) > glm::length(db);
 	});
 
+	glDepthMask(GL_FALSE);
 	auto it = translucentQueue.begin();
 	if(it == translucentQueue.end()) return;
 	for(;it != translucentQueue.end(); it++) {
@@ -59,6 +59,7 @@ void Renderer::render() {
 		}
 		translucentArray.push_back(it->transform->getMatrix());
 	}
+	glDepthMask(GL_TRUE);
 	currentMesh->setTransforms(translucentArray.data(), translucentArray.size());
 	currentMesh->render();
 	translucentArray.clear();

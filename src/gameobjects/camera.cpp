@@ -7,7 +7,7 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/trigonometric.hpp>
 
-void Camera::update(const glm::vec3 playerPos) {
+void Camera::update(const glm::vec3 playerPos, const glm::vec3 playerDir) {
 	constexpr float sensitivity = 0.01f;
 	constexpr float speed = 0.01f;
 
@@ -19,23 +19,28 @@ void Camera::update(const glm::vec3 playerPos) {
 	auto[mouseX, mouseY] = Input::getMousePos();
 	if(mouseX != 0) rotateYaw(-mouseX * sensitivity);
 	if(mouseY != 0) rotatePitch(-mouseY * sensitivity);
+
+	if(Input::isKeyClicked("SPACE")) outsideMode = !outsideMode;
 	
+	if (Input::getScroll() >= 1 || Input::isKeyClicked("+")) {
+		targetFov -= 10.f;
+		fovTimer = 0;
+	}
+	if (Input::getScroll() <= -1 || Input::isKeyClicked("-")) {
+		targetFov += 10.f;
+		fovTimer = 0;
+	}
+	targetFov = std::clamp(targetFov, minFov, maxFov);
+	fovTimer += AppData::deltaT * 4.0f; 
+	fovTimer = std::min(fovTimer, 1.f);
+	fov = std::lerp(fov, targetFov, fovTimer);
+
 	if(outsideMode) {
-		position = -20.f * direction + lookat;
-		if (Input::getScroll() >= 1 || Input::isKeyClicked("+")) {
-			targetFov -= 10.f;
-			fovTimer = 0;
-		}
-		if (Input::getScroll() <= -1 || Input::isKeyClicked("-")) {
-			targetFov += 10.f;
-			fovTimer = 0;
-		}
-		targetFov = std::clamp(targetFov, minFov, maxFov);
-		fovTimer += AppData::deltaT * 4.0f; 
-		fovTimer = std::min(fovTimer, 1.f);
-		fov = std::lerp(fov, targetFov, fovTimer);
+		direction = glm::normalize(glm::vec3{0.0, -1.f, 2.f});
+		position = -30.f * direction + lookat;
 	} else {
 		position = playerPos;
+		direction = playerDir;
 	}
 }
 

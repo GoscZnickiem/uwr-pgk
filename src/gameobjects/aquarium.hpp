@@ -18,6 +18,12 @@ private:
 	Transform wall3T;
 	Renderable wall4;
 	Transform wall4T;
+
+	Renderable water;
+	Transform waterT;
+	Renderable waterS;
+	Transform waterST;
+
 	Renderable floor;
 	Transform floorT;
 	Renderable base;

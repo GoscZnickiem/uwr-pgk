@@ -25,6 +25,7 @@ struct AppData {
 	struct {
 		Mesh ball;
 		Mesh cube;
+		Mesh cubeInv;
 		Mesh plane;
 	} models;
 
@@ -32,6 +33,9 @@ struct AppData {
 		Material bubble;
 		Material test;
 		Material glass;
+		Material glass0;
+		Material glass1;
+		Material glass2;
 		Material wood;
 		Material aquariumBase;
 		Material gravel;

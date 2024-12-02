@@ -17,6 +17,7 @@ TestScene::TestScene()
 	test2.mesh = &AppData::Data().models.ball;
 	test2.material = &AppData::Data().materials.bubble;
 	test2.transform = &testT2;
+	test2.debugName = "bubble";
 	testT2.position = {2.0f, 1.0f, 1.0f};
 	testT2.scale = {1.0f, 1.0f, 1.0f};
 
@@ -32,7 +33,7 @@ TestScene::TestScene()
 }
 
 void TestScene::update() {
-	cameras[0].update({0,0,0});
+	cameras[0].update({0,0,0}, {1,0,0});
 }
 
 void TestScene::render() {
