@@ -2,42 +2,34 @@
 
 #version 460 core
 
-out vec4 vcolor;
-out vec2 vpos;
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aUV;
+layout (location = 3) in mat4 iModel;
 
-void main(void) {
-    const vec2 vertices[6] = vec2[6](
-        vec2(-0.9, -0.9),
-        vec2( 0.9,  0.9),
-        vec2( 0.9, -0.9),
-        vec2(-0.9, -0.9),
-        vec2( 0.9,  0.9),
-        vec2(-0.9,  0.9)
-    );
-    const vec4 colors[] = vec4[6](
-        vec4(1.0, 0.0, 0.0, 1.0),
-        vec4(0.0, 1.0, 0.0, 1.0),
-        vec4(1.0, 1.0, 0.0, 1.0),
-        vec4(1.0, 0.0, 0.0, 1.0),
-        vec4(0.0, 1.0, 0.0, 1.0),
-        vec4(0.0, 0.0, 1.0, 1.0)
-    );
+layout(std140, binding = 0) uniform Camera {
+    mat4 view;
+    mat4 projection;
+	vec3 cameraPosition;
+};
 
-    vcolor = colors[gl_VertexID];
-    vpos = vertices[gl_VertexID];
-    gl_Position = vec4(vertices[gl_VertexID], 0.5, 1.0); 
+void main() {
+	gl_Position = projection * view * iModel * vec4(aPos, 1.0);
 }
 
 #shader fragment
 
 #version 460 core
 
-in vec4 vcolor;
-in vec2 vpos;
-layout(location = 0) out vec2 depth;
+uniform int side;
 
-void main(void) {
-    if(length(vpos) < 0.1) {
-        depth = vec2(1.0, 1.0);
-    }
+out vec4 depth;
+
+void main() {
+	float d = gl_FragCoord.z / gl_FragCoord.w;
+	if(side == 0) {
+		depth = vec4(d, 0.0, 0.0, 1.0);
+	} else {
+		depth = vec4(0.0, d, 0.0, 1.0);
+	}
 }

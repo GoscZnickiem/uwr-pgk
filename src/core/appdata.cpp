@@ -29,6 +29,7 @@ void AppData::atResize(int width, int height) {
 }
 
 AppData::AppData([[maybe_unused]] Token t) :
+	mainLoop{}, window{}, sceneManager{}, renderer{},
 	shaders {
 		.standard {"assets/shaders/shader.glsl"},
 		.waterDepth {"assets/shaders/waterDepth.glsl"},

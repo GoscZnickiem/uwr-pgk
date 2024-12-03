@@ -119,5 +119,5 @@ void main() {
 	vec2 depths = texture(depthTexture, ndcCoords).rg;
 
 	vec4 res = lighten(specularLight, vec4(ambientLight + diffuseLight, opacity));
-	FragColor = vec4(depths, res.b, res.a * alpha);
+	FragColor = vec4(res.r + depths.r, res.g + depths.g, res.b, res.a * alpha);
 }

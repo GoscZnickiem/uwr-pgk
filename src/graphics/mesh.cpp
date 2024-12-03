@@ -65,7 +65,6 @@ void Mesh::render() {
 }
 
 void Mesh::setTransforms(glm::mat4* transforms, std::size_t count) {
-	if(count == 0) return;
 	glBindBuffer(GL_ARRAY_BUFFER, m_instanceVbo);
 	bool resized = false;
 	m_instances = static_cast<GLsizei>(count);

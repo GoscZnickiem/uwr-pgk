@@ -10,10 +10,12 @@
 
 class Renderer {
 public:
-	Renderer();
+	Renderer(int width = 800, int height = 600);
 
 	void render();
 	void writeDepth();
+	void renderGeometry();
+	void clearBuffers();
 
 	void addRender(Renderable renderData);
 

@@ -6,7 +6,7 @@
 #include <iostream>
 
 void APIENTRY OpenGLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity,
-                                  GLsizei length, const GLchar* message, const void* userParam) {
+                                  [[maybe_unused]] GLsizei length, const GLchar* message, [[maybe_unused]] const void* userParam) {
     std::cout << "OpenGL Debug Message:\n";
     std::cout << "Source: ";
     switch (source) {
@@ -38,10 +38,7 @@ void APIENTRY OpenGLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum 
     std::cout << "\nMessage: " << message << "\n" << std::endl;
 }
 
-Window::Window() {
-	constexpr int width = 800;
-	constexpr int height = 600;
-
+Window::Window(int width, int height) {
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -76,7 +73,6 @@ Window::Window() {
 	glDebugMessageCallback(OpenGLDebugCallback, nullptr);
 	GLint maxUniformBufferBindings;
 	glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &maxUniformBufferBindings);
-	std::cout << maxUniformBufferBindings << "\n";
 
 	glfwSetFramebufferSizeCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int w, int h) {
 		AppData::Data().atResize(w, h);
