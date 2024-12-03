@@ -6,7 +6,7 @@
 Aquarium::Aquarium(float width, float height, float depth) {
 	constexpr float wallWidth = 0.1f;
 	constexpr float baseHeight = 3.0f;
-	constexpr float baseExtent = 0.3f;
+	constexpr float baseExtent = 0.8f;
 	constexpr float waterGap = 0.5f;
 
 	wall1.mesh = &AppData::Data().models.cube;
@@ -83,14 +83,14 @@ Aquarium::Aquarium(float width, float height, float depth) {
 	base.mesh = &AppData::Data().models.cube;
 	base.material = &AppData::Data().materials.aquariumBase;
 	base.transform = &baseT;
-	baseT.position = {0.0f, -height - baseHeight - 0.7f, 0.0f};
+	baseT.position = {0.0f, -height - baseHeight - height / 10, 0.0f};
 	baseT.scale = {depth + baseExtent * 2, baseHeight, width + baseExtent};
 
 	table.mesh = &AppData::Data().models.plane;
 	table.material = &AppData::Data().materials.wood;
 	table.transform = &tableT;
 	tableT.position = {0.0f, -height - baseHeight * 3, 0.0f};
-	tableT.scale = {100.f, 1.0f, 100.f};
+	tableT.scale = {200.f, 1.0f, 200.f};
 }
 
 void Aquarium::render() {

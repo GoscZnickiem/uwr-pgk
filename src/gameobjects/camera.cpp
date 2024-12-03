@@ -35,7 +35,7 @@ void Camera::update(const glm::vec3 playerPos, const glm::vec3 playerDir) {
 	fovTimer = std::min(fovTimer, 1.f);
 	fov = std::lerp(fov, targetFov, fovTimer);
 	if(outsideMode) {
-		position = -50.f * direction + lookat;
+		position = -60.f * direction + lookat;
 	} else {
 		position = playerPos;
 		// direction = playerDir;

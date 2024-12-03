@@ -102,7 +102,7 @@ vec4 pointLightSpec(PointLight light, vec3 normal, vec3 viewDir) {
 
 vec4 water(float dist, float farDist, float nearDist) {
 	float distInWater = (min(dist, farDist) - nearDist) / 40;
-	float f = 1 - pow(2.0, -2.5 * distInWater);
+	float f = 1 - pow(2.0, -2.0 * distInWater);
 	vec3 c = vec3(0.2, 0.6, 0.7);
 	return vec4(c, f);
 }

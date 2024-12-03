@@ -149,7 +149,7 @@ AppData::AppData([[maybe_unused]] Token t) :
 			.ambient  = glm::vec3{1.0f, 1.3f, 1.1f}, 
 			.diffuse  = glm::vec3{1.0f, 1.3f, 1.1f}, 
 			.specular = glm::vec3{2.0f, 2.0f, 2.0f}, 
-			.shininess = 128.f, .opacity = 0.3f, .alpha = 0.2f
+			.shininess = 128.f, .opacity = 0.3f, .alpha = 0.8f
 		},
 		.wood {
 			.shader = &shaders.standard, 
@@ -167,9 +167,9 @@ AppData::AppData([[maybe_unused]] Token t) :
 		},
 		.gravel {
 			.shader = &shaders.standard, 
-			.ambient  = glm::vec3{0.3f, 0.3f, 0.4f}, 
-			.diffuse  = glm::vec3{0.5f, 0.5f, 0.5f}, 
-			.specular = glm::vec3{0.1f, 0.1f, 0.1f}, 
+			.ambient  = glm::vec3{5.3f, 5.3f, 3.5f}, 
+			.diffuse  = glm::vec3{0.1f, 0.1f, 0.1f}, 
+			.specular = glm::vec3{0.0f, 0.0f, 0.0f}, 
 			.shininess = 4.f, .opacity = 1.0f, .alpha = 1.0f
 		},
 		.water {
