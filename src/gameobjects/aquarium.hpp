@@ -8,6 +8,7 @@ public:
 	Aquarium(float width, float height, float depth);
 
 	void render();
+	void fogRender();
 
 private:
 	Renderable wall1;

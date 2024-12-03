@@ -98,10 +98,25 @@ vec4 dirLightSpec(DirectionalLight light, vec3 normal, vec3 viewDir) {
 
 vec4 lighten(vec4 a, vec4 b) {
 	float alp = a.a + (1.0 - a.a) * b.a;
-	float red = (a.r * a.a + b.r * b.a) / alp;
-	float green = (a.g * a.a + b.g * b.a) / alp;
-	float blue = (a.b * a.a + b.b * b.a) / alp;
-	return vec4(red, green, blue, alp);
+	vec3 c = (a.rgb * a.a + b.rgb * b.a) / alp;
+	return vec4(c, alp);
+}
+
+vec4 darken(vec4 a, vec4 b) {
+	float alp = a.a + b.a - a.a * b.a;
+	vec3 c = (a.rgb * a.a + b.rgb * b.a) / alp;
+	return vec4(c, alp);
+}
+
+vec4 water(float dist, float farDist, float nearDist) {
+	float distInWater = (min(dist, farDist) - nearDist) / 40;
+	float f = pow(2.0, 1.0 * distInWater) - 1;
+	vec3 c = vec3(0.2, 0.6, 0.7);
+	return vec4(c, f);
+}
+
+vec3 blend(vec3 a, vec3 b, float t) {
+	return a * (1 - t) + b * t;
 }
 
 void main() {
@@ -117,7 +132,10 @@ void main() {
 
 	vec2 ndcCoords = gl_FragCoord.xy / vec2(textureSize(depthTexture, 0));
 	vec2 depths = texture(depthTexture, ndcCoords).rg;
+	vec4 waterColor = water(gl_FragCoord.z/gl_FragCoord.w, depths.g, depths.r);
 
-	vec4 res = lighten(specularLight, vec4(ambientLight + diffuseLight, opacity));
-	FragColor = vec4(res.r + depths.r, res.g + depths.g, res.b, res.a * alpha);
+	vec4 res = vec4(ambientLight + diffuseLight, opacity);
+	res = lighten(res, specularLight);
+
+	FragColor = vec4(blend(res.rgb, waterColor.rgb, waterColor.a), res.a * alpha);
 }

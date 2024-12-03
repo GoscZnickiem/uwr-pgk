@@ -39,9 +39,10 @@ void Level::render() {
 	Shader::SetLightDirectional(globalLight);
 	Shader::SetLightsUniform();
 
+	aquarium.fogRender();
+	AppData::Data().renderer.writeDepth();
+
 	aquarium.render();
 	for(auto& b : bubbles) b.render();
-
 	AppData::Data().renderer.render();
-	Mesh::aaaa = false;
 }
