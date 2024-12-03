@@ -13,6 +13,7 @@ struct Material {
 	float opacity{1.f};
 	float alpha{1.f};
 	unsigned int textureID{0};
+	bool twoSided{false};
 
 	void setup() const;
 };

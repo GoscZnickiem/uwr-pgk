@@ -137,19 +137,19 @@ AppData::AppData([[maybe_unused]] Token t) :
 			.specular = glm::vec3{1.0f, 1.0f, 1.2f}, 
 			.shininess = 32.f, .opacity = 0.5f, .alpha = 1.0f
 		},
-		.test {
+		.light {
 			.shader = &shaders.standard, 
-			.ambient  = glm::vec3{1.0f, 1.0f, 0.7f}, 
-			.diffuse  = glm::vec3{1.0f, 1.0f, 0.6f}, 
-			.specular = glm::vec3{0.9f, 0.9f, 0.9f}, 
-			.shininess = 64.f, .opacity = 1.0f, .alpha = 1.0f
+			.ambient  = glm::vec3{50.0f, 50.0f, 50.0f}, 
+			.diffuse  = glm::vec3{2.0f, 2.0f, 2.0f}, 
+			.specular = glm::vec3{2.0f, 2.0f, 2.0f}, 
+			.shininess = 32.f, .opacity = 1.0f, .alpha = 1.0f
 		},
 		.glass {
 			.shader = &shaders.standard, 
 			.ambient  = glm::vec3{1.0f, 1.3f, 1.1f}, 
 			.diffuse  = glm::vec3{1.0f, 1.3f, 1.1f}, 
 			.specular = glm::vec3{2.0f, 2.0f, 2.0f}, 
-			.shininess = 128.f, .opacity = 0.2f, .alpha = 0.9f
+			.shininess = 128.f, .opacity = 0.3f, .alpha = 0.2f
 		},
 		.wood {
 			.shader = &shaders.standard, 
@@ -169,7 +169,14 @@ AppData::AppData([[maybe_unused]] Token t) :
 			.shader = &shaders.standard, 
 			.ambient  = glm::vec3{0.3f, 0.3f, 0.4f}, 
 			.diffuse  = glm::vec3{0.5f, 0.5f, 0.5f}, 
-			.specular = glm::vec3{0.5f, 0.5f, 0.5f}, 
-			.shininess = 2.f, .opacity = 1.0f, .alpha = 1.0f
+			.specular = glm::vec3{0.1f, 0.1f, 0.1f}, 
+			.shininess = 4.f, .opacity = 1.0f, .alpha = 1.0f
+		},
+		.water {
+			.shader = &shaders.standard, 
+			.ambient  = glm::vec3{0.8f, 0.7f, 1.0f}, 
+			.diffuse  = glm::vec3{0.5f, 0.7f, 0.9f}, 
+			.specular = glm::vec3{0.8f, 1.0f, 1.2f}, 
+			.shininess = 64.f, .opacity = 0.3f, .alpha = 0.9f
 		}
 	} {}

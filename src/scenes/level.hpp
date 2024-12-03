@@ -5,6 +5,7 @@
 #include "../graphics/light.hpp"
 #include "../gameobjects/aquarium.hpp"
 #include "../gameobjects/bubble.hpp"
+#include "../gameobjects/lightBubble.hpp"
 #include <vector>
 
 class Level : public Scene {
@@ -20,6 +21,7 @@ private:
 	Aquarium aquarium;
 
 	std::vector<Bubble> bubbles;
+	std::vector<LightBubble> lightBubbles;
 };
 
 #endif

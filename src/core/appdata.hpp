@@ -33,11 +33,12 @@ struct AppData {
 
 	struct {
 		Material bubble;
-		Material test;
+		Material light;
 		Material glass;
 		Material wood;
 		Material aquariumBase;
 		Material gravel;
+		Material water;
 	} materials;
 
 	void atResize(int width, int height);

@@ -2,10 +2,11 @@
 #include "../core/appdata.hpp"
 #include "../core/input.hpp"
 #include "../utility.hpp"
+#include <algorithm>
 
-static constexpr float aqHeight = 10.f;
-static constexpr float aqWidth = 10.f;
-static constexpr float aqDepth = 20.f;
+static constexpr float aqHeight = 20.f;
+static constexpr float aqWidth = 20.f;
+static constexpr float aqDepth = 40.f;
 
 Level::Level(std::size_t bubbleCount)
 : aquarium(aqWidth, aqHeight, aqDepth) {
@@ -27,15 +28,31 @@ Level::Level(std::size_t bubbleCount)
 		b.speed = random(1.3f, 1.6f);
 		b.transform.position = {random(-aqDepth + b.startSize, aqDepth - b.startSize), random(-aqHeight - 1.f, aqHeight - 2.f), random(-aqWidth + b.startSize, aqWidth - b.startSize)};
 	}
+
+	std::size_t lights = std::min(bubbleCount / 2, Shader::LIGHTS_NUM);
+	lightBubbles.reserve(lights);
+	for(std::size_t i = 0; i < lights; i++) {
+		// auto& b = lightBubbles.emplace_back(glm::vec3{random(0,1), random(0,1), random(0,1)});
+		auto& b = lightBubbles.emplace_back(glm::vec3{0, 1, 0});
+		b.startHeight = -aqHeight;
+		b.endHeight = aqHeight - 1.f;
+		b.startSize = 0.6f;
+		b.endSize = b.startSize * 1.5f;
+		b.speed = random(1.3f, 1.6f);
+		b.transform.position = {random(-aqDepth + b.startSize, aqDepth - b.startSize), random(-aqHeight - 1.f, aqHeight - 2.f), random(-aqWidth + b.startSize, aqWidth - b.startSize)};
+	}
 }
 
 void Level::update() {
 	cameras[0].update({0,0,0}, {1,0,0});
-	for(auto& b : bubbles) b.update();
+	// for(auto& b : bubbles) b.update();
+	// for(auto& b : lightBubbles) b.update();
 }
 
 void Level::render() {
 	cameras[0].setup();
+
+	for(auto& b : lightBubbles) b.setLight();
 	Shader::SetLightDirectional(globalLight);
 	Shader::SetLightsUniform();
 
@@ -44,5 +61,7 @@ void Level::render() {
 
 	aquarium.render();
 	for(auto& b : bubbles) b.render();
+	for(auto& b : lightBubbles) b.render();
+
 	AppData::Data().renderer.render();
 }

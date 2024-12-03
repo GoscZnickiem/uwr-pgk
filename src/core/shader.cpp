@@ -1,6 +1,7 @@
 #include "shader.hpp"
 
 #include <GL/glew.h>
+#include <array>
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <cstddef>
@@ -170,9 +171,10 @@ void Shader::SetLightPoint(const Light& light) {
 void Shader::SetLightsUniform() {
 	glBindBuffer(GL_UNIFORM_BUFFER, s_lightsUBO);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, (1 + LIGHTS_NUM) * sizeof(Light), s_lights.data());
+	glBufferSubData(GL_UNIFORM_BUFFER, (1 + LIGHTS_NUM) * sizeof(Light), sizeof(int), &s_currentLightIndex);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	s_currentLightIndex = 0;
-	s_lights.fill({{},0.f,{},0.f});
+	s_currentLightIndex = 1;
+	s_lights.fill({{{0.f, 0.f, 0.f}}, 0.f, {0.f, 0.f, 0.f},0.f});
 }
 
 void Shader::bind() const {
@@ -194,7 +196,7 @@ void Shader::CreateCameraUBO() {
 void Shader::CreateLightUBO() {
 	glGenBuffers(1, &s_lightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, s_lightsUBO);
-	glBufferData(GL_UNIFORM_BUFFER, (1 + LIGHTS_NUM) * sizeof(Light), nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, (1 + LIGHTS_NUM) * sizeof(Light) + sizeof(int), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, s_lightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

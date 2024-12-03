@@ -52,6 +52,7 @@ layout(std140, binding = 0) uniform Camera {
 layout(std140, binding = 1) uniform Lights {
 	DirectionalLight directionalLight;
 	PointLight pointLights[NUM_LIGHTS];
+	int pointLightsCount;
 };
 
 uniform vec3 ambient;
@@ -80,39 +81,36 @@ vec4 dirLightSpec(DirectionalLight light, vec3 normal, vec3 viewDir) {
 	return spec * vec4(light.intensity * light.color * specular, 1.0);
 }
 
-// vec4 pointLight(PointLight light, vec3 fragPos, vec3 normal, vec3 viewDir) {
-// 	vec3 lightDir = normalize(light.position - fragPos);
-//     float distance = length(light.position - fragPos);
-// 	float attenuation = 1.0 / (1.0 + light.intensity * 5.0 * distance * distance);
-//
-//     vec3 halfway = normalize(lightDir + viewDir);
-//
-//     float diff = max(dot(normal, lightDir), 0.0);
-//     vec3 diffuseLight = diff * light.color * light.intensity * attenuation;
-//
-//     float spec = pow(max(dot(normal, halfway), 0.0), shininess);
-//     vec3 specularLight = spec * light.color * light.intensity * attenuation;
-//
-//     return diffuseLight + specularLight;
-// }
+vec3 pointLightDiff(PointLight light, vec3 normal, vec3 viewDir) {
+	vec3 lightDir = normalize(light.position - fragPosition);
+    float distance = length(light.position - fragPosition);
+	float attenuation = 1.0 / (3.0 + 0.1 * distance * distance / light.intensity);
+
+	float diff = max(dot(normal, lightDir), 0.0);
+	return diff * light.intensity * light.color * diffuse * attenuation;
+}
+
+vec4 pointLightSpec(PointLight light, vec3 normal, vec3 viewDir) {
+	vec3 lightDir = normalize(light.position - fragPosition);
+	vec3 halfway = normalize(lightDir + viewDir);
+    float distance = length(light.position - fragPosition);
+	float attenuation = 1.0 / (1.0 + 0.1 * distance * distance / light.intensity);
+
+	float spec = pow(max(dot(normal, halfway), 0.0), shininess);
+	return spec * vec4(light.intensity * light.color * specular, 1.0) * attenuation;
+}
+
+vec4 water(float dist, float farDist, float nearDist) {
+	float distInWater = (min(dist, farDist) - nearDist) / 40;
+	float f = 1 - pow(2.0, -2.5 * distInWater);
+	vec3 c = vec3(0.2, 0.6, 0.7);
+	return vec4(c, f);
+}
 
 vec4 lighten(vec4 a, vec4 b) {
 	float alp = a.a + (1.0 - a.a) * b.a;
 	vec3 c = (a.rgb * a.a + b.rgb * b.a) / alp;
 	return vec4(c, alp);
-}
-
-vec4 darken(vec4 a, vec4 b) {
-	float alp = a.a + b.a - a.a * b.a;
-	vec3 c = (a.rgb * a.a + b.rgb * b.a) / alp;
-	return vec4(c, alp);
-}
-
-vec4 water(float dist, float farDist, float nearDist) {
-	float distInWater = (min(dist, farDist) - nearDist) / 40;
-	float f = pow(2.0, 1.0 * distInWater) - 1;
-	vec3 c = vec3(0.2, 0.6, 0.7);
-	return vec4(c, f);
 }
 
 vec3 blend(vec3 a, vec3 b, float t) {
@@ -124,18 +122,24 @@ void main() {
 	vec3 normal = normalize(fragNormal);
 
 	vec3 ambientLight = ambient * 0.1f * opacity;
+
 	vec3 diffuseLight = dirLightDiff(directionalLight, normal, viewDir);
+	for(int i = 0; i < pointLightsCount; i++) {
+		diffuseLight += pointLightDiff(pointLights[i], normal, viewDir);
+	}
+
+	vec4 res = vec4(ambientLight + diffuseLight, opacity);
 	vec4 specularLight = dirLightSpec(directionalLight, normal, viewDir);
-	// for(int i = 0; i < NUM_LIGHTS; i++) {
-	// 	color += pointLight(pointLights[i], fragPosition, normal, viewDir);
-	// }
+	for(int i = 0; i < pointLightsCount; i++) {
+		vec4 l = pointLightSpec(pointLights[i], normal, viewDir);
+		specularLight.rgb += l.rgb;
+		specularLight.a = specularLight.a + l.a - specularLight.a * l.a;
+	}
+	res = lighten(res, specularLight);
 
 	vec2 ndcCoords = gl_FragCoord.xy / vec2(textureSize(depthTexture, 0));
 	vec2 depths = texture(depthTexture, ndcCoords).rg;
 	vec4 waterColor = water(gl_FragCoord.z/gl_FragCoord.w, depths.g, depths.r);
-
-	vec4 res = vec4(ambientLight + diffuseLight, opacity);
-	res = lighten(res, specularLight);
 
 	FragColor = vec4(blend(res.rgb, waterColor.rgb, waterColor.a), res.a * alpha);
 }
