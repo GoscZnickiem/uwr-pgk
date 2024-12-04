@@ -7,31 +7,32 @@ Aquarium::Aquarium(float width, float height, float depth) {
 	constexpr float wallWidth = 0.1f;
 	constexpr float baseHeight = 3.0f;
 	constexpr float baseExtent = 0.8f;
+	constexpr float floorHeight = 0.5f;
 	constexpr float waterGap = 0.5f;
 
 	wall1.mesh = &AppData::Data().models.cube;
 	wall1.material = &AppData::Data().materials.glass;
 	wall1.transform = &wall1T;
-	wall1T.position = {-depth - wallWidth, 0.0f, 0.0f};
-	wall1T.scale = {wallWidth, height, width};
+	wall1T.position = {-depth - wallWidth, -floorHeight*2, 0.0f};
+	wall1T.scale = {wallWidth, height + floorHeight, width};
 
 	wall2.mesh = &AppData::Data().models.cube;
 	wall2.material = &AppData::Data().materials.glass;
 	wall2.transform = &wall2T;
-	wall2T.position = {depth + wallWidth, 0.0f, 0.0f};
-	wall2T.scale = {wallWidth, height, width};
+	wall2T.position = {depth + wallWidth, -floorHeight*2, 0.0f};
+	wall2T.scale = {wallWidth, height + floorHeight, width};
 
 	wall3.mesh = &AppData::Data().models.cube;
 	wall3.material = &AppData::Data().materials.glass;
 	wall3.transform = &wall3T;
-	wall3T.position = {0.0f, 0.0f, width + wallWidth};
-	wall3T.scale = {depth + wallWidth * 2, height, wallWidth};
+	wall3T.position = {0.0f, -floorHeight*2, width + wallWidth};
+	wall3T.scale = {depth + wallWidth * 2, height + floorHeight, wallWidth};
 
 	wall4.mesh = &AppData::Data().models.cube;
 	wall4.material = &AppData::Data().materials.glass;
 	wall4.transform = &wall4T;
-	wall4T.position = {0.0f, 0.0f, -width - wallWidth};
-	wall4T.scale = {depth + wallWidth * 2, height, wallWidth};
+	wall4T.position = {0.0f, -floorHeight*2, -width - wallWidth};
+	wall4T.scale = {depth + wallWidth * 2, height + floorHeight, wallWidth};
 
 	water1.mesh = &AppData::Data().models.plane;
 	water1.material = &AppData::Data().materials.water;
@@ -77,13 +78,13 @@ Aquarium::Aquarium(float width, float height, float depth) {
 	floor.mesh = &AppData::Data().models.plane;
 	floor.material = &AppData::Data().materials.gravel;
 	floor.transform = &floorT;
-	floorT.position = {0.0f, -height + 0.01f, 0.0f};
+	floorT.position = {0.0f, -height, 0.0f};
 	floorT.scale = {depth, 1.0f, width};
 
 	base.mesh = &AppData::Data().models.cube;
 	base.material = &AppData::Data().materials.aquariumBase;
 	base.transform = &baseT;
-	baseT.position = {0.0f, -height - baseHeight - height / 10, 0.0f};
+	baseT.position = {0.0f, -height - baseHeight - floorHeight*2, 0.0f};
 	baseT.scale = {depth + baseExtent * 2, baseHeight, width + baseExtent};
 
 	table.mesh = &AppData::Data().models.plane;

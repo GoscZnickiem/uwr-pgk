@@ -4,6 +4,7 @@
 #include "../core/scene.hpp"
 #include "../graphics/light.hpp"
 #include "../gameobjects/aquarium.hpp"
+#include "../gameobjects/player.hpp"
 #include "../gameobjects/bubble.hpp"
 #include "../gameobjects/lightBubble.hpp"
 #include <vector>
@@ -20,8 +21,11 @@ private:
 
 	Aquarium aquarium;
 
+	Player player;
 	std::vector<Bubble> bubbles;
 	std::vector<LightBubble> lightBubbles;
+
+	std::size_t lvl = 0;
 };
 
 #endif

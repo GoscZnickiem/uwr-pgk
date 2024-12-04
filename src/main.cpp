@@ -46,9 +46,11 @@ int main (int argc, char *argv[]) {
 
 	glDebugMessageCallback(MessageCallback, nullptr);
 
-	AppData::Data().sceneManager.pushScene<Level>(300);
+	AppData::Data().sceneManager.pushScene<Level>(10);
 	AppData::Data().sceneManager.switchToNextScene();
 	AppData::Data().mainLoop.run();
 
 	AppData::Terminate();
+
+	std::cout << "GAME OVER\nYour score: " << AppData::score << "\n";
 }

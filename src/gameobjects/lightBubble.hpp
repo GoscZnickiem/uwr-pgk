@@ -10,6 +10,8 @@ public:
 
 	Light light;
 
+	bool collected{false};
+
 	void update();
 	void render();
 	void setLight();

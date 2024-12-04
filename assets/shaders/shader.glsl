@@ -84,7 +84,7 @@ vec4 dirLightSpec(DirectionalLight light, vec3 normal, vec3 viewDir) {
 vec3 pointLightDiff(PointLight light, vec3 normal, vec3 viewDir) {
 	vec3 lightDir = normalize(light.position - fragPosition);
     float distance = length(light.position - fragPosition);
-	float attenuation = 1.0 / (3.0 + 0.1 * distance * distance / light.intensity);
+	float attenuation = 1.0 / (1.0 + 0.02 * distance * distance / light.intensity);
 
 	float diff = max(dot(normal, lightDir), 0.0);
 	return diff * light.intensity * light.color * diffuse * attenuation;
@@ -94,7 +94,7 @@ vec4 pointLightSpec(PointLight light, vec3 normal, vec3 viewDir) {
 	vec3 lightDir = normalize(light.position - fragPosition);
 	vec3 halfway = normalize(lightDir + viewDir);
     float distance = length(light.position - fragPosition);
-	float attenuation = 1.0 / (1.0 + 0.1 * distance * distance / light.intensity);
+	float attenuation = 1.0 / (1.0 + 0.3 * distance * distance / light.intensity);
 
 	float spec = pow(max(dot(normal, halfway), 0.0), shininess);
 	return spec * vec4(light.intensity * light.color * specular, 1.0) * attenuation;
@@ -102,7 +102,7 @@ vec4 pointLightSpec(PointLight light, vec3 normal, vec3 viewDir) {
 
 vec4 water(float dist, float farDist, float nearDist) {
 	float distInWater = (min(dist, farDist) - nearDist) / 40;
-	float f = 1 - pow(2.0, -2.0 * distInWater);
+	float f = 1 - pow(2.0, -(2.0 * distInWater));
 	vec3 c = vec3(0.2, 0.6, 0.7);
 	return vec4(c, f);
 }

@@ -77,47 +77,6 @@ AppData::AppData([[maybe_unused]] Token t) :
 				20, 22, 21, 20, 23, 22
 			}
 		},
-		.cubeInv {
-			{
-				-1.0f, -1.0f, -1.0f,	 0.0f,  0.0f, -1.0f,	0.f, 0.f,
-				 1.0f, -1.0f, -1.0f,	 0.0f,  0.0f, -1.0f,	0.f, 0.f,
-				 1.0f,  1.0f, -1.0f,	 0.0f,  0.0f, -1.0f,	0.f, 0.f,
-				-1.0f,  1.0f, -1.0f,	 0.0f,  0.0f, -1.0f,	0.f, 0.f,
-
-				-1.0f, -1.0f,  1.0f,	 0.0f,  0.0f,  1.0f,	0.f, 0.f,
-				 1.0f, -1.0f,  1.0f,	 0.0f,  0.0f,  1.0f,	0.f, 0.f,
-				 1.0f,  1.0f,  1.0f,	 0.0f,  0.0f,  1.0f,	0.f, 0.f,
-				-1.0f,  1.0f,  1.0f,	 0.0f,  0.0f,  1.0f,	0.f, 0.f,
-
-				-1.0f, -1.0f, -1.0f,	-1.0f,  0.0f,  0.0f,	0.f, 0.f,
-				-1.0f,  1.0f, -1.0f,	-1.0f,  0.0f,  0.0f,	0.f, 0.f,
-				-1.0f,  1.0f,  1.0f,	-1.0f,  0.0f,  0.0f,	0.f, 0.f,
-				-1.0f, -1.0f,  1.0f,	-1.0f,  0.0f,  0.0f,	0.f, 0.f,
-
-				 1.0f, -1.0f, -1.0f, 	 1.0f,  0.0f,  0.0f, 	0.f, 0.f,
-				 1.0f,  1.0f, -1.0f, 	 1.0f,  0.0f,  0.0f, 	0.f, 0.f,
-				 1.0f,  1.0f,  1.0f, 	 1.0f,  0.0f,  0.0f, 	0.f, 0.f,
-				 1.0f, -1.0f,  1.0f, 	 1.0f,  0.0f,  0.0f, 	0.f, 0.f,
-
-				-1.0f, -1.0f, -1.0f,	 0.0f, -1.0f,  0.0f,	0.f, 0.f,
-				 1.0f, -1.0f, -1.0f,	 0.0f, -1.0f,  0.0f,	0.f, 0.f,
-				 1.0f, -1.0f,  1.0f,	 0.0f, -1.0f,  0.0f,	0.f, 0.f,
-				-1.0f, -1.0f,  1.0f,	 0.0f, -1.0f,  0.0f,	0.f, 0.f,
-
-				-1.0f,  1.0f, -1.0f,	 0.0f,  1.0f,  0.0f,	0.f, 0.f,
-				 1.0f,  1.0f, -1.0f,	 0.0f,  1.0f,  0.0f,	0.f, 0.f,
-				 1.0f,  1.0f,  1.0f,	 0.0f,  1.0f,  0.0f,	0.f, 0.f,
-				-1.0f,  1.0f,  1.0f,	 0.0f,  1.0f,  0.0f,	0.f, 0.f,
-			}, 
-			{
-				0, 1, 2,  0, 2, 3,
-				4, 6, 5,  4, 7, 6,
-				8, 9, 10,  8, 10, 11,
-				12, 14, 13, 12, 15, 14,
-				16, 18, 17, 16, 19, 18,
-				20, 21, 22, 20, 22, 23
-			}
-		},
 		.plane {
 			{
 				-1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.f, 0.f,
@@ -130,19 +89,19 @@ AppData::AppData([[maybe_unused]] Token t) :
 			}
 		}
 	}, materials {
+		.player {
+			.shader = &shaders.standard, 
+			.ambient  = glm::vec3{2.0f, 0.4f, 0.5f}, 
+			.diffuse  = glm::vec3{2.0f, 0.4f, 0.5f}, 
+			.specular = glm::vec3{1.0f, 1.0f, 0.8f}, 
+			.shininess = 16.f, .opacity = 1.0f, .alpha = 1.0f
+		},
 		.bubble {
 			.shader = &shaders.standard, 
 			.ambient  = glm::vec3{1.0f, 1.0f, 1.3f}, 
 			.diffuse  = glm::vec3{0.7f, 0.8f, 1.4f}, 
 			.specular = glm::vec3{1.0f, 1.0f, 1.2f}, 
-			.shininess = 32.f, .opacity = 0.5f, .alpha = 1.0f
-		},
-		.light {
-			.shader = &shaders.standard, 
-			.ambient  = glm::vec3{50.0f, 50.0f, 50.0f}, 
-			.diffuse  = glm::vec3{2.0f, 2.0f, 2.0f}, 
-			.specular = glm::vec3{2.0f, 2.0f, 2.0f}, 
-			.shininess = 32.f, .opacity = 1.0f, .alpha = 1.0f
+			.shininess = 32.f, .opacity = 0.6f, .alpha = 1.0f
 		},
 		.glass {
 			.shader = &shaders.standard, 
@@ -153,9 +112,9 @@ AppData::AppData([[maybe_unused]] Token t) :
 		},
 		.wood {
 			.shader = &shaders.standard, 
-			.ambient  = glm::vec3{0.7f, 0.6f, 0.2f}, 
-			.diffuse  = glm::vec3{0.7f, 0.6f, 0.2f}, 
-			.specular = glm::vec3{0.9f, 0.9f, 0.8f}, 
+			.ambient  = glm::vec3{1.0f, 0.8f, 0.5f}, 
+			.diffuse  = glm::vec3{1.0f, 0.8f, 0.3f}, 
+			.specular = glm::vec3{0.6f, 0.6f, 0.5f}, 
 			.shininess = 64.f, .opacity = 1.0f, .alpha = 1.0f
 		},
 		.aquariumBase {
@@ -178,5 +137,16 @@ AppData::AppData([[maybe_unused]] Token t) :
 			.diffuse  = glm::vec3{0.5f, 0.7f, 0.9f}, 
 			.specular = glm::vec3{0.8f, 1.0f, 1.2f}, 
 			.shininess = 64.f, .opacity = 0.3f, .alpha = 0.9f
-		}
-	} {}
+		},
+		.light {},
+	} {
+	for(std::size_t i = 0; i < materials.light.size(); i++) {
+		materials.light[i] = {
+			.shader = &shaders.standard, 
+			.ambient  = glm::vec3{10.0f, 10.0f, 10.0f} * lightColors[i], 
+			.diffuse  = glm::vec3{1.0f, 1.0f, 1.0f} * lightColors[i], 
+			.specular = glm::vec3{1.0f, 1.0f, 1.0f} * lightColors[i], 
+			.shininess = 1.f, .opacity = 1.0f, .alpha = 1.0f
+		};
+	}
+}

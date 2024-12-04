@@ -6,6 +6,8 @@
 #include "window.hpp"
 #include "sceneManager.hpp"
 #include "../graphics/renderer.hpp"
+#include <array>
+#include <cstdint>
 
 struct AppData {
 
@@ -27,19 +29,31 @@ struct AppData {
 	struct {
 		Mesh ball;
 		Mesh cube;
-		Mesh cubeInv;
 		Mesh plane;
 	} models;
 
 	struct {
+		Material player;
 		Material bubble;
-		Material light;
 		Material glass;
 		Material wood;
 		Material aquariumBase;
 		Material gravel;
 		Material water;
+		std::array<Material, 7> light;
 	} materials;
+
+	static constexpr std::array<glm::vec3, 7> lightColors = {
+		glm::vec3{1, 0, 1},
+		glm::vec3{0.9f, 0.8f, 0.1f},
+		glm::vec3{1, 0.5f, 1},
+		glm::vec3{0, 0, 1},
+		glm::vec3{0, 1, 1},
+		glm::vec3{0, 1, 0}, 
+		glm::vec3{1.05f, 1.f, 0.95f}
+	};
+
+	static inline uint64_t score = 0;
 
 	void atResize(int width, int height);
 
