@@ -23,6 +23,8 @@ public:
 
 	void updateFrameBuffers(int width, int height);
 
+	static inline float time = 0;
+
 private:
 	struct OpaqueRenderIndex {
 		Mesh* mesh;
@@ -36,6 +38,7 @@ private:
 	glm::vec3 cameraPosition;
 
 	GLuint waterDepthTexture;
+	GLuint frameBufferDepth;
 	GLuint frameBuffer;
 };
 

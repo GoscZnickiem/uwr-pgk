@@ -8,7 +8,7 @@ Aquarium::Aquarium(float width, float height, float depth) {
 	constexpr float baseHeight = 3.0f;
 	constexpr float baseExtent = 0.8f;
 	constexpr float floorHeight = 0.5f;
-	constexpr float waterGap = 0.5f;
+	constexpr float waterGap = 1.0f;
 
 	wall1.mesh = &AppData::Data().models.cube;
 	wall1.material = &AppData::Data().materials.glass;
@@ -62,8 +62,8 @@ Aquarium::Aquarium(float width, float height, float depth) {
 	water4T.rotation = {glm::pi<float>(), glm::half_pi<float>(), 0.0f};
 	water4T.scale = {depth, 1.0f, height - waterGap};
 
-	waterA.mesh = &AppData::Data().models.plane;
-	waterA.material = &AppData::Data().materials.water;
+	waterA.mesh = &AppData::Data().models.highResPlane;
+	waterA.material = &AppData::Data().materials.waterSurface;
 	waterA.transform = &waterAT;
 	waterAT.position = {0.0f, height - waterGap * 2, 0.0f};
 	waterAT.scale = {depth, 1.0f, width};
@@ -105,7 +105,6 @@ void Aquarium::render() {
 	AppData::Data().renderer.addRender(water3);
 	AppData::Data().renderer.addRender(water4);
 	AppData::Data().renderer.addRender(waterA);
-	AppData::Data().renderer.addRender(waterB);
 
 	AppData::Data().renderer.addRender(floor);
 	AppData::Data().renderer.addRender(base);

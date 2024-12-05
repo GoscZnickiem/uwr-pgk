@@ -34,6 +34,8 @@ private:
 
 public:
 	static Mesh CreateSphereMesh(std::size_t subdivisions);
+	static Mesh CreatePlaneMesh(std::size_t subdivisions);
+	static Mesh CreatePlaneMesh(std::size_t subdivisionsX, std::size_t subdivisionsY);
 };
 
 #endif

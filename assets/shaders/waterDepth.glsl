@@ -28,8 +28,8 @@ out vec4 depth;
 void main() {
 	float d = gl_FragCoord.z / gl_FragCoord.w;
 	if(side == 0) {
-		depth = vec4(d, 0.0, 0.0, 1.0);
+		depth = vec4(d, 0.0, 0.0, 0.5);
 	} else {
-		depth = vec4(0.0, d, 0.0, 1.0);
+		depth = vec4(0.0, d, 0.0, 0.5);
 	}
 }

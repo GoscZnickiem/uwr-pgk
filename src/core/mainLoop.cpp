@@ -8,6 +8,7 @@
 
 void MainLoop::update() {
 	AppData::Data().sceneManager.update();
+	Renderer::time += AppData::deltaT;
 	Input::update();
 }
 

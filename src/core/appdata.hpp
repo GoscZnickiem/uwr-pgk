@@ -30,6 +30,7 @@ struct AppData {
 		Mesh ball;
 		Mesh cube;
 		Mesh plane;
+		Mesh highResPlane;
 	} models;
 
 	struct {
@@ -40,6 +41,7 @@ struct AppData {
 		Material aquariumBase;
 		Material gravel;
 		Material water;
+		Material waterSurface;
 		std::array<Material, 7> light;
 	} materials;
 

@@ -154,3 +154,45 @@ Mesh Mesh::CreateSphereMesh(std::size_t subdivisions) {
 
 	return Mesh(vertexData, indices);
 }
+
+Mesh Mesh::CreatePlaneMesh(std::size_t subdivisions) {
+	return CreatePlaneMesh(subdivisions, subdivisions);
+}
+
+Mesh Mesh::CreatePlaneMesh(std::size_t subdivisionsX, std::size_t subdivisionsY) {
+	float subX = static_cast<float>(subdivisionsX);
+	float subY = static_cast<float>(subdivisionsY);
+	float stepX = 2.f / (subX + 1);
+	float stepY = 2.f / (subY + 1);
+
+	std::vector<float> vertexData;
+	for(float x = 0; x <= subX + 1; x++) {
+		for(float y = 0; y <= subY + 1; y++) {
+			vertexData.push_back(x * stepX - 1.f);
+			vertexData.push_back(0.f);
+			vertexData.push_back(y * stepY - 1.f);
+			vertexData.push_back(0.f);
+			vertexData.push_back(1.f);
+			vertexData.push_back(0.f);
+			vertexData.push_back(0.f);
+			vertexData.push_back(0.f);
+		}
+	}
+
+	std::vector<int> indices;
+	int sX = static_cast<int>(subdivisionsX);
+	int sY = static_cast<int>(subdivisionsY);
+	for(int x = 0; x <= sX; x++) {
+		for(int y = 0; y <= sY; y++) {
+			indices.push_back(y + x * (sY + 2));
+			indices.push_back(y + x * (sY + 2) + 1);
+			indices.push_back(y + (x + 1) * (sY + 2) + 1);
+
+			indices.push_back(y + x * (sY + 2));
+			indices.push_back(y + (x + 1) * (sY + 2) + 1);
+			indices.push_back(y + (x + 1) * (sY + 2));
+		}
+	}
+
+	return Mesh(vertexData, indices);
+}

@@ -34,6 +34,7 @@ void Renderer::render() {
 		if(currentShader != data.material->shader) {
 			currentShader = data.material->shader;
 			currentShader->bind();
+			currentShader->setUniform("time", time);
 			currentShader->setUniform("depthTexture", 0);
 		}
 		if(currentMesh != data.mesh) {

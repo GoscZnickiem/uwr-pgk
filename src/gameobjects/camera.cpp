@@ -57,8 +57,9 @@ glm::mat4 Camera::getProjectionMatrix() const {
 }
 
 void Camera::rotatePitch(float rad) {
-	constexpr float limit = 0.98f;
-	if((rad > 0 && dirBuffer.y >= limit) || (rad < 0 && dirBuffer.y <= -limit)) return;
+	constexpr float limitup = 0.3f;
+	constexpr float limitdown = -0.6f;
+	if((rad > 0 && dirBuffer.y >= limitup) || (rad < 0 && dirBuffer.y <= limitdown)) return;
 	dirBuffer = glm::rotate(glm::mat4(1.f), rad, glm::normalize(glm::cross(dirBuffer, up))) * glm::vec4(dirBuffer, 1.f);
 }
 

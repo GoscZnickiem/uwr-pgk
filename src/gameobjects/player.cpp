@@ -13,7 +13,7 @@ Player::Player() {
 	direction = {1,0,0};
 
 	light.color = {1, 0, 0};
-	light.intensity = 2.f;
+	light.intensity = 1.f;
 }
 
 void Player::update() {

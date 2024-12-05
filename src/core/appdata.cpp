@@ -77,17 +77,8 @@ AppData::AppData([[maybe_unused]] Token t) :
 				20, 22, 21, 20, 23, 22
 			}
 		},
-		.plane {
-			{
-				-1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.f, 0.f,
-				-1.0f, 0.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.f, 0.f,
-				 1.0f, 0.0f,  1.0f, 0.0f, 1.0f, 0.0f, 0.f, 0.f,
-				 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.f, 0.f,
-			},
-			{
-				0, 1, 2, 0, 2, 3
-			}
-		}
+		.plane {Mesh::CreatePlaneMesh(0)},
+		.highResPlane {Mesh::CreatePlaneMesh(500, 250)}
 	}, materials {
 		.player {
 			.shader = &shaders.standard, 
@@ -136,7 +127,16 @@ AppData::AppData([[maybe_unused]] Token t) :
 			.ambient  = glm::vec3{0.8f, 0.7f, 1.0f}, 
 			.diffuse  = glm::vec3{0.5f, 0.7f, 0.9f}, 
 			.specular = glm::vec3{0.8f, 1.0f, 1.2f}, 
-			.shininess = 64.f, .opacity = 0.3f, .alpha = 0.9f
+			.shininess = 64.f, .opacity = 0.3f, .alpha = 0.9f,
+			.special = 1
+		},
+		.waterSurface {
+			.shader = &shaders.standard, 
+			.ambient  = glm::vec3{0.8f, 0.7f, 1.0f}, 
+			.diffuse  = glm::vec3{0.5f, 0.7f, 0.9f}, 
+			.specular = glm::vec3{0.8f, 1.0f, 1.2f}, 
+			.shininess = 64.f, .opacity = 0.3f, .alpha = 0.9f,
+			.special = 2
 		},
 		.light {},
 	} {
