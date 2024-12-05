@@ -35,14 +35,11 @@ zbuduje projekt w konfiguracji do debugowania w katalogu "debug/".
 ## Funkcjonalność
 
 Sterowanie: 
- - `W/S/A/D/R/F` - ruch do przodu/tyłu/lewo/prawo/góra/dół
- - `C` - przełączanie między kamerą zewnętrzną i główną
- - `spacja` - przełączanie trybu widoku "minimapy"
- - `escape` - pauza. Wciśnięcie `R` w trakcie pauzy powoduje reset
- - mysz - obrót kamery i przybliżanie (kółko myszy)
+ - `W/S/A/D/SPACE/SHIFT` - ruch do przodu/tyłu/lewo/prawo/góra/dół
+ - `TAB` - przełączanie między kamerą zewnętrzną i wewnętrzną
+ - `+/-` - zmiana FOV
+ - `ENTER` - tymczasowe wyłączenie sortowania przezroczystych rzeczy
+ - `ESCAPE` - przejście do następnego poziomu (może się przydać żeby zobaczyć jak program radzi sobie przy większej liczbie bombelków)
+ - mysz - obrót kamery i zmiana FOV (kółko myszy)
 
-Celem gry jest przejście do niebieskiej kuli (mety) po przeciwnej stronie labiryntu 3D.
-
-Na planszy znajdują się (oprócz statycznych przeszkód): 
- - poruszający się wrogowie (czerwone kulki) resetujące postęp gracza,
- - wzmocnienia (niebiesko-zielone kulki), które po zebraniu na krótki czas ułatwiają przedostawanie się przez labirynt.
+Celem gry jest przejście do przeciwległej ścianki akwarium, unikając bombleków i zbierając specjalne świecące bombelki.
