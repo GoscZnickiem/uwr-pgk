@@ -1,5 +1,6 @@
 #include "renderer.hpp"
 #include "../core/appdata.hpp"
+#include "../core/input.hpp"
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
@@ -50,11 +51,13 @@ void Renderer::render() {
 		arr.clear();
 	}
 
-	std::sort(translucentQueue.begin(), translucentQueue.end(), [&](const Renderable& a, const Renderable& b){
-		auto da = a.transform->position - cameraPosition;
-		auto db = b.transform->position - cameraPosition;
-		return glm::length(da) > glm::length(db);
-	});
+	if(!Input::isKeyPressed("ENTER")) {
+		std::sort(translucentQueue.begin(), translucentQueue.end(), [&](const Renderable& a, const Renderable& b){
+			auto da = a.transform->position - cameraPosition;
+			auto db = b.transform->position - cameraPosition;
+			return glm::length(da) > glm::length(db);
+		});
+	}
 
 	glEnable(GL_BLEND); 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
