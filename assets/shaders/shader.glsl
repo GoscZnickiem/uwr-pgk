@@ -54,7 +54,7 @@ vec4 displacement(vec2 p) {
 	float freq = 1.212;
 
 	for(int i = 0; i < 12; i++) {
-		vec4 r = hash(i * 3 + 1) * 3;
+		vec4 r = hash(i * 0.3 + i * i * 0.01 + 1) * 3;
 		float w = dot(r.xy, vec2(p.x, p.y * 0.7)) * freq + time * r.z + r.w;
 		sum += amplitude * waveF(w);
 		derX += r.x * amplitude * freq * DwaveF(w);
