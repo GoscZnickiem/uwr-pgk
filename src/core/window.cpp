@@ -26,7 +26,7 @@ Window::Window(std::function<void(int, int)> resizeCallback)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	m_ID = glfwCreateWindow(width, height, "Hello OpenGL", nullptr, nullptr);
 	if(m_ID == nullptr) {
