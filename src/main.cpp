@@ -94,6 +94,8 @@ struct Application {
 		camera.update(player.transform.position);
 
 		Input::setMousePosLock(true);
+
+		window.uselessMethod();
 	}
 
 	void update() {

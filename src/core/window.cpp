@@ -18,8 +18,8 @@ std::map<GLint, std::string> glToString = {
 
 Window::Window(std::function<void(int, int)> resizeCallback)
 	: m_resizeCallback(resizeCallback) {
-	const int width = 800;
-	const int height = 600;
+	const int width = 500;
+	const int height = 500;
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -66,8 +66,6 @@ Window::Window(std::function<void(int, int)> resizeCallback)
 
 	Input::setWindow(m_ID);
 	Shader::CreateCameraUBO();
-
-	glfwSetWindowSize(m_ID, width, height);
 }
 
 void Window::endFrame() {
@@ -91,3 +89,6 @@ std::pair<float, float> Window::getWindowSize() {
 	return {static_cast<float>(w), static_cast<float>(h)};
 }
 
+void Window::uselessMethod() const {
+	glfwSetWindowSize(m_ID, 800, 600);
+}
