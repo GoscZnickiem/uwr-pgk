@@ -6,6 +6,7 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/trigonometric.hpp>
+#include <iostream>
 
 void Camera::update(const glm::vec3 playerPos) {
 	constexpr float sensitivity = 0.01f;
@@ -42,6 +43,7 @@ void Camera::update(const glm::vec3 playerPos) {
 
 void Camera::setup() {
 	glViewport(viewPosP.first, viewPosP.second, viewSizeP.first, viewSizeP.second);
+	std::cout << viewPosP.first << " " << viewPosP.second << " " << viewSizeP.first << " " << viewSizeP.second << "\n";
 	Shader::SetCameraUniform(getViewMatrix(), getProjectionMatrix());
 }
 

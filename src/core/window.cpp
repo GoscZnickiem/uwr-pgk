@@ -23,10 +23,10 @@ Window::Window(std::function<void(int, int)> resizeCallback)
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	m_ID = glfwCreateWindow(width, height, "Hello OpenGL", nullptr, nullptr);
 	if(m_ID == nullptr) {
@@ -46,7 +46,6 @@ Window::Window(std::function<void(int, int)> resizeCallback)
 		std::cerr << "GLEW initialization failed\n";
 		exit(3);
 	}
-	glViewport(0, 0, width, height);
 	glfwSetInputMode(m_ID, GLFW_STICKY_KEYS, GL_TRUE);
 	glfwSetInputMode(m_ID, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 
@@ -68,6 +67,7 @@ Window::Window(std::function<void(int, int)> resizeCallback)
 	Input::setWindow(m_ID);
 	Shader::CreateCameraUBO();
 
+	glfwSetWindowSize(m_ID, width, height);
 }
 
 void Window::endFrame() {

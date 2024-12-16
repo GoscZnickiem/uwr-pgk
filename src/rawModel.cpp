@@ -83,7 +83,7 @@ static glm::vec3 lerp(const glm::vec3& a, const glm::vec3& b, float t) {
 }
 
 RawModel RawModel::GenerateSphere(std::size_t subdivisions, const glm::vec3& gradIn, const glm::vec3& gradOut) {
-	const float t = (1.0f + std::sqrtf(5.0f)) / 2.0f;
+	const float t = (1.0f + std::sqrt(5.0f)) / 2.0f;
 	std::vector<glm::vec3> vertices = {
         {-1,  t,  0}, { 1,  t,  0}, {-1, -t,  0}, { 1, -t,  0},
         { 0, -1,  t}, { 0,  1,  t}, { 0, -1, -t}, { 0,  1, -t},
