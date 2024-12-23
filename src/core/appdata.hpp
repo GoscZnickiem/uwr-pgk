@@ -2,10 +2,9 @@
 #define _GZN_PGK_CORE_APPDATA_
 
 #include "mainLoop.hpp"
-#include "shader.hpp"
 #include "window.hpp"
-#include "sceneManager.hpp"
 #include "../graphics/renderer.hpp"
+#include "../graphics/shader.hpp"
 #include <array>
 #include <cstdint>
 
@@ -13,7 +12,6 @@ struct AppData {
 
 	MainLoop mainLoop;
 	Window window;
-	SceneManager sceneManager;
 	Renderer renderer;
 
 	static constexpr unsigned int updatesPerSecond = 256;
@@ -21,29 +19,9 @@ struct AppData {
 	static constexpr float deltaT = static_cast<float>(timePerUpdate);
 
 	struct {
-		const Shader standard;
-		const Shader waterDepth;
-		const Shader quad;
+		const Shader map2D;
+		const Shader map3D;
 	} shaders;
-
-	struct {
-		Mesh ball;
-		Mesh cube;
-		Mesh plane;
-		Mesh highResPlane;
-	} models;
-
-	struct {
-		Material player;
-		Material bubble;
-		Material glass;
-		Material wood;
-		Material aquariumBase;
-		Material gravel;
-		Material water;
-		Material waterSurface;
-		std::array<Material, 7> light;
-	} materials;
 
 	static constexpr std::array<glm::vec3, 7> lightColors = {
 		glm::vec3{1, 0, 1},

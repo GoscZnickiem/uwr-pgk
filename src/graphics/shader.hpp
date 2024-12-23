@@ -40,7 +40,7 @@ public:
 	void setUniform(const std::string& name, const glm::mat3& v) const;
 	void setUniform(const std::string& name, const glm::mat4& v) const;
 
-	static void SetCameraUniform(const Camera& camrea);
+	static void SetCameraUniform(const Camera& camera);
 	static void SetLightDirectional(const Light& light);
 	static void SetLightPoint(const Light& light);
 	static void SetLightsUniform();

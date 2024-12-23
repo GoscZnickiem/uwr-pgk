@@ -2,7 +2,7 @@
 #define _GZN_PGK_GRAPHICS_MATERIAL_
 
 #include <glm/vec3.hpp>
-#include "../core/shader.hpp"
+#include "shader.hpp"
 
 struct Material {
 	const Shader* shader;
