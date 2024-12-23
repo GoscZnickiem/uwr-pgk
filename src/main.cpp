@@ -1,6 +1,5 @@
 #include "core/appdata.hpp"
 #include "core/window.hpp"
-#include "scenes/level.hpp"
 
 #include <cmath>
 #include <ctime>
@@ -46,11 +45,9 @@ int main (int argc, char *argv[]) {
 
 	glDebugMessageCallback(MessageCallback, nullptr);
 
-	AppData::Data().sceneManager.pushScene<Level>(10);
-	AppData::Data().sceneManager.switchToNextScene();
 	AppData::Data().mainLoop.run();
 
 	AppData::Terminate();
 
-	std::cout << "GAME OVER\nYour score: " << AppData::score << "\n";
+	std::cout << "Exit app\n";
 }

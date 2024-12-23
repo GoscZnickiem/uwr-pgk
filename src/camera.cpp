@@ -1,7 +1,7 @@
 #include "camera.hpp"
-#include "../core/appdata.hpp"
-#include "../core/shader.hpp"
-#include "../core/input.hpp"
+#include "core/appdata.hpp"
+#include "core/shader.hpp"
+#include "core/input.hpp"
 #include <algorithm>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -45,7 +45,6 @@ void Camera::update(const glm::vec3 playerPos, const glm::vec3 playerDir) {
 
 void Camera::setup() {
 	Shader::SetCameraUniform(*this);
-	AppData::Data().renderer.setCameraPos(position);
 }
 
 glm::mat4 Camera::getViewMatrix() const {

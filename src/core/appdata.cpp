@@ -24,12 +24,10 @@ void AppData::Terminate() {
 
 void AppData::atResize(int width, int height) {
 	glViewport(0, 0, width, height);
-	sceneManager.atWindowResize(width, height);
-	renderer.updateFrameBuffers(width, height);
 }
 
 AppData::AppData([[maybe_unused]] Token t) :
-	mainLoop{}, window{}, sceneManager{}, renderer{},
+	mainLoop{}, window{},
 	shaders {
 		.map2D {"assets/shaders/map2D.glsl"},
 		.map3D {"assets/shaders/map3D.glsl"}

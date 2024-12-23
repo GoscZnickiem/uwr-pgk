@@ -1,5 +1,5 @@
-#ifndef _GZN_PGK_GAMEOBJECTS_CAMERA_
-#define _GZN_PGK_GAMEOBJECTS_CAMERA_
+#ifndef _GZN_PGK_CAMERA_
+#define _GZN_PGK_CAMERA_
 
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>

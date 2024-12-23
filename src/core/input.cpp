@@ -1,6 +1,5 @@
 #include "input.hpp"
 
-#include <iostream>
 #include <map>
 #include <stdexcept>
 

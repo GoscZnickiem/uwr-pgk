@@ -7,14 +7,13 @@
 #include <chrono>
 
 void MainLoop::update() {
-	AppData::Data().sceneManager.update();
-	Renderer::time += AppData::deltaT;
 	Input::update();
+	scene.update();
 }
 
 void MainLoop::render() {
-	AppData::Data().sceneManager.render();
 	AppData::Data().window.endFrame();
+	scene.render();
 }
 
 void MainLoop::run() {

@@ -1,7 +1,6 @@
 #include "shader.hpp"
 
 #include <GL/glew.h>
-#include <array>
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
 #include <cstddef>
@@ -159,24 +158,6 @@ void Shader::SetCameraUniform(const Camera& camera) {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void Shader::SetLightDirectional(const Light& light) {
-	s_lights[0] = light;
-}
-
-void Shader::SetLightPoint(const Light& light) {
-	if(s_currentLightIndex > LIGHTS_NUM) return;
-	s_lights[s_currentLightIndex++] = light;
-}
-
-void Shader::SetLightsUniform() {
-	glBindBuffer(GL_UNIFORM_BUFFER, s_lightsUBO);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, (1 + LIGHTS_NUM) * sizeof(Light), s_lights.data());
-	glBufferSubData(GL_UNIFORM_BUFFER, (1 + LIGHTS_NUM) * sizeof(Light), sizeof(int), &s_currentLightIndex);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	s_currentLightIndex = 1;
-	s_lights.fill({{{0.f, 0.f, 0.f}}, 0.f, {0.f, 0.f, 0.f},0.f});
-}
-
 void Shader::bind() const {
 	glUseProgram(m_ID);
 }
@@ -190,14 +171,6 @@ void Shader::CreateCameraUBO() {
 	glBindBuffer(GL_UNIFORM_BUFFER, s_cameraUBO);
 	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + sizeof(glm::vec3), nullptr, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, s_cameraUBO);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
-
-void Shader::CreateLightUBO() {
-	glGenBuffers(1, &s_lightsUBO);
-	glBindBuffer(GL_UNIFORM_BUFFER, s_lightsUBO);
-	glBufferData(GL_UNIFORM_BUFFER, (1 + LIGHTS_NUM) * sizeof(Light) + sizeof(int), nullptr, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, s_lightsUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 

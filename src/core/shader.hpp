@@ -1,14 +1,12 @@
 #ifndef _GZN_PGK_CORE_SHADER_
 #define _GZN_PGK_CORE_SHADER_
 
-#include "../graphics/light.hpp"
-#include "../gameobjects/camera.hpp"
+#include "../camera.hpp"
 #include <cstdint>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/matrix.hpp>
-#include <array>
 #include <string>
 
 class Shader {
@@ -40,25 +38,16 @@ public:
 	void setUniform(const std::string& name, const glm::mat3& v) const;
 	void setUniform(const std::string& name, const glm::mat4& v) const;
 
+	static void CreateCameraUBO();
 	static void SetCameraUniform(const Camera& camera);
-	static void SetLightDirectional(const Light& light);
-	static void SetLightPoint(const Light& light);
-	static void SetLightsUniform();
 
 	void bind() const;
 	void unbind() const;
 
-	static void CreateCameraUBO();
-	static void CreateLightUBO();
-
-	static constexpr std::size_t LIGHTS_NUM = 15;
 private:
 	uint32_t m_ID = 0;
 
 	inline static uint32_t s_cameraUBO = 0;
-	inline static uint32_t s_lightsUBO = 0;
-	inline static uint32_t s_currentLightIndex = 1;
-	inline static std::array<Light, LIGHTS_NUM + 1> s_lights;
 
 	void compileShader(uint32_t shader, const char* source);
 };
