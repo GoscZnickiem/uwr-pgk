@@ -5,49 +5,75 @@
 #include <ctime>
 #include <iostream>
 #include <cstdlib>
+#include <string_view>
+#include <utility>
 
 void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]] GLenum type, [[maybe_unused]] GLuint id, [[maybe_unused]] GLenum severity, [[maybe_unused]] GLsizei length, [[maybe_unused]] const GLchar* message, [[maybe_unused]] const void* userParam) {
 	if (type == GL_DEBUG_TYPE_ERROR)
 		std::cerr << "GL Error: " << message << "\n";
 }
 
-int main (int argc, char *argv[]) {
-	bool generatedSeed = true;
-	unsigned long seed = static_cast<long unsigned int>(std::time(nullptr));
-	int size = 5;
-    if (argc > 3) {
-        std::cerr << "Error: too many arguments. Proper usage: " << argv[0] << " [seed] [board size]\n";
+int main (int argc, char** argv) {
+	std::pair<int, int> latitude{-90,90};
+	std::pair<int, int> longitude{-180,180};
+	std::string directory;
+
+    if (argc == 1) {
+        std::cerr << "Error: Source directory not provided. Proper usage: " << argv[0] << " directory-path [options]\n";
         return 1;
     }
-    if (argc >= 2) {
-		try {
-			seed = std::stoul(argv[1]);
-			generatedSeed = false;
-		} catch (std::invalid_argument& e) {
-			if(argv[1][0] != 'r' || argv[1][1] != '\0') {
-				std::cerr << "Error: argument for seed value should be a non-negative integer or 'r' for random value\n";
-				return 1;
+	for(int argIndex = 1; argIndex < argc; argIndex++) {
+		char* arg = argv[argIndex];
+		auto argString = std::string_view(arg);
+
+		if(argString == "-h" || argString == "-help") {
+			std::cout << "SEND HELP. HEEEEEEELP.\n";
+			return 0;
+		}
+
+		auto coordOption = [&](std::string_view optName, std::pair<int,int>& dest, std::pair<int,int> range){
+			auto end = [&](){
+				std::cerr << "Error: Option usage: " << optName << " <minValue> <maxValue>\n"
+					"Both values are expected in range [" << range.first << ", " << range.second << "]\n";
+				exit(2);
+			};
+			if(argIndex + 2 >= argc) end();
+			try {
+				dest.first = std::stoi(argv[argIndex + 1]);
+				dest.second = std::stoi(argv[argIndex + 2]);
+			} catch (std::invalid_argument& e) {
+				end();
 			}
+			if(dest.first > range.second || dest.first < range.first || dest.second > range.second || dest.second < range.first) end();
+			argIndex += 2;
+		};
+
+		if(argString == "-lat") {
+			coordOption("-lat", latitude, latitude);
 		}
-    }
-    if (argc == 3) {
-		size = std::stoi(argv[2]);
-		if(size < 2) {
-			std::cerr << "Error: size parameter should be at least 2\n";
-			return 2;
+		else if(argString == "-lon") {
+			coordOption("-lon", longitude, longitude);
 		}
-    }
-	if(generatedSeed) {
-		std::cout << "Seed: " << seed << "\n\n";
+		else if(!directory.empty()) {
+			std::cerr << "Error: Two directories provided - one expected\n";
+			return 1;
+		}
+		else {
+			directory = argString;
+		}
 	}
 
-	AppData::Init();
-
-	glDebugMessageCallback(MessageCallback, nullptr);
-
-	AppData::Data().mainLoop.run();
-
-	AppData::Terminate();
+	// AppData::Init();
+	//
+	// glDebugMessageCallback(MessageCallback, nullptr);
+	//
+	// AppData::Data().mainLoop.run();
+	//
+	// AppData::Terminate();
+	
+	std::cout << "Opening directory: " << directory << "\n";
+	std::cout << "Lat: " << latitude.first << ", " << latitude.second << "\n";
+	std::cout << "Lon: " << longitude.first << ", " << longitude.second << "\n";
 
 	std::cout << "Exit app\n";
 }
