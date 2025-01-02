@@ -1,5 +1,6 @@
 #include "core/appdata.hpp"
 #include "core/window.hpp"
+#include "heightMapReader.hpp"
 
 #include <cmath>
 #include <ctime>
@@ -75,5 +76,8 @@ int main (int argc, char** argv) {
 	std::cout << "Lat: " << latitude.first << ", " << latitude.second << "\n";
 	std::cout << "Lon: " << longitude.first << ", " << longitude.second << "\n";
 
+	auto maps = readData(directory, latitude, longitude);
+
+	std::cout << "Read " << maps.size() << " files\n";
 	std::cout << "Exit app\n";
 }
