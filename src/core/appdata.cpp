@@ -1,5 +1,7 @@
 #include "appdata.hpp"
 
+#include "../heightMap.hpp"
+
 #include <iostream>
 #include <memory>
 
@@ -15,10 +17,12 @@ void AppData::Init() {
 		exit(1);
 	}
 	intance = std::make_unique<AppData>(Token{});
+	HeightMap::CreateEbos();
 }
 
 void AppData::Terminate() {
 	intance.reset();
+	HeightMap::DeleteEbos();
 	glfwTerminate();
 }
 

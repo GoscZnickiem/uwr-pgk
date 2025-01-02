@@ -64,20 +64,22 @@ int main (int argc, char** argv) {
 		}
 	}
 
-	// AppData::Init();
-	//
-	// glDebugMessageCallback(MessageCallback, nullptr);
-	//
-	// AppData::Data().mainLoop.run();
-	//
-	// AppData::Terminate();
+	AppData::Init();
+
+	glDebugMessageCallback(MessageCallback, nullptr);
+
 	
 	std::cout << "Opening directory: " << directory << "\n";
 	std::cout << "Lat: " << latitude.first << ", " << latitude.second << "\n";
 	std::cout << "Lon: " << longitude.first << ", " << longitude.second << "\n";
 
-	auto maps = readData(directory, latitude, longitude);
+	AppData::Data().mainScene.chunks = readData(directory, latitude, longitude);
 
-	std::cout << "Read " << maps.size() << " files\n";
+	std::cout << "Read " << AppData::Data().mainScene.chunks.size() << " files\n";
+
+	AppData::Data().mainLoop.run();
+
+	AppData::Terminate();
+
 	std::cout << "Exit app\n";
 }

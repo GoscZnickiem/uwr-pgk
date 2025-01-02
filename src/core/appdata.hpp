@@ -9,6 +9,7 @@ struct AppData {
 
 	MainLoop mainLoop;
 	Window window;
+	MainScene mainScene;
 
 	static constexpr unsigned int updatesPerSecond = 256;
 	static constexpr double timePerUpdate = 1./updatesPerSecond;
