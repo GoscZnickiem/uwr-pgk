@@ -8,12 +8,12 @@
 
 void MainLoop::update() {
 	Input::update();
-	scene.update();
+	AppData::Data().mainScene.update();
 }
 
 void MainLoop::render() {
 	AppData::Data().window.endFrame();
-	scene.render();
+	AppData::Data().mainScene.render();
 }
 
 void MainLoop::run() {

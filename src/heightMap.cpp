@@ -36,7 +36,7 @@ struct Lod {
 		for(GLuint squareY = 0; squareY < Side; squareY++) {
 			for(GLuint squareX = 0; squareX < Side; squareX++) {
 				const GLuint i = static_cast<GLuint>(squareY * Side + squareX);
-				(*arr)[i*6]	= static_cast<GLuint>((squareY * HeightMap::side + squareX) * S);
+				(*arr)[i*6]		= static_cast<GLuint>((squareY * HeightMap::side + squareX) * S);
 				(*arr)[i*6+1]	= static_cast<GLuint>((squareY * HeightMap::side + squareX + 1) * S);
 				(*arr)[i*6+2]	= static_cast<GLuint>(((squareY + 1) * HeightMap::side + squareX) * S);
 				(*arr)[i*6+3]	= static_cast<GLuint>((squareY * HeightMap::side + squareX + 1) * S);

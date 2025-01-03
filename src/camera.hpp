@@ -7,7 +7,6 @@
 class Camera {
 public:
 	void update(const glm::vec3 playerPos, const glm::vec3 playerDir);
-	void setup();
 
 	glm::mat4 getViewMatrix() const;
 	glm::mat4 getProjectionMatrix() const;

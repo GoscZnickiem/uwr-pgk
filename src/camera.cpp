@@ -43,10 +43,6 @@ void Camera::update(const glm::vec3 playerPos, const glm::vec3 playerDir) {
 	}
 }
 
-void Camera::setup() {
-	Shader::SetCameraUniform(*this);
-}
-
 glm::mat4 Camera::getViewMatrix() const {
 	return glm::lookAt(position, position + direction, up);
 }

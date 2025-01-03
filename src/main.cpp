@@ -74,11 +74,17 @@ int main (int argc, char** argv) {
 	std::cout << "Lon: " << longitude.first << ", " << longitude.second << "\n";
 
 	AppData::Data().mainScene.chunks = readData(directory, latitude, longitude);
+	for(auto* c : AppData::Data().mainScene.chunks) {
+		c->createBuffer();
+	}
 
 	std::cout << "Read " << AppData::Data().mainScene.chunks.size() << " files\n";
 
 	AppData::Data().mainLoop.run();
 
+	for(auto* c : AppData::Data().mainScene.chunks) {
+		c->deleteBuffer();
+	}
 	AppData::Terminate();
 
 	std::cout << "Exit app\n";

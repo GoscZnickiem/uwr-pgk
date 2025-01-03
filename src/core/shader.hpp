@@ -38,16 +38,11 @@ public:
 	void setUniform(const std::string& name, const glm::mat3& v) const;
 	void setUniform(const std::string& name, const glm::mat4& v) const;
 
-	static void CreateCameraUBO();
-	static void SetCameraUniform(const Camera& camera);
-
 	void bind() const;
 	void unbind() const;
 
 private:
 	uint32_t m_ID = 0;
-
-	inline static uint32_t s_cameraUBO = 0;
 
 	void compileShader(uint32_t shader, const char* source);
 };

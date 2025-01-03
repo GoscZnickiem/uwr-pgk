@@ -4,6 +4,7 @@
 #include "mainLoop.hpp"
 #include "window.hpp"
 #include "shader.hpp"
+#include "../mainScene.hpp"
 
 struct AppData {
 

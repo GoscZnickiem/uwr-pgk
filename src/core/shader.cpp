@@ -150,28 +150,12 @@ void Shader::setUniform(const std::string& name,const glm::mat4& v) const {
 	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(v));
 }
 
-void Shader::SetCameraUniform(const Camera& camera) {
-	glBindBuffer(GL_UNIFORM_BUFFER, s_cameraUBO);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(camera.getViewMatrix()));
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.getProjectionMatrix()));
-	glBufferSubData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(camera.position));
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
-
 void Shader::bind() const {
 	glUseProgram(m_ID);
 }
 
 void Shader::unbind() const {
 	glUseProgram(0);
-}
-
-void Shader::CreateCameraUBO() {
-	glGenBuffers(1, &s_cameraUBO);
-	glBindBuffer(GL_UNIFORM_BUFFER, s_cameraUBO);
-	glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + sizeof(glm::vec3), nullptr, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 0, s_cameraUBO);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Shader::compileShader(uint32_t shader, const char* source) {

@@ -41,7 +41,7 @@ void APIENTRY OpenGLDebugCallback(GLenum source, GLenum type, GLuint id, GLenum 
 Window::Window(int width, int height) {
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
@@ -67,8 +67,6 @@ Window::Window(int width, int height) {
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(OpenGLDebugCallback, nullptr);
-	GLint maxUniformBufferBindings;
-	glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &maxUniformBufferBindings);
 
 	glfwSetFramebufferSizeCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int w, int h) {
 		AppData::Data().atResize(w, h);
@@ -83,7 +81,6 @@ Window::Window(int width, int height) {
 	});
 
 	Input::setWindow(m_ID);
-	Shader::CreateCameraUBO();
 }
 
 void Window::endFrame() {
