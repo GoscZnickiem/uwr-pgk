@@ -7,10 +7,12 @@
 
 class MainScene {
 public:
+	MainScene();
+
 	void update();
 	void render();
 
-	std::vector<HeightMap*> chunks;
+	std::vector<HeightMap> chunks;
 };
 
 #endif
