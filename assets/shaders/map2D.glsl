@@ -13,10 +13,10 @@ uniform uint lod;
 out vec4 color;
 
 void main() {
-	uint x = (gl_VertexID % side - (side - 1)/2) * lod + position.x * (side - 1);
-	uint y = ((side - 1)/2 - gl_VertexID / side) * lod + position.y * (side - 1);
+	float x = (gl_VertexID % side) / float(side - 1) + float(position.x);
+	float y = (side - gl_VertexID / side) / float(side - 1) + float(position.y);
 
-	vec2 pos = vec2(x, y) / lod * scale - cameraPos;
+	vec2 pos = vec2(x, y) * scale - cameraPos;
 
     gl_Position = vec4(pos, 0.0, 1.0);
 
