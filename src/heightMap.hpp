@@ -15,6 +15,8 @@ struct HeightMap {
 
 	GLuint vao;
 	GLuint vbo;
+	static inline constexpr std::size_t LODS = 10;
+	static inline constexpr std::array<GLuint, 10> LOD_DIVS = {1, 2, 4, 6, 10, 15, 20, 30, 60, 100};
 	static inline std::array<GLuint, 10> ebo;
 	static inline std::array<GLint, 10> eboSize;
 

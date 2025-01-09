@@ -49,16 +49,30 @@ struct Lod {
 	}
 };
 
-void HeightMap::CreateEbos() {
-	auto* indices = Lod<1>::generateIndices();
-	glGenBuffers(1, &ebo[0]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[0]);
+template<GLuint S>
+void createEbo() {
+	auto* indices = Lod<HeightMap::LOD_DIVS[S]>::generateIndices();
+	glGenBuffers(1, &HeightMap::ebo[S]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HeightMap::ebo[S]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(indices->size() * sizeof(GLuint)), indices->data(), GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	eboSize[0] = indices->size();
+	HeightMap::eboSize[S] = static_cast<GLint>(indices->size());
 	delete indices;
+}
+
+void HeightMap::CreateEbos() {
+	createEbo<0>();
+	createEbo<1>();
+	createEbo<2>();
+	createEbo<3>();
+	createEbo<4>();
+	createEbo<5>();
+	createEbo<6>();
+	createEbo<7>();
+	createEbo<8>();
+	createEbo<9>();
 } 
 
 void HeightMap::DeleteEbos() {
-    glDeleteBuffers(1, &ebo[0]);
+    glDeleteBuffers(10, &ebo[0]);
 }
