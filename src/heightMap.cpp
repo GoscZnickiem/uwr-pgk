@@ -25,6 +25,7 @@ static std::mutex requestsMutex;
 
 
 HeightMap::~HeightMap() {
+	GenerateRequestedBuffers();
 	if(state == State::LOADED) unload();
 }
 
