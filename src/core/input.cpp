@@ -18,7 +18,17 @@ static std::map<std::string, char> keys = {
 	{"A", 0},
 	{"D", 0},
 	{"+", 0},
-	{"-", 0}
+	{"-", 0},
+	{"0", 0},
+	{"1", 0},
+	{"2", 0},
+	{"3", 0},
+	{"4", 0},
+	{"5", 0},
+	{"6", 0},
+	{"7", 0},
+	{"8", 0},
+	{"9", 0}
 };
 
 static const std::map<GLint, std::string> glToString = {
@@ -36,7 +46,17 @@ static const std::map<GLint, std::string> glToString = {
 	{GLFW_KEY_A, "A"},
 	{GLFW_KEY_D, "D"},
 	{GLFW_KEY_EQUAL, "+"},
-	{GLFW_KEY_MINUS, "-"}
+	{GLFW_KEY_MINUS, "-"},
+	{GLFW_KEY_0, "0"},
+	{GLFW_KEY_1, "1"},
+	{GLFW_KEY_2, "2"},
+	{GLFW_KEY_3, "3"},
+	{GLFW_KEY_4, "4"},
+	{GLFW_KEY_5, "5"},
+	{GLFW_KEY_6, "6"},
+	{GLFW_KEY_7, "7"},
+	{GLFW_KEY_8, "8"},
+	{GLFW_KEY_9, "9"}
 };
 
 static GLFWwindow* window;

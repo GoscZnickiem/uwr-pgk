@@ -12,7 +12,7 @@ struct AppData {
 	Window window;
 	MainScene mainScene;
 
-	static constexpr unsigned int updatesPerSecond = 256;
+	static constexpr unsigned int updatesPerSecond = 60;
 	static constexpr double timePerUpdate = 1./updatesPerSecond;
 	static constexpr float deltaT = static_cast<float>(timePerUpdate);
 
@@ -26,6 +26,8 @@ struct AppData {
 	static AppData& Data();
 	static void Init();
 	static void Terminate();
+	static inline std::size_t trianglesDrawn = 0;
+	static inline std::size_t lod = 0;
 
 private:
 	struct Token {};

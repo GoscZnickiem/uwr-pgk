@@ -88,10 +88,21 @@ void MainScene::update() {
 	if(Input::isKeyPressed("S")) cameraPos.y -= AppData::deltaT;
 	if(Input::isKeyPressed("A")) cameraPos.x -= AppData::deltaT;
 	if(Input::isKeyPressed("D")) cameraPos.x += AppData::deltaT;
+
+	// LOD control
+	if(Input::isKeyPressed("0")) AppData::lod = 0;
+	if(Input::isKeyPressed("1")) AppData::lod = 1;
+	if(Input::isKeyPressed("2")) AppData::lod = 2;
+	if(Input::isKeyPressed("3")) AppData::lod = 3;
+	if(Input::isKeyPressed("4")) AppData::lod = 4;
+	if(Input::isKeyPressed("5")) AppData::lod = 5;
+	if(Input::isKeyPressed("6")) AppData::lod = 6;
+	if(Input::isKeyPressed("7")) AppData::lod = 7;
+	if(Input::isKeyPressed("8")) AppData::lod = 8;
+	if(Input::isKeyPressed("9")) AppData::lod = 9;
 }
 
 void MainScene::render() {
-	const std::size_t lod = 1;
 	AppData::Data().shaders.map2D.bind();
 	AppData::Data().shaders.map2D.setUniform("cameraPos", cameraPos);
 	AppData::Data().shaders.map2D.setUniform("scale", scale);
@@ -104,7 +115,7 @@ void MainScene::render() {
 			auto& c = chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)];
 			if(c.state != HeightMap::State::LOADED) continue;
 			AppData::Data().shaders.map2D.setUniform("position", x-180, y-90);
-			c.render(lod);
+			c.render();
 		}
 	}
 }

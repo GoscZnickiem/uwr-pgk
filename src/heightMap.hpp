@@ -9,11 +9,12 @@ struct HeightMap {
 	static inline constexpr std::size_t side = 1201;
 	static inline constexpr std::size_t size = side * side;
 
-	static inline constexpr std::size_t LODS = 10;
-	static inline constexpr std::array<GLuint, 10> LOD_DIVS = {1, 2, 4, 6, 10, 15, 20, 30, 60, 100};
-	static inline std::array<GLuint, 10> ebo;
-	static inline std::array<GLint, 10> eboSize;
+	static inline constexpr std::size_t LODS = 9;
+	static inline constexpr std::array<GLuint, LODS> LOD_DIVS = {1, 2, 4, 6, 10, 15, 20, 30, 60};
+	static inline std::array<GLuint, LODS> ebo;
+	static inline std::array<GLint, LODS> eboSize;
 	static inline std::string readDirectory = "./";
+	static inline std::size_t lod = LODS / 2;
 
 	enum class State {
 		LOADED, LOADING, UNLOADED, UNAVAIBLE
@@ -26,7 +27,7 @@ struct HeightMap {
 	void load(int latitude, int longitude);
 	void unload(int latitude, int longitude);
 	void unload();
-	void render(std::size_t lod);
+	void render();
 
 	static void SetReadDirectory(std::string directory);
 	static void CreateEbos();

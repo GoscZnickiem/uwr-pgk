@@ -1,4 +1,5 @@
 #include "heightMap.hpp"
+#include "core/appdata.hpp"
 
 #include <cstdint>
 #include <cstdlib>
@@ -102,10 +103,11 @@ void HeightMap::unload(int latitude, int longitude) {
 	std::cout << "unloaded " << ss.str() << "\n";
 }
 
-void HeightMap::render(std::size_t lod) {
+void HeightMap::render() {
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[lod]);
 	glDrawElements(GL_TRIANGLES, eboSize[lod], GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
+	AppData::trianglesDrawn += static_cast<std::size_t>(eboSize[lod] / 3);
 }
 
 
@@ -160,7 +162,6 @@ void HeightMap::CreateEbos() {
 	createEbo<6>();
 	createEbo<7>();
 	createEbo<8>();
-	createEbo<9>();
 } 
 
 void HeightMap::DeleteEbos() {
