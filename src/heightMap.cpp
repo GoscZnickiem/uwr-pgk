@@ -25,6 +25,9 @@ static std::queue<BufferRequest> bufferRequests;
 static std::mutex requestsMutex;
 
 
+
+HeightMap::HeightMap() : state(State::UNAVAIBLE) {}
+
 HeightMap::~HeightMap() {
 	GenerateRequestedBuffers();
 	if(state == State::LOADED) unload();
@@ -165,7 +168,7 @@ void HeightMap::CreateEbos() {
 } 
 
 void HeightMap::DeleteEbos() {
-    glDeleteBuffers(10, &ebo[0]);
+    glDeleteBuffers(9, &ebo[0]);
 }
 
 
@@ -189,6 +192,7 @@ void HeightMap::GenerateRequestedBuffers() {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+		std::cout << "state loaded\n";
 		request.target->state = State::LOADED;
 
 		bufferRequests.pop();

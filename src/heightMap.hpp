@@ -18,10 +18,11 @@ struct HeightMap {
 
 	enum class State {
 		LOADED, LOADING, UNLOADED, UNAVAIBLE
-	} state{State::UNAVAIBLE};
+	} state;
 	GLuint vao;
 	GLuint vbo;
 
+	HeightMap();
 	~HeightMap();
 
 	void load(int latitude, int longitude);

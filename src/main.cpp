@@ -64,6 +64,8 @@ int main (int argc, char** argv) {
 	}
 
 	HeightMap::SetReadDirectory(directory);
+	AppData::latBounds = {latitude.first + 90, latitude.second + 90};
+	AppData::lonBounds = {longitude.first + 180, longitude.second + 180};
 	AppData::Init();
 	// AppData::Data().mainScene.cameraPos = 
 
@@ -72,6 +74,4 @@ int main (int argc, char** argv) {
 	AppData::Data().mainLoop.run();
 
 	AppData::Terminate();
-
-	std::cout << "Exit app\n";
 }

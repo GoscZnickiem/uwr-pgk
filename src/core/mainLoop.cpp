@@ -29,7 +29,7 @@ void MainLoop::run() {
 	constexpr double minFPS = 10;
 	constexpr double maxFPS = 60;
 	constexpr double fpsInterval = 0.5;
-	constexpr int fpsSkipDisplay = 20;
+	constexpr int fpsShowInterval = 4;
 	double fpsTimer = 0.0;
 	int fpsShowCount = 0;
 
@@ -66,9 +66,10 @@ void MainLoop::run() {
 			}
 
 			fpsShowCount++;
-			if(fpsShowCount == fpsSkipDisplay) continue;
-			fpsShowCount = 0;
-			std::cout << "FPS: " << fps << ", TPS: " << tps << ", lod = " << HeightMap::lod + 1 << "\n";
+			if(fpsShowCount == fpsShowInterval) {
+				fpsShowCount = 0;
+				std::cout << "FPS: " << fps << ", TPS: " << tps << ", lod = " << HeightMap::lod + 1 << "\n";
+			}
 		}
 	}
 }

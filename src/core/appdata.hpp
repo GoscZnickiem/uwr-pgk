@@ -28,6 +28,8 @@ struct AppData {
 	static void Terminate();
 	static inline std::size_t trianglesDrawn = 0;
 	static inline std::size_t lod = 0;
+	static inline std::pair<int, int> latBounds = {0, 359};
+	static inline std::pair<int, int> lonBounds = {0, 179};
 
 private:
 	struct Token {};

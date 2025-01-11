@@ -24,6 +24,13 @@ MainScene::MainScene() {
 			const int y = latSign == 'N' ? lat + 90 : 90 - lat;
 			const int x = lonSign == 'E' ? lon + 180 : 180 - lon;
 
+			if(y < AppData::latBounds.first || y > AppData::latBounds.second) continue;
+			if(AppData::lonBounds.first <= AppData::lonBounds.second) {
+				if(x < AppData::lonBounds.first || x > AppData::lonBounds.second) continue;
+			} else {
+				if(x < AppData::lonBounds.first && x > AppData::lonBounds.second) continue;
+			}
+
 			chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].state = HeightMap::State::UNLOADED;
 			std::cout << x << " " << y << " (" << fileName << ")\n";
         }
@@ -31,7 +38,7 @@ MainScene::MainScene() {
         std::cerr << "Error: unable to access directory: " << e.what() << std::endl;
     }
 
-	cameraPos = {14, 50};
+	cameraPos = {12, 48};
 	scale = {0.2f, 0.2f};
 }
 
@@ -60,8 +67,8 @@ void MainScene::update() {
 	// unload invisible ones:
 	int borderLeft = areaXmin == 0 ? 359 : areaXmin - 1;
 	int borderRight = areaXmax == 359 ? 0 : areaXmax + 1;
-	int borderTop = areaYmin == 0 ? 180 : areaYmin - 1;
-	int borderBottom = areaYmax == 179 ? 0 : areaYmax + 1;
+	int borderBottom = areaYmin == 0 ? 180 : areaYmin - 1;
+	int borderTop = areaYmax == 179 ? 0 : areaYmax + 1;
 	for(int x = borderLeft; x != borderRight; x++) {
 		if(x == 360) x = 0;
 		const int y = borderTop;
@@ -88,6 +95,13 @@ void MainScene::update() {
 	if(Input::isKeyPressed("S")) cameraPos.y -= AppData::deltaT;
 	if(Input::isKeyPressed("A")) cameraPos.x -= AppData::deltaT;
 	if(Input::isKeyPressed("D")) cameraPos.x += AppData::deltaT;
+
+	if(Input::isKeyClicked("+") || Input::getScroll() > 0) {
+		scale *= 1.25f;
+	}
+	if(Input::isKeyClicked("-") || Input::getScroll() < 0) {
+		scale *= 0.8f;
+	}
 
 	// LOD control
 	if(Input::isKeyPressed("0")) AppData::lod = 0;

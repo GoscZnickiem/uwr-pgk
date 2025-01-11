@@ -64,9 +64,9 @@ Window::Window(int width, int height) {
 	glfwSetInputMode(m_ID, GLFW_STICKY_KEYS, GL_TRUE);
 	glfwSetInputMode(m_ID, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(OpenGLDebugCallback, nullptr);
+	// glEnable(GL_DEBUG_OUTPUT);
+	// glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	// glDebugMessageCallback(OpenGLDebugCallback, nullptr);
 
 	glfwSetFramebufferSizeCallback(m_ID, []([[maybe_unused]] GLFWwindow* window, int w, int h) {
 		AppData::Data().atResize(w, h);
