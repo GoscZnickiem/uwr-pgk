@@ -8,9 +8,9 @@
 #include <iostream>
 
 void MainLoop::update() {
-	Input::update();
 	AppData::Data().mainScene.update();
 	HeightMap::GenerateRequestedBuffers();
+	Input::update();
 }
 
 void MainLoop::render() {
