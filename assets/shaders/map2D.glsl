@@ -7,16 +7,16 @@ layout(location = 0) in int height;
 uniform vec2 cameraPos;
 uniform vec2 scale;
 uniform ivec2 position;
-uniform uint side;
-uniform uint lod;
 
 out vec4 color;
+
+const int side = 1201;
 
 void main() {
 	float x = (gl_VertexID % side) / float(side - 1) + float(position.x);
 	float y = (side - gl_VertexID / side) / float(side - 1) + float(position.y);
 
-	vec2 pos = vec2(x, y) * scale - cameraPos;
+	vec2 pos = (vec2(x, y) - cameraPos) * scale;
 
     gl_Position = vec4(pos, 0.0, 1.0);
 

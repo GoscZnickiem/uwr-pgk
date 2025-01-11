@@ -1,5 +1,7 @@
 #include "mainScene.hpp"
 #include "core/appdata.hpp"
+#include "core/input.hpp"
+#include <cmath>
 #include <filesystem>
 #include <iostream>
 #include <regex>
@@ -14,28 +16,95 @@ MainScene::MainScene() {
 			std::string fileName = entry.path().filename().string();
 			if (!std::regex_match(fileName, match, filePattern)) continue;
 
-			const int latSign = match[1].str()[0] == 'N' ? 1 : -1;
-			const int lat = std::stoi(match[2].str()) * latSign;
-			const int lonSign = match[3].str()[0] == 'E' ? 1 : -1;
-			const int lon = std::stoi(match[4].str()) * lonSign;
+			const char latSign = match[1].str()[0];
+			const int lat = std::stoi(match[2].str());
+			const char lonSign = match[3].str()[0];
+			const int lon = std::stoi(match[4].str());
 
-			chunks.emplace_back(lat, lon);
+			const int y = latSign == 'N' ? lat + 90 : 90 - lat;
+			const int x = lonSign == 'E' ? lon + 180 : 180 - lon;
+
+			chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].exists = true;
+			std::cout << x << " " << y << " (" << fileName << ")\n";
         }
     } catch (const std::filesystem::filesystem_error& e) {
         std::cerr << "Error: unable to access directory: " << e.what() << std::endl;
     }
+
+	cameraPos = {14, 50};
+	scale = {1.0f, 1.0f};
 }
 
 void MainScene::update() {
+	areaXmin = static_cast<int>( std::floor(cameraPos.x - 1 / scale.x) ) + 180;
+	if(areaXmin < 0) areaXmin += 360;
+	areaXmax = static_cast<int>( std::ceil(cameraPos.x + 1 / scale.x) ) + 180;
+	if(areaXmax >= 360) areaXmax -= 360;
 
+	areaYmin = static_cast<int>( std::floor(cameraPos.y - 1 / scale.y) ) + 90;
+	if(areaYmin < 0) areaYmin += 180;
+	areaYmax = static_cast<int>( std::ceil(cameraPos.y + 1 / scale.y) ) + 90;
+	if(areaYmax >= 180) areaYmax -= 180;
+
+	// load visible chunks:
+	for(int x = areaXmin; x != areaXmax; x++) {
+		if(x == 360) x = 0;
+		for(int y = areaYmin; y != areaYmax; y++) {
+			if(y == 180) y = 0;
+
+			auto& c = chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)];
+			c.load(y - 90, x - 180);
+		}
+	}
+
+	// unload invisible ones:
+	int borderLeft = areaXmin == 0 ? 359 : areaXmin - 1;
+	int borderRight = areaXmax == 359 ? 0 : areaXmax + 1;
+	int borderTop = areaYmin == 0 ? 180 : areaYmin - 1;
+	int borderBottom = areaYmax == 179 ? 0 : areaYmax + 1;
+	for(int x = borderLeft; x != borderRight; x++) {
+		if(x == 360) x = 0;
+		const int y = borderTop;
+		chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].unload(y - 90, x - 180);
+	}
+	for(int x = borderLeft; x != borderRight; x++) {
+		if(x == 360) x = 0;
+		const int y = borderBottom;
+		chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].unload(y - 90, x - 180);
+	}
+	for(int y = borderBottom; y != borderTop; y++) {
+		if(y == 360) y = 0;
+		const int x = borderLeft;
+		chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].unload(y - 90, x - 180);
+	}
+	for(int y = borderBottom; y != borderTop; y++) {
+		if(y == 360) y = 0;
+		const int x = borderRight;
+		chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].unload(y - 90, x - 180);
+	}
+
+	// camera movement
+	if(Input::isKeyPressed("W")) cameraPos.y += AppData::deltaT;
+	if(Input::isKeyPressed("S")) cameraPos.y -= AppData::deltaT;
+	if(Input::isKeyPressed("A")) cameraPos.x -= AppData::deltaT;
+	if(Input::isKeyPressed("D")) cameraPos.x += AppData::deltaT;
 }
 
 void MainScene::render() {
 	const std::size_t lod = 0;
 	AppData::Data().shaders.map2D.bind();
-	AppData::Data().shaders.map2D.setUniform("cameraPos", 1.0f, 0.5f);
-	AppData::Data().shaders.map2D.setUniform("scale", 1.f, 1.f);
-	AppData::Data().shaders.map2D.setUniform("side", 1201u);
-	// chunks[0].render(lod);
-	// chunks[1].render(lod);
+	AppData::Data().shaders.map2D.setUniform("cameraPos", cameraPos);
+	AppData::Data().shaders.map2D.setUniform("scale", scale);
+
+	for(int x = areaXmin; x != areaXmax; x++) {
+		if(x == 360) x = 0;
+		for(int y = areaYmin; y != areaYmax; y++) {
+			if(y == 180) y = 0;
+
+			auto& c = chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)];
+			if(!c.exists || !c.loaded) continue;
+			AppData::Data().shaders.map2D.setUniform("position", x-180, y-90);
+			c.render(lod);
+		}
+	}
 }

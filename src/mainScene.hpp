@@ -4,7 +4,7 @@
 #include "heightMap.hpp"
 
 #include <array>
-#include <vector>
+#include <glm/ext/vector_float2.hpp>
 
 class MainScene {
 public:
@@ -13,7 +13,13 @@ public:
 	void update();
 	void render();
 
-	std::array<std::array<HeightMap, 181>, 361> chunks;
+	std::array<std::array<HeightMap, 180>, 360> chunks;
+	glm::vec2 cameraPos;
+	glm::vec2 scale;
+	int areaXmin{0};
+	int areaXmax{0};
+	int areaYmin{0};
+	int areaYmax{0};
 };
 
 #endif

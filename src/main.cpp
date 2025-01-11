@@ -65,6 +65,7 @@ int main (int argc, char** argv) {
 
 	HeightMap::setReadDirectory(directory);
 	AppData::Init();
+	// AppData::Data().mainScene.cameraPos = 
 
 	glDebugMessageCallback(MessageCallback, nullptr);
 

@@ -14,13 +14,13 @@ inline static constexpr uint16_t swapBytes(uint16_t v) {
 	return (v >> 8) | (v << 8);
 }
 
-HeightMap::HeightMap(int lat, int lon) : latitude(lat), longitude(lon) {}
-
 HeightMap::~HeightMap() {
 	if(!loaded) unload();
 }
 
-void HeightMap::load() {
+void HeightMap::load(int latitude, int longitude) {
+	if(!exists || loaded) return;
+
 	const char latSign = latitude < 0 ? 'S' : 'N';
 	const char lonSign = longitude < 0 ? 'W' : 'E';
 
@@ -64,17 +64,41 @@ void HeightMap::load() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	loaded = true;
+
+	std::cout << "loaded " << ss.str() << "\n";
 }
 
 void HeightMap::unload() {
+	if(!exists || !loaded) return;
+
 	glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
 
 	loaded = false;
 }
 
+void HeightMap::unload(int latitude, int longitude) {
+	if(!exists || !loaded) return;
+
+	glDeleteVertexArrays(1, &vao);
+    glDeleteBuffers(1, &vbo);
+
+	loaded = false;
+
+	const char latSign = latitude < 0 ? 'S' : 'N';
+	const char lonSign = longitude < 0 ? 'W' : 'E';
+
+	std::stringstream ss;
+	ss  << readDirectory 
+		<< latSign 
+		<< std::setw(2) << std::setfill('0') << std::abs(latitude)
+		<< lonSign
+		<< std::setw(3) << std::setfill('0') << std::abs(longitude)
+		<< ".hgt";
+	std::cout << "unloaded " << ss.str() << "\n";
+}
+
 void HeightMap::render(std::size_t lod) {
-	AppData::Data().shaders.map2D.setUniform("position", latitude, longitude);
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[lod]);
 	glDrawElements(GL_TRIANGLES, eboSize[lod], GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
@@ -84,7 +108,9 @@ void HeightMap::render(std::size_t lod) {
 
 
 void HeightMap::setReadDirectory(std::string directory) {
-	readDirectory = std::move(directory);
+    if (!directory.empty() && directory.back() != '/')
+        directory += '/';
+    readDirectory = std::move(directory);
 }
 
 template<GLuint S>
