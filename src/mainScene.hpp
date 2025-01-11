@@ -3,6 +3,7 @@
 
 #include "heightMap.hpp"
 
+#include <array>
 #include <vector>
 
 class MainScene {
@@ -12,7 +13,7 @@ public:
 	void update();
 	void render();
 
-	std::vector<HeightMap> chunks;
+	std::array<std::array<HeightMap, 181>, 361> chunks;
 };
 
 #endif
