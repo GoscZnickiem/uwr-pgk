@@ -15,8 +15,9 @@ struct HeightMap {
 	static inline std::array<GLint, 10> eboSize;
 	static inline std::string readDirectory = "./";
 
-	bool loaded{false};
-	bool exists{false};
+	enum class State {
+		LOADED, LOADING, UNLOADED, UNAVAIBLE
+	} state{State::UNAVAIBLE};
 	GLuint vao;
 	GLuint vbo;
 
@@ -27,9 +28,11 @@ struct HeightMap {
 	void unload();
 	void render(std::size_t lod);
 
-	static void setReadDirectory(std::string directory);
+	static void SetReadDirectory(std::string directory);
 	static void CreateEbos();
 	static void DeleteEbos();
+
+	static void GenerateRequestedBuffers();
 };
 
 #endif

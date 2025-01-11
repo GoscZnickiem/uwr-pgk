@@ -9,6 +9,7 @@
 void MainLoop::update() {
 	Input::update();
 	AppData::Data().mainScene.update();
+	HeightMap::GenerateRequestedBuffers();
 }
 
 void MainLoop::render() {

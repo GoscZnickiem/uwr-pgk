@@ -63,7 +63,7 @@ int main (int argc, char** argv) {
 		}
 	}
 
-	HeightMap::setReadDirectory(directory);
+	HeightMap::SetReadDirectory(directory);
 	AppData::Init();
 	// AppData::Data().mainScene.cameraPos = 
 

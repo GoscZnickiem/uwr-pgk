@@ -24,7 +24,7 @@ MainScene::MainScene() {
 			const int y = latSign == 'N' ? lat + 90 : 90 - lat;
 			const int x = lonSign == 'E' ? lon + 180 : 180 - lon;
 
-			chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].exists = true;
+			chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].state = HeightMap::State::UNLOADED;
 			std::cout << x << " " << y << " (" << fileName << ")\n";
         }
     } catch (const std::filesystem::filesystem_error& e) {
@@ -32,18 +32,18 @@ MainScene::MainScene() {
     }
 
 	cameraPos = {14, 50};
-	scale = {1.0f, 1.0f};
+	scale = {0.2f, 0.2f};
 }
 
 void MainScene::update() {
-	areaXmin = static_cast<int>( std::floor(cameraPos.x - 1 / scale.x) ) + 180;
+	areaXmin = static_cast<int>( std::floor(cameraPos.x - 1 / scale.x) ) + 180 - 1;
 	if(areaXmin < 0) areaXmin += 360;
-	areaXmax = static_cast<int>( std::ceil(cameraPos.x + 1 / scale.x) ) + 180;
+	areaXmax = static_cast<int>( std::ceil(cameraPos.x + 1 / scale.x) ) + 180 + 1;
 	if(areaXmax >= 360) areaXmax -= 360;
 
-	areaYmin = static_cast<int>( std::floor(cameraPos.y - 1 / scale.y) ) + 90;
+	areaYmin = static_cast<int>( std::floor(cameraPos.y - 1 / scale.y) ) + 90 - 1;
 	if(areaYmin < 0) areaYmin += 180;
-	areaYmax = static_cast<int>( std::ceil(cameraPos.y + 1 / scale.y) ) + 90;
+	areaYmax = static_cast<int>( std::ceil(cameraPos.y + 1 / scale.y) ) + 90 + 1;
 	if(areaYmax >= 180) areaYmax -= 180;
 
 	// load visible chunks:
@@ -91,7 +91,7 @@ void MainScene::update() {
 }
 
 void MainScene::render() {
-	const std::size_t lod = 0;
+	const std::size_t lod = 1;
 	AppData::Data().shaders.map2D.bind();
 	AppData::Data().shaders.map2D.setUniform("cameraPos", cameraPos);
 	AppData::Data().shaders.map2D.setUniform("scale", scale);
@@ -102,7 +102,7 @@ void MainScene::render() {
 			if(y == 180) y = 0;
 
 			auto& c = chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)];
-			if(!c.exists || !c.loaded) continue;
+			if(c.state != HeightMap::State::LOADED) continue;
 			AppData::Data().shaders.map2D.setUniform("position", x-180, y-90);
 			c.render(lod);
 		}
