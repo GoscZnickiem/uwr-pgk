@@ -3,6 +3,7 @@
 #include "core/input.hpp"
 #include <cmath>
 #include <filesystem>
+#include <glm/geometric.hpp>
 #include <iostream>
 #include <regex>
 
@@ -43,15 +44,11 @@ MainScene::MainScene() {
 	cameraPos = {13, 50};
 	scale = 0.5f;
 
-	camera.up = {0, 1, 0};
 	camera.direction = {-1, 0, 0};
 	cameraHeight = 50.0f;
 }
 
 void MainScene::update() {
-	const float speed = AppData::deltaT / scale * 1.f;
-	constexpr float earthRadius = 6378.f;
-
 	if(view2D) {
 		areaXmin = static_cast<int>( std::floor(cameraPos.x - 1 / scale / aspectRatio.x) ) + 180 - 1;
 		if(areaXmin < 0) areaXmin += 360;
@@ -99,6 +96,7 @@ void MainScene::update() {
 		}
 
 		// camera movement
+		const float speed = AppData::deltaT / scale * 1.f;
 		if(Input::isKeyPressed("W")) cameraPos.y += speed;
 		if(Input::isKeyPressed("S")) cameraPos.y -= speed;
 		if(Input::isKeyPressed("A")) { cameraPos.x -= speed; if(cameraPos.x < -180) cameraPos.x += 360; }
@@ -113,17 +111,43 @@ void MainScene::update() {
 			if(scale < 0.01f) scale = 0.01f;
 		}
 	} else {
-		// camera movement
-		// if(Input::isKeyPressed("W")) { cameraPos.y += speed; if(cameraPos.y > 90) cameraPos.y = 90; }
-		// if(Input::isKeyPressed("S")) { cameraPos.y -= speed; if(cameraPos.y < -90) cameraPos.y = -90; }
-		// if(Input::isKeyPressed("A")) { cameraPos.x -= speed; if(cameraPos.x < -180) cameraPos.x += 360; }
-		// if(Input::isKeyPressed("D")) { cameraPos.x += speed; if(cameraPos.x >= 180) cameraPos.x -= 360; }
+		constexpr float earthRadius = 6378.f;
 
-		if(Input::isKeyClicked("+") || Input::getScroll() > 0) {
+		auto project = [](glm::vec3& a, glm::vec3& b) {
+			float dotProduct = glm::dot(a, b);
+			float lengthSquared = glm::length(b) * glm::length(b);
+			return (dotProduct / lengthSquared) * b;
+		};
+		// camera movement
+
+		glm::vec3 dir{0, 0, 0};
+		auto a = camera.direction - project(camera.direction, camera.up);
+		if(Input::isKeyPressed("W")) { dir += a; }
+		if(Input::isKeyPressed("S")) { dir -= a;}
+		if(Input::isKeyPressed("A")) { dir += glm::cross(camera.up, a); }
+		if(Input::isKeyPressed("D")) { dir -= glm::cross(camera.up, a); }
+		if(dir.x != 0 && dir.y != 0 && dir.z != 0) {
+			dir = glm::normalize(dir);
+			auto up = glm::vec3{0,1,0};
+			auto b = project(dir, up);
+
+			const float spdFactor = AppData::deltaT * cameraHeight / 20.f;
+			float longitudeSpeed = b.y * spdFactor;
+			float latitudeSpeed = glm::determinant(glm::mat3(dir - b, up, camera.up)) * spdFactor / std::cos(3.1415f/180 * cameraPos.y);
+
+			cameraPos.y += longitudeSpeed; 
+			if(cameraPos.y > 90) cameraPos.y = 90; 
+			if(cameraPos.y < -90) cameraPos.y = -90;
+			cameraPos.x += latitudeSpeed; 
+			if(cameraPos.x < -180) cameraPos.x += 360; 
+			if(cameraPos.x >= 180) cameraPos.x -= 360; 
+		}
+
+		if(Input::isKeyPressed("+") || Input::getScroll() > 0) {
 			cameraHeight += 1.f;
 			if(cameraHeight > 2 * earthRadius) cameraHeight = 2 * earthRadius;
 		}
-		if(Input::isKeyClicked("-") || Input::getScroll() < 0) {
+		if(Input::isKeyPressed("-") || Input::getScroll() < 0) {
 			cameraHeight -= 1.f;
 			if(cameraHeight < 0) cameraHeight = 0;
 		}
@@ -132,7 +156,9 @@ void MainScene::update() {
 		const float cosx = std::cos(3.1415f/180 * cameraPos.x);
 		const float siny = std::sin(3.1415f/180 * cameraPos.y);
 		const float cosy = std::cos(3.1415f/180 * cameraPos.y);
-		camera.position = (earthRadius + cameraHeight) * glm::vec3{cosy * cosx, siny, -cosy * sinx};
+		auto dirFromCenter = glm::vec3{cosy * cosx, siny, -cosy * sinx};
+		camera.position = (earthRadius + cameraHeight) * dirFromCenter;
+		camera.up = dirFromCenter;
 
 		camera.update();
 	}
@@ -183,5 +209,5 @@ void MainScene::render() {
 
 void MainScene::atResize(int width, int height) {
 	aspectRatio = {static_cast<float>(height)/static_cast<float>(width), 1};
-	camera.aspectRatio = aspectRatio.x;
+	camera.aspectRatio = 1/aspectRatio.x;
 }

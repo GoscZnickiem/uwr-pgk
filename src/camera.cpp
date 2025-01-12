@@ -27,14 +27,14 @@ glm::mat4 Camera::getProjectionMatrix() const {
 }
 
 void Camera::rotatePitch(float rad) {
-	constexpr float limitup = 0.3f;
-	constexpr float limitdown = -0.6f;
-	if((rad > 0 && direction.y >= limitup) || (rad < 0 && direction.y <= limitdown)) return;
+	// constexpr float limitup = 0.3f;
+	// constexpr float limitdown = -0.6f;
+	// if((rad > 0 && direction.y >= limitup) || (rad < 0 && direction.y <= limitdown)) return;
 	direction = glm::rotate(glm::mat4(1.f), rad, glm::normalize(glm::cross(direction, up))) * glm::vec4(direction, 1.f);
 }
 
 void Camera::rotateYaw(float rad) {
-	direction = glm::rotate(glm::mat4(1.f), rad, glm::vec3(0.f, 1.f, 0.f)) * glm::vec4(direction, 1.f);
+	direction = glm::rotate(glm::mat4(1.f), rad, up) * glm::vec4(direction, 1.f);
 }
 
 void Camera::updateResolution(int w, int h) {
