@@ -16,6 +16,7 @@ void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]]
 int main (int argc, char** argv) {
 	std::pair<int, int> latitude{-90,90};
 	std::pair<int, int> longitude{-180,180};
+	std::size_t lod = 0;
 	std::string directory;
 
     if (argc == 1) {
@@ -54,6 +55,21 @@ int main (int argc, char** argv) {
 		else if(argString == "-lon") {
 			coordOption("-lon", longitude, longitude);
 		}
+		else if(argString == "-lod") {
+			auto end = [&](){
+				std::cerr << "Error: Option usage: -lod <lodValue>\n"
+					"The value is either 0 - for auto-lod or in range 1-9 where 1 means best quality and 9 means worst quality\n";
+				exit(2);
+			};
+			if(argIndex + 1 >= argc) end();
+			try {
+				lod = std::stoull(argv[argIndex + 1]);
+			} catch (std::invalid_argument& e) {
+				end();
+			}
+			if(lod > HeightMap::LODS) end();
+			argIndex ++;
+		}
 		else if(!directory.empty()) {
 			std::cerr << "Error: Two directories provided - one expected\n";
 			return 1;
@@ -63,9 +79,10 @@ int main (int argc, char** argv) {
 		}
 	}
 
-	HeightMap::SetReadDirectory(directory);
+	AppData::SetReadDirectory(directory);
 	AppData::latBounds = {latitude.first + 90, latitude.second + 90};
 	AppData::lonBounds = {longitude.first + 180, longitude.second + 180};
+	AppData::lod = lod;
 	AppData::Init();
 	AppData::Data().window.uselessMethod();
 	// AppData::Data().mainScene.cameraPos = 

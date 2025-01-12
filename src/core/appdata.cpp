@@ -31,6 +31,12 @@ void AppData::atResize(int width, int height) {
 	mainScene.atResize(width, height);
 }
 
+void AppData::SetReadDirectory(std::string directory) {
+    if (!directory.empty() && directory.back() != '/')
+        directory += '/';
+    readDirectory = std::move(directory);
+}
+
 AppData::AppData([[maybe_unused]] Token t) :
 	mainLoop{}, window{},
 	shaders {

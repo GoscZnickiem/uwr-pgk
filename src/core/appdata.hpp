@@ -22,6 +22,7 @@ struct AppData {
 	} shaders;
 
 	void atResize(int width, int height);
+	static void SetReadDirectory(std::string directory);
 
 	static AppData& Data();
 	static void Init();
@@ -30,6 +31,7 @@ struct AppData {
 	static inline std::size_t lod = 0;
 	static inline std::pair<int, int> latBounds = {0, 359};
 	static inline std::pair<int, int> lonBounds = {0, 179};
+	static inline std::string readDirectory = "./";
 
 private:
 	struct Token {};

@@ -11,10 +11,11 @@ MainScene::MainScene() {
 	std::smatch match;
 
     try {
-        for (const auto& entry : std::filesystem::directory_iterator(HeightMap::readDirectory)) {
+        for (const auto& entry : std::filesystem::recursive_directory_iterator(AppData::readDirectory)) {
             if (!entry.is_regular_file()) continue;
 			std::string fileName = entry.path().filename().string();
 			if (!std::regex_match(fileName, match, filePattern)) continue;
+			std::string fullName = entry.path().string();
 
 			const char latSign = match[1].str()[0];
 			const int lat = std::stoi(match[2].str());
@@ -31,22 +32,15 @@ MainScene::MainScene() {
 				if(x < AppData::lonBounds.first && x > AppData::lonBounds.second) continue;
 			}
 
-			chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].state = HeightMap::State::UNLOADED;
-			std::cout << x << " " << y << " (" << fileName << ")\n";
+			auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
+			c.state = HeightMap::State::UNLOADED;
+			c.sourceFile = fullName;
         }
     } catch (const std::filesystem::filesystem_error& e) {
         std::cerr << "Error: unable to access directory: " << e.what() << std::endl;
     }
 
-	for(std::size_t i = 0; i < chunks.size(); i++) {
-		std::cout << "x = " << i << ": ";
-		for(auto& c : chunks[i]) {
-			std::cout << (c.state == HeightMap::State::UNAVAIBLE ? " " : "#");
-		}
-		std::cout << "\n";
-	}
-
-	cameraPos = {12, 48};
+	cameraPos = {13, 50};
 	scale = 0.2f;
 }
 
@@ -68,7 +62,7 @@ void MainScene::update() {
 		if(x == 360) { x = -1; continue; }
 		for(int y = areaYmin; y != areaYmax; y++) {
 			auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
-			c.load(y - 90, x - 180);
+			c.load();
 		}
 	}
 
@@ -80,20 +74,20 @@ void MainScene::update() {
 	for(int x = borderLeft; x != borderRight; x++) {
 		if(x == 360) { x = -1; continue; }
 		const int y = borderTop;
-		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload(y - 90, x - 180);
+		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload();
 	}
 	for(int x = borderLeft; x != borderRight; x++) {
 		if(x == 360) { x = -1; continue; }
 		const int y = borderBottom;
-		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload(y - 90, x - 180);
+		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload();
 	}
 	for(int y = borderBottom; y != borderTop; y++) {
 		const int x = borderLeft;
-		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload(y - 90, x - 180);
+		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload();
 	}
 	for(int y = borderBottom; y != borderTop; y++) {
 		const int x = borderRight;
-		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload(y - 90, x - 180);
+		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload();
 	}
 
 	// camera movement
@@ -109,7 +103,7 @@ void MainScene::update() {
 	}
 	if(Input::isKeyClicked("-") || Input::getScroll() < 0) {
 		scale *= 0.8f;
-		if(scale < 0.05f) scale = 0.05f;
+		if(scale < 0.01f) scale = 0.01f;
 	}
 
 	// LOD control
@@ -143,5 +137,5 @@ void MainScene::render() {
 }
 
 void MainScene::atResize(int width, int height) {
-	aspectRatio = {static_cast<float>(width)/static_cast<float>(height), 1};
+	aspectRatio = {static_cast<float>(height)/static_cast<float>(width), 1};
 }
