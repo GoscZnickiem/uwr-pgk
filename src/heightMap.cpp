@@ -1,6 +1,7 @@
 #include "heightMap.hpp"
 #include "core/appdata.hpp"
 
+#include <bit>
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
@@ -12,8 +13,11 @@
 #include <array>
 #include <thread>
 
-inline static constexpr uint16_t swapBytes(uint16_t v) {
-	return (v >> 8) | (v << 8);
+inline static constexpr uint16_t processBytes(uint16_t v) {
+	uint16_t val = (v >> 8) | (v << 8);
+	auto recast = std::bit_cast<int16_t>(val);
+	if(recast < -500 || recast > 9000) val = 0;
+	return val;
 }
 
 struct BufferRequest {
@@ -69,7 +73,7 @@ void HeightMap::load() {
 		file.close();
 
 		for (std::size_t i = 0; i < size; i++)
-			data[i] = swapBytes(data[i]);
+			data[i] = processBytes(data[i]);
 
 		{
 			std::lock_guard<std::mutex> lock(requestsMutex);

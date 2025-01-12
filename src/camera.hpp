@@ -6,7 +6,7 @@
 
 class Camera {
 public:
-	void update(const glm::vec3 playerPos, const glm::vec3 playerDir);
+	void update();
 
 	glm::mat4 getViewMatrix() const;
 	glm::mat4 getProjectionMatrix() const;
@@ -23,15 +23,6 @@ public:
 	float aspectRatio{1.f};
 	float nearPlane{0.001f};
 	float farPlane{1000.f};
-
-	bool outsideMode{false};
-	float minFov{50.f};
-	float maxFov{120.f};
-	float targetFov{1.f};
-	float fovTimer{1.f};
-	glm::vec3 lookat{0.f, 0.f, 0.f};
-
-	glm::vec3 dirBuffer{direction};
 };
 
 #endif
