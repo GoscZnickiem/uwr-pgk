@@ -12,10 +12,12 @@ public:
 
 	void update();
 	void render();
+	void atResize(int width, int height);
 
 	std::array<std::array<HeightMap, 180>, 360> chunks;
 	glm::vec2 cameraPos;
-	glm::vec2 scale;
+	float scale;
+	glm::vec2 aspectRatio;
 	int areaXmin{0};
 	int areaXmax{0};
 	int areaYmin{0};

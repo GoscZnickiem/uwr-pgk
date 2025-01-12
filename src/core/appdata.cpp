@@ -28,6 +28,7 @@ void AppData::Terminate() {
 
 void AppData::atResize(int width, int height) {
 	glViewport(0, 0, width, height);
+	mainScene.atResize(width, height);
 }
 
 AppData::AppData([[maybe_unused]] Token t) :

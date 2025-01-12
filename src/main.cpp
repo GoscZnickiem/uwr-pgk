@@ -67,6 +67,7 @@ int main (int argc, char** argv) {
 	AppData::latBounds = {latitude.first + 90, latitude.second + 90};
 	AppData::lonBounds = {longitude.first + 180, longitude.second + 180};
 	AppData::Init();
+	AppData::Data().window.uselessMethod();
 	// AppData::Data().mainScene.cameraPos = 
 
 	glDebugMessageCallback(MessageCallback, nullptr);

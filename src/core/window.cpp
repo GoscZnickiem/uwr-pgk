@@ -103,3 +103,7 @@ std::pair<int, int> Window::getWindowSize() {
 	glfwGetWindowSize(m_ID, &w, &h);
 	return {w, h};
 }
+
+void Window::uselessMethod() const {
+	glfwSetWindowSize(m_ID, 800, 600);
+}

@@ -31,35 +31,43 @@ MainScene::MainScene() {
 				if(x < AppData::lonBounds.first && x > AppData::lonBounds.second) continue;
 			}
 
-			chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].state = HeightMap::State::UNLOADED;
+			chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].state = HeightMap::State::UNLOADED;
 			std::cout << x << " " << y << " (" << fileName << ")\n";
         }
     } catch (const std::filesystem::filesystem_error& e) {
         std::cerr << "Error: unable to access directory: " << e.what() << std::endl;
     }
 
+	for(std::size_t i = 0; i < chunks.size(); i++) {
+		std::cout << "x = " << i << ": ";
+		for(auto& c : chunks[i]) {
+			std::cout << (c.state == HeightMap::State::UNAVAIBLE ? " " : "#");
+		}
+		std::cout << "\n";
+	}
+
 	cameraPos = {12, 48};
-	scale = {0.2f, 0.2f};
+	scale = 0.2f;
 }
 
 void MainScene::update() {
-	areaXmin = static_cast<int>( std::floor(cameraPos.x - 1 / scale.x) ) + 180 - 1;
+	areaXmin = static_cast<int>( std::floor(cameraPos.x - 1 / scale) ) + 180 - 1;
 	if(areaXmin < 0) areaXmin += 360;
-	areaXmax = static_cast<int>( std::ceil(cameraPos.x + 1 / scale.x) ) + 180 + 1;
+	areaXmax = static_cast<int>( std::ceil(cameraPos.x + 1 / scale) ) + 180 + 1;
 	if(areaXmax >= 360) areaXmax -= 360;
 
-	areaYmin = static_cast<int>( std::floor(cameraPos.y - 1 / scale.y) ) + 90 - 1;
-	if(areaYmin < 0) areaYmin += 180;
-	areaYmax = static_cast<int>( std::ceil(cameraPos.y + 1 / scale.y) ) + 90 + 1;
-	if(areaYmax >= 180) areaYmax -= 180;
+	areaYmin = static_cast<int>( std::floor(cameraPos.y - 1 / scale) ) + 90 - 1;
+	if(areaYmin < 0) areaYmin = 0;
+	if(areaYmin >= 180) areaYmin = 179;
+	areaYmax = static_cast<int>( std::ceil(cameraPos.y + 1 / scale) ) + 90 + 1;
+	if(areaYmax < 0) areaYmax = 0;
+	if(areaYmax >= 180) areaYmax = 179;
 
 	// load visible chunks:
 	for(int x = areaXmin; x != areaXmax; x++) {
-		if(x == 360) x = 0;
+		if(x == 360) { x = -1; continue; }
 		for(int y = areaYmin; y != areaYmax; y++) {
-			if(y == 180) y = 0;
-
-			auto& c = chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)];
+			auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
 			c.load(y - 90, x - 180);
 		}
 	}
@@ -67,40 +75,41 @@ void MainScene::update() {
 	// unload invisible ones:
 	int borderLeft = areaXmin == 0 ? 359 : areaXmin - 1;
 	int borderRight = areaXmax == 359 ? 0 : areaXmax + 1;
-	int borderBottom = areaYmin == 0 ? 180 : areaYmin - 1;
-	int borderTop = areaYmax == 179 ? 0 : areaYmax + 1;
+	int borderBottom = areaYmin == 0 ? 0 : areaYmin - 1;
+	int borderTop = areaYmax == 179 ? 179 : areaYmax + 1;
 	for(int x = borderLeft; x != borderRight; x++) {
-		if(x == 360) x = 0;
+		if(x == 360) { x = -1; continue; }
 		const int y = borderTop;
-		chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].unload(y - 90, x - 180);
+		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload(y - 90, x - 180);
 	}
 	for(int x = borderLeft; x != borderRight; x++) {
-		if(x == 360) x = 0;
+		if(x == 360) { x = -1; continue; }
 		const int y = borderBottom;
-		chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].unload(y - 90, x - 180);
+		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload(y - 90, x - 180);
 	}
 	for(int y = borderBottom; y != borderTop; y++) {
-		if(y == 360) y = 0;
 		const int x = borderLeft;
-		chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].unload(y - 90, x - 180);
+		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload(y - 90, x - 180);
 	}
 	for(int y = borderBottom; y != borderTop; y++) {
-		if(y == 360) y = 0;
 		const int x = borderRight;
-		chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].unload(y - 90, x - 180);
+		chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload(y - 90, x - 180);
 	}
 
 	// camera movement
-	if(Input::isKeyPressed("W")) cameraPos.y += AppData::deltaT;
-	if(Input::isKeyPressed("S")) cameraPos.y -= AppData::deltaT;
-	if(Input::isKeyPressed("A")) cameraPos.x -= AppData::deltaT;
-	if(Input::isKeyPressed("D")) cameraPos.x += AppData::deltaT;
+	const float speed = AppData::deltaT / scale * 1.f;
+	if(Input::isKeyPressed("W")) cameraPos.y += speed;
+	if(Input::isKeyPressed("S")) cameraPos.y -= speed;
+	if(Input::isKeyPressed("A")) { cameraPos.x -= speed; if(cameraPos.x < -180) cameraPos.x += 360; }
+	if(Input::isKeyPressed("D")) { cameraPos.x += speed; if(cameraPos.x >= 180) cameraPos.x -= 360; }
 
 	if(Input::isKeyClicked("+") || Input::getScroll() > 0) {
 		scale *= 1.25f;
+		if(scale > 10.f) scale = 10.f;
 	}
 	if(Input::isKeyClicked("-") || Input::getScroll() < 0) {
 		scale *= 0.8f;
+		if(scale < 0.05f) scale = 0.05f;
 	}
 
 	// LOD control
@@ -119,17 +128,20 @@ void MainScene::update() {
 void MainScene::render() {
 	AppData::Data().shaders.map2D.bind();
 	AppData::Data().shaders.map2D.setUniform("cameraPos", cameraPos);
-	AppData::Data().shaders.map2D.setUniform("scale", scale);
+	AppData::Data().shaders.map2D.setUniform("scale", aspectRatio * scale);
 
 	for(int x = areaXmin; x != areaXmax; x++) {
-		if(x == 360) x = 0;
+		if(x == 360) { x = -1; continue; }
 		for(int y = areaYmin; y != areaYmax; y++) {
-			if(y == 180) y = 0;
 
-			auto& c = chunks[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)];
+			auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
 			if(c.state != HeightMap::State::LOADED) continue;
 			AppData::Data().shaders.map2D.setUniform("position", x-180, y-90);
 			c.render();
 		}
 	}
+}
+
+void MainScene::atResize(int width, int height) {
+	aspectRatio = {static_cast<float>(width)/static_cast<float>(height), 1};
 }

@@ -14,6 +14,7 @@ public:
 	void close();
 	bool shouldClose();
 	std::pair<int, int> getWindowSize();
+	void uselessMethod() const;
 
 private:
 	GLFWwindow* m_ID;

@@ -48,10 +48,11 @@ void HeightMap::load(int latitude, int longitude) {
 		<< std::setw(3) << std::setfill('0') << std::abs(longitude)
 		<< ".hgt";
 
+	std::cout << "loading " << ss.str() << "\n";
 	std::thread([this, name = ss.str()]() {
 		std::ifstream file(name, std::ios::binary);
 		if(!file) {
-			std::cerr << "Error: Failed to open the file \"" << name << "\"\n";
+			std::cerr << "Error: Failed to open the file \"" + name + "\"\n";
 			exit(3);
 		}
 
@@ -59,7 +60,7 @@ void HeightMap::load(int latitude, int longitude) {
 
 		file.read(reinterpret_cast<char*>(data.get()), size * 2);
 		if (!file) {
-			std::cerr << "Error: Failed to read the file \"" << name << "\". Bytes read: " << file.gcount() << "\n";
+			std::cerr << "Error: Failed to read the file \"" + name + "\"\n";
 			exit(3);
 		}
 		file.close();
@@ -192,7 +193,6 @@ void HeightMap::GenerateRequestedBuffers() {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-		std::cout << "state loaded\n";
 		request.target->state = State::LOADED;
 
 		bufferRequests.pop();
