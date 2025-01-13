@@ -83,32 +83,17 @@ MainScene::MainScene() {
 				camPos = camera.position;
 				maxDistanceSquared = horizont * horizont;
 			}
+			auto dist = [](const HeightMap& a, const HeightMap& b){
+				return lenSqared(a.worldPos - b.worldPos);
+			};
 			if(is2d) {
-				for(int x = 0; x < 360; x++) {
-					for(int y = 0; y < 180; y++) {
-						if(x >= borderLeft && x <= borderRight && y >= borderBottom && y <= borderTop)
-							chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].requestLoad();
-						else 
-							chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].requestUnload();
-					}
-				}
+				chunkRequester(borderLeft, borderRight, borderBottom, borderTop, 
+					dist, [](const HeightMap& c){ return c.state == HeightMap::State::UNLOADED; });
 			} else {
-				for(int x = borderLeft; x != borderRight; x++) {
-					if(x == 360) { x = -1; continue; }
-					for(int y = 0; y < 180; y++) {
-						auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
-						if(y >= borderBottom && y <= borderTop && lenSqared(camPos - c.worldPos) <= maxDistanceSquared)
-							c.requestLoad();
-						else 
-							c.requestUnload();
-					}
-				}
-				for(int x = borderRight + 1; x != borderLeft; x++) {
-					if(x == 360) { x = -1; continue; }
-					for(int y = 0; y < 180; y++) {
-						chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].requestUnload();
-					}
-				}
+				chunkRequester(borderLeft, borderRight, borderBottom, borderTop, 
+					dist, [&](const HeightMap& c){
+						return c.state == HeightMap::State::UNLOADED && lenSqared(camPos - c.worldPos) <= maxDistanceSquared; 
+					});
 			}
 		}
 	}};
@@ -317,4 +302,50 @@ void MainScene::render() {
 void MainScene::atResize(int width, int height) {
 	aspectRatio = {static_cast<float>(height)/static_cast<float>(width), 1};
 	camera.aspectRatio = 1/aspectRatio.x;
+}
+
+
+void MainScene::chunkRequester(int borderLeft, int borderRight, int borderBottom, int borderTop,
+					 std::function<float(const HeightMap&, const HeightMap&)> dist,
+					 std::function<bool(const HeightMap&)> pred) {
+	
+	const std::size_t centerX = static_cast<std::size_t>(borderLeft + borderRight) / 2;
+    const std::size_t centerY = static_cast<std::size_t>(borderBottom + borderTop) / 2;
+	const auto& center = chunks[centerX][centerY];
+
+	static std::vector<std::pair<float, std::pair<int, int>>> chunkDistances;
+	chunkDistances.clear();
+
+	for (int x = borderLeft; x <= borderRight; x++) {
+		if(x == 360) { x = -1; continue; }
+        for (int y = borderBottom; y <= borderTop; y++) {
+			auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
+            if (pred(c)) {
+                const float distance = dist(c, center);
+                chunkDistances.emplace_back(distance, std::make_pair(x, y));
+            }
+        }
+    }
+
+	std::sort(chunkDistances.begin(), chunkDistances.end(), [](const auto& a, const auto& b) {
+        return a.first < b.first;
+    });
+
+	for (const auto& chunkInfo : chunkDistances) {
+        const std::size_t x = static_cast<std::size_t>(chunkInfo.second.first);
+        const std::size_t y = static_cast<std::size_t>(chunkInfo.second.second);
+        chunks[x][y].requestLoad();
+    }
+
+	for (int x = 0; x < 360; x++) {
+        for (int y = 0; y < 180; y++) {
+			auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
+			if(borderLeft <= borderRight) {
+				if(x < borderLeft || x > borderRight || y < borderBottom || y > borderTop)
+					c.requestUnload();
+			}
+			else if ((x < borderLeft && x > borderRight) || y < borderBottom || y > borderTop)
+				c.requestUnload();
+        }
+    }
 }

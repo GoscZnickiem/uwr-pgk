@@ -18,6 +18,10 @@ public:
 	void render();
 	void atResize(int width, int height);
 
+	void chunkRequester(int borderLeft, int borderRight, int borderBottom, int borderTop,
+					 std::function<float(const HeightMap&, const HeightMap&)> dist,
+					 std::function<bool(const HeightMap&)> pred);
+
 	std::mutex mutex;
 	bool runChunkUpdater{true};
 	std::thread chunkUpdater;
