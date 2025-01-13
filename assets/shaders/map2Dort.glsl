@@ -16,7 +16,7 @@ void main() {
 	float x = (gl_VertexID % side) / float(side - 1) + float(position.x);
 	float y = (side - gl_VertexID / side) / float(side - 1) + float(position.y);
 
-	vec2 pos = (vec2(x, y) - cameraPos) * scale;
+	vec2 pos = (vec2(x - cameraPos.x, y - cameraPos.y)) * scale;
 
     gl_Position = vec4(pos, 0.0, 1.0);
 

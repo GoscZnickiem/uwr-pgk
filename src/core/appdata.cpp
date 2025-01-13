@@ -40,6 +40,8 @@ void AppData::SetReadDirectory(std::string directory) {
 AppData::AppData([[maybe_unused]] Token t) :
 	mainLoop{}, window{},
 	shaders {
-		.map2D {"assets/shaders/map2D.glsl"},
+		.map2Dort {"assets/shaders/map2Dort.glsl"},
+		.map2Dequirect {"assets/shaders/map2Dequirect.glsl"},
+		.map2Dsimple {"assets/shaders/map2Dsimple.glsl"},
 		.map3D {"assets/shaders/map3D.glsl"}
 	} { }

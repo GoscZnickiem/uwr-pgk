@@ -23,6 +23,9 @@ public:
 	std::thread chunkUpdater;
 
 	bool view2D{true};
+	enum class Projection {
+		ORTOGONAL, EQUIRECTANGULAR, SIMPLE
+	} projection{Projection::ORTOGONAL};
 
 	std::array<std::array<HeightMap, 180>, 360> chunks;
 	glm::vec2 cameraPos;

@@ -17,7 +17,9 @@ struct AppData {
 	static constexpr float deltaT = static_cast<float>(timePerUpdate);
 
 	struct {
-		const Shader map2D;
+		const Shader map2Dort;
+		const Shader map2Dequirect;
+		const Shader map2Dsimple;
 		const Shader map3D;
 	} shaders;
 

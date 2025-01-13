@@ -20,14 +20,8 @@ static float lenSqared(const glm::vec3& v) {
 	return v.x * v.x + v.y * v.y + v.z * v.z;
 }
 
-template<typename F>
-static void forEachInArea(int xmin, int xmax, int ymin, int ymax, F&& fun) {
-	for(int x = xmin; x != xmax + 1; x++) {
-		if(x == 360) { x = -1; continue; }
-		for(int y = ymin; y != ymax; y++) {
-			fun(x, y);
-		}
-	}
+static constexpr float radians(float angle) {
+	return angle * 3.1415f/180;
 }
 
 MainScene::MainScene() {
@@ -60,10 +54,10 @@ MainScene::MainScene() {
 			c.state = HeightMap::State::UNLOADED;
 			c.sourceFile = fullName;
 
-			const float sinxc = std::sin(3.1415f/180 * static_cast<float>(x - 180));
-			const float cosxc = std::cos(3.1415f/180 * static_cast<float>(x - 180));
-			const float sinyc = std::sin(3.1415f/180 * static_cast<float>(y - 90));
-			const float cosyc = std::cos(3.1415f/180 * static_cast<float>(y - 90));
+			const float sinxc = std::sin(radians(static_cast<float>(x - 180)));
+			const float cosxc = std::cos(radians(static_cast<float>(x - 180)));
+			const float sinyc = std::sin(radians(static_cast<float>(y - 90)));
+			const float cosyc = std::cos(radians(static_cast<float>(y - 90)));
 
 			c.worldPos = earthRadius * glm::vec3{cosyc * cosxc , sinyc, -cosyc * sinxc};
         }
@@ -92,11 +86,10 @@ MainScene::MainScene() {
 			if(is2d) {
 				for(int x = 0; x < 360; x++) {
 					for(int y = 0; y < 180; y++) {
-						if(x > borderLeft && x < borderRight && y > borderBottom && y < borderTop)  // TODO 
+						if(x >= borderLeft && x <= borderRight && y >= borderBottom && y <= borderTop)
 							chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].requestLoad();
-						else {
+						else 
 							chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].requestUnload();
-						}
 					}
 				}
 			} else {
@@ -104,18 +97,13 @@ MainScene::MainScene() {
 					if(x == 360) { x = -1; continue; }
 					for(int y = 0; y < 180; y++) {
 						auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
-						if(y > borderBottom && y < borderTop) { // TODO
-							const auto diff = camPos - c.worldPos;
-							if(lenSqared(diff) > maxDistanceSquared)
-								c.requestUnload();
-							else 
-								c.requestLoad();
-						}
+						if(y >= borderBottom && y <= borderTop && lenSqared(camPos - c.worldPos) <= maxDistanceSquared)
+							c.requestLoad();
 						else 
 							c.requestUnload();
 					}
 				}
-				for(int x = borderRight; x != borderLeft; x++) {
+				for(int x = borderRight + 1; x != borderLeft; x++) {
 					if(x == 360) { x = -1; continue; }
 					for(int y = 0; y < 180; y++) {
 						chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].requestUnload();
@@ -161,19 +149,30 @@ void MainScene::update() {
 			}
 
 			// render area
-			areaXmin = static_cast<int>( std::floor(cameraPos.x - 1 / scale / aspectRatio.x) ) + 180 - 1;
-			if(areaXmin < 0) areaXmin = 0;
-			if(areaXmin >= 360) areaXmin = 359;
-			areaXmax = static_cast<int>( std::ceil(cameraPos.x + 1 / scale / aspectRatio.x) ) + 180 + 1;
-			if(areaXmax < 0) areaXmax = 0;
-			if(areaXmax >= 360) areaXmax = 359;
-
 			areaYmin = static_cast<int>( std::floor(cameraPos.y - 1 / scale) ) + 90 - 1;
 			if(areaYmin < 0) areaYmin = 0;
 			if(areaYmin >= 180) areaYmin = 179;
 			areaYmax = static_cast<int>( std::ceil(cameraPos.y + 1 / scale) ) + 90 + 1;
 			if(areaYmax < 0) areaYmax = 0;
 			if(areaYmax >= 180) areaYmax = 179;
+
+			const float extent = projection == Projection::ORTOGONAL ? 1 :
+				1 / std::cos(radians(static_cast<float>(std::max(std::abs(areaYmax - 90), std::abs(areaYmin - 90))) + 0.5f));
+			areaXmin = static_cast<int>( std::floor(cameraPos.x - 1 / scale / aspectRatio.x * extent) ) + 180 - 1;
+			if(areaXmin < 0) areaXmin = 0;
+			if(areaXmin >= 360) areaXmin = 359;
+			areaXmax = static_cast<int>( std::ceil(cameraPos.x + 1 / scale / aspectRatio.x * extent) ) + 180 + 1;
+			if(areaXmax < 0) areaXmax = 0;
+			if(areaXmax >= 360) areaXmax = 359;
+
+
+			if(Input::isKeyClicked("SPACE")) {
+				switch(projection) {
+					case Projection::ORTOGONAL: projection = Projection::EQUIRECTANGULAR; break;
+					case Projection::EQUIRECTANGULAR: projection = Projection::SIMPLE; break;
+					case Projection::SIMPLE: projection = Projection::ORTOGONAL; break;
+				}
+			}
 		} else {
 			// camera movement
 			glm::vec3 dir{0, 0, 0};
@@ -189,7 +188,7 @@ void MainScene::update() {
 
 				const float spdFactor = AppData::deltaT * std::lerp(0.1f, 150.f, std::clamp(cameraHeight / earthRadius, 0.f, earthRadius / 10));
 				float longitudeSpeed = b.y * spdFactor;
-				float latitudeSpeed = glm::dot(glm::cross(up, camera.up), dir) * spdFactor / std::cos(3.1415f/180 * cameraPos.y);
+				float latitudeSpeed = glm::dot(glm::cross(up, camera.up), dir) * spdFactor / std::cos(radians(cameraPos.y));
 
 				cameraPos.y += longitudeSpeed; 
 				cameraPos.x += latitudeSpeed; 
@@ -209,10 +208,10 @@ void MainScene::update() {
 				if(cameraHeight < 0) cameraHeight = 0;
 			}
 
-			const float sinx = std::sin(3.1415f/180 * cameraPos.x);
-			const float cosx = std::cos(3.1415f/180 * cameraPos.x);
-			const float siny = std::sin(3.1415f/180 * cameraPos.y);
-			const float cosy = std::cos(3.1415f/180 * cameraPos.y);
+			const float sinx = std::sin(radians(cameraPos.x));
+			const float cosx = std::cos(radians(cameraPos.x));
+			const float siny = std::sin(radians(cameraPos.y));
+			const float cosy = std::cos(radians(cameraPos.y));
 			auto dirFromCenter = glm::vec3{cosy * cosx, siny, -cosy * sinx};
 			camera.position = (earthRadius + cameraHeight) * dirFromCenter;
 			camera.up = dirFromCenter;
@@ -271,6 +270,13 @@ void MainScene::update() {
 
 	if(Input::isKeyClicked("TAB")) {
 		Input::setMousePosLock(view2D);
+		const float sinx = std::sin(radians(cameraPos.x));
+		const float cosx = std::cos(radians(cameraPos.x));
+		const float siny = std::sin(radians(cameraPos.y));
+		const float cosy = std::cos(radians(cameraPos.y));
+		auto dirFromCenter = glm::vec3{cosy * cosx, siny, -cosy * sinx};
+		camera.direction = glm::normalize(-dirFromCenter + (std::abs(dirFromCenter.y) == 1 ? glm::vec3{0,0,1} : glm::vec3{0,1,0}));
+		std::cout << camera.direction.x << " " << camera.direction.y << " " << camera.direction.z << "\n";
 		view2D = !view2D;
 	}
 }
@@ -278,7 +284,11 @@ void MainScene::update() {
 void MainScene::render() {
 	const Shader* shader;
 	if(view2D) {
-		shader = &AppData::Data().shaders.map2D;
+		switch(projection) {
+			case Projection::ORTOGONAL: shader = &AppData::Data().shaders.map2Dort; break;
+			case Projection::EQUIRECTANGULAR: shader = &AppData::Data().shaders.map2Dequirect; break;
+			case Projection::SIMPLE: shader = &AppData::Data().shaders.map2Dsimple; break;
+		}
 		shader->bind();
 		shader->setUniform("cameraPos", cameraPos);
 		shader->setUniform("scale", aspectRatio * scale);
