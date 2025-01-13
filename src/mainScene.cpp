@@ -1,11 +1,34 @@
 #include "mainScene.hpp"
 #include "core/appdata.hpp"
 #include "core/input.hpp"
+#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <glm/geometric.hpp>
 #include <iostream>
 #include <regex>
+#include <thread>
+
+
+static glm::vec3 project(const glm::vec3& a,const glm::vec3& b) {
+	float dotProduct = glm::dot(a, b);
+	float lengthSquared = glm::length(b) * glm::length(b);
+	return (dotProduct / lengthSquared) * b;
+};
+
+static float lenSqared(const glm::vec3& v) {
+	return v.x * v.x + v.y * v.y + v.z * v.z;
+}
+
+template<typename F>
+static void forEachInArea(int xmin, int xmax, int ymin, int ymax, F&& fun) {
+	for(int x = xmin; x != xmax + 1; x++) {
+		if(x == 360) { x = -1; continue; }
+		for(int y = ymin; y != ymax; y++) {
+			fun(x, y);
+		}
+	}
+}
 
 MainScene::MainScene() {
 	std::regex filePattern(R"(([NS])(\d{2})([WE])(\d{3})\.hgt)");
@@ -36,10 +59,71 @@ MainScene::MainScene() {
 			auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
 			c.state = HeightMap::State::UNLOADED;
 			c.sourceFile = fullName;
+
+			const float sinxc = std::sin(3.1415f/180 * static_cast<float>(x - 180));
+			const float cosxc = std::cos(3.1415f/180 * static_cast<float>(x - 180));
+			const float sinyc = std::sin(3.1415f/180 * static_cast<float>(y - 90));
+			const float cosyc = std::cos(3.1415f/180 * static_cast<float>(y - 90));
+
+			c.worldPos = earthRadius * glm::vec3{cosyc * cosxc , sinyc, -cosyc * sinxc};
         }
     } catch (const std::filesystem::filesystem_error& e) {
         std::cerr << "Error: unable to access directory: " << e.what() << std::endl;
     }
+
+
+	chunkUpdater = std::thread{[this]() {
+		while(true) {
+			int borderLeft; int borderRight; int borderBottom; int borderTop;
+			bool is2d;
+			glm::vec3 camPos;
+			float maxDistanceSquared;
+			{
+				std::lock_guard<std::mutex> lock(mutex);
+				if(!runChunkUpdater) return;
+				borderLeft = areaXmin;
+				borderRight = areaXmax;
+				borderBottom = areaYmin;
+				borderTop = areaYmax;
+				is2d = view2D;
+				camPos = camera.position;
+				maxDistanceSquared = horizont * horizont;
+			}
+			if(is2d) {
+				for(int x = 0; x < 360; x++) {
+					for(int y = 0; y < 180; y++) {
+						if(x > borderLeft && x < borderRight && y > borderBottom && y < borderTop)  // TODO 
+							chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].requestLoad();
+						else {
+							chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].requestUnload();
+						}
+					}
+				}
+			} else {
+				for(int x = borderLeft; x != borderRight; x++) {
+					if(x == 360) { x = -1; continue; }
+					for(int y = 0; y < 180; y++) {
+						auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
+						if(y > borderBottom && y < borderTop) { // TODO
+							const auto diff = camPos - c.worldPos;
+							if(lenSqared(diff) > maxDistanceSquared)
+								c.requestUnload();
+							else 
+								c.requestLoad();
+						}
+						else 
+							c.requestUnload();
+					}
+				}
+				for(int x = borderRight; x != borderLeft; x++) {
+					if(x == 360) { x = -1; continue; }
+					for(int y = 0; y < 180; y++) {
+						chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].requestUnload();
+					}
+				}
+			}
+		}
+	}};
 
 	cameraPos = {13, 50};
 	scale = 0.5f;
@@ -48,119 +132,129 @@ MainScene::MainScene() {
 	cameraHeight = 50.0f;
 }
 
+MainScene::~MainScene() {
+	{
+		std::lock_guard<std::mutex> lock(mutex);
+		runChunkUpdater = false;
+	}
+	chunkUpdater.join();
+}
+
 void MainScene::update() {
-	if(view2D) {
-		areaXmin = static_cast<int>( std::floor(cameraPos.x - 1 / scale / aspectRatio.x) ) + 180 - 1;
-		if(areaXmin < 0) areaXmin += 360;
-		areaXmax = static_cast<int>( std::ceil(cameraPos.x + 1 / scale / aspectRatio.x) ) + 180 + 1;
-		if(areaXmax >= 360) areaXmax -= 360;
+	{
+	std::lock_guard<std::mutex> lock(mutex);
+		if(view2D) {
+			// camera movement
+			const float speed = AppData::deltaT / scale * 1.f;
+			if(Input::isKeyPressed("W")) cameraPos.y += speed;
+			if(Input::isKeyPressed("S")) cameraPos.y -= speed;
+			if(Input::isKeyPressed("A")) { cameraPos.x -= speed; if(cameraPos.x < -180) cameraPos.x += 360; }
+			if(Input::isKeyPressed("D")) { cameraPos.x += speed; if(cameraPos.x >= 180) cameraPos.x -= 360; }
 
-		areaYmin = static_cast<int>( std::floor(cameraPos.y - 1 / scale) ) + 90 - 1;
-		if(areaYmin < 0) areaYmin = 0;
-		if(areaYmin >= 180) areaYmin = 179;
-		areaYmax = static_cast<int>( std::ceil(cameraPos.y + 1 / scale) ) + 90 + 1;
-		if(areaYmax < 0) areaYmax = 0;
-		if(areaYmax >= 180) areaYmax = 179;
-
-		// load visible chunks:
-		for(int x = areaXmin; x != areaXmax; x++) {
-			if(x == 360) { x = -1; continue; }
-			for(int y = areaYmin; y != areaYmax; y++) {
-				auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
-				c.load();
+			if(Input::isKeyClicked("+") || Input::getScroll() > 0) {
+				scale *= 1.25f;
+				if(scale > 10.f) scale = 10.f;
 			}
-		}
+			if(Input::isKeyClicked("-") || Input::getScroll() < 0) {
+				scale *= 0.8f;
+				if(scale < 0.01f) scale = 0.01f;
+			}
 
-		// unload invisible ones:
-		int borderLeft = areaXmin == 0 ? 359 : areaXmin - 1;
-		int borderRight = areaXmax == 359 ? 0 : areaXmax + 1;
-		int borderBottom = areaYmin == 0 ? 0 : areaYmin - 1;
-		int borderTop = areaYmax == 179 ? 179 : areaYmax + 1;
-		for(int x = borderLeft; x != borderRight; x++) {
-			if(x == 360) { x = -1; continue; }
-			const int y = borderTop;
-			chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload();
-		}
-		for(int x = borderLeft; x != borderRight; x++) {
-			if(x == 360) { x = -1; continue; }
-			const int y = borderBottom;
-			chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload();
-		}
-		for(int y = borderBottom; y != borderTop; y++) {
-			const int x = borderLeft;
-			chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload();
-		}
-		for(int y = borderBottom; y != borderTop; y++) {
-			const int x = borderRight;
-			chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)].unload();
-		}
+			// render area
+			areaXmin = static_cast<int>( std::floor(cameraPos.x - 1 / scale / aspectRatio.x) ) + 180 - 1;
+			if(areaXmin < 0) areaXmin = 0;
+			if(areaXmin >= 360) areaXmin = 359;
+			areaXmax = static_cast<int>( std::ceil(cameraPos.x + 1 / scale / aspectRatio.x) ) + 180 + 1;
+			if(areaXmax < 0) areaXmax = 0;
+			if(areaXmax >= 360) areaXmax = 359;
 
-		// camera movement
-		const float speed = AppData::deltaT / scale * 1.f;
-		if(Input::isKeyPressed("W")) cameraPos.y += speed;
-		if(Input::isKeyPressed("S")) cameraPos.y -= speed;
-		if(Input::isKeyPressed("A")) { cameraPos.x -= speed; if(cameraPos.x < -180) cameraPos.x += 360; }
-		if(Input::isKeyPressed("D")) { cameraPos.x += speed; if(cameraPos.x >= 180) cameraPos.x -= 360; }
+			areaYmin = static_cast<int>( std::floor(cameraPos.y - 1 / scale) ) + 90 - 1;
+			if(areaYmin < 0) areaYmin = 0;
+			if(areaYmin >= 180) areaYmin = 179;
+			areaYmax = static_cast<int>( std::ceil(cameraPos.y + 1 / scale) ) + 90 + 1;
+			if(areaYmax < 0) areaYmax = 0;
+			if(areaYmax >= 180) areaYmax = 179;
+		} else {
+			// camera movement
+			glm::vec3 dir{0, 0, 0};
+			auto a = camera.direction - project(camera.direction, camera.up);
+			if(Input::isKeyPressed("W")) { dir += a; }
+			if(Input::isKeyPressed("S")) { dir -= a;}
+			if(Input::isKeyPressed("A")) { dir += glm::cross(camera.up, a); }
+			if(Input::isKeyPressed("D")) { dir -= glm::cross(camera.up, a); }
+			if(dir.x != 0 && dir.y != 0 && dir.z != 0) {
+				dir = glm::normalize(dir);
+				auto up = glm::vec3{0,1,0};
+				auto b = project(dir, up);
 
-		if(Input::isKeyClicked("+") || Input::getScroll() > 0) {
-			scale *= 1.25f;
-			if(scale > 10.f) scale = 10.f;
-		}
-		if(Input::isKeyClicked("-") || Input::getScroll() < 0) {
-			scale *= 0.8f;
-			if(scale < 0.01f) scale = 0.01f;
-		}
-	} else {
-		constexpr float earthRadius = 6378.f;
+				const float spdFactor = AppData::deltaT * std::lerp(0.1f, 150.f, std::clamp(cameraHeight / earthRadius, 0.f, earthRadius / 10));
+				float longitudeSpeed = b.y * spdFactor;
+				float latitudeSpeed = glm::dot(glm::cross(up, camera.up), dir) * spdFactor / std::cos(3.1415f/180 * cameraPos.y);
 
-		auto project = [](glm::vec3& a, glm::vec3& b) {
-			float dotProduct = glm::dot(a, b);
-			float lengthSquared = glm::length(b) * glm::length(b);
-			return (dotProduct / lengthSquared) * b;
-		};
-		// camera movement
-
-		glm::vec3 dir{0, 0, 0};
-		auto a = camera.direction - project(camera.direction, camera.up);
-		if(Input::isKeyPressed("W")) { dir += a; }
-		if(Input::isKeyPressed("S")) { dir -= a;}
-		if(Input::isKeyPressed("A")) { dir += glm::cross(camera.up, a); }
-		if(Input::isKeyPressed("D")) { dir -= glm::cross(camera.up, a); }
-		if(dir.x != 0 && dir.y != 0 && dir.z != 0) {
-			dir = glm::normalize(dir);
-			auto up = glm::vec3{0,1,0};
-			auto b = project(dir, up);
-
-			const float spdFactor = AppData::deltaT * cameraHeight / 20.f;
-			float longitudeSpeed = b.y * spdFactor;
-			float latitudeSpeed = glm::determinant(glm::mat3(dir - b, up, camera.up)) * spdFactor / std::cos(3.1415f/180 * cameraPos.y);
-
-			cameraPos.y += longitudeSpeed; 
+				cameraPos.y += longitudeSpeed; 
+				cameraPos.x += latitudeSpeed; 
+			}
 			if(cameraPos.y > 90) cameraPos.y = 90; 
 			if(cameraPos.y < -90) cameraPos.y = -90;
-			cameraPos.x += latitudeSpeed; 
 			if(cameraPos.x < -180) cameraPos.x += 360; 
 			if(cameraPos.x >= 180) cameraPos.x -= 360; 
-		}
 
-		if(Input::isKeyPressed("+") || Input::getScroll() > 0) {
-			cameraHeight += 1.f;
-			if(cameraHeight > 2 * earthRadius) cameraHeight = 2 * earthRadius;
-		}
-		if(Input::isKeyPressed("-") || Input::getScroll() < 0) {
-			cameraHeight -= 1.f;
-			if(cameraHeight < 0) cameraHeight = 0;
-		}
+			const float vertSpeed = std::lerp(10.f, 1000.f, std::clamp(cameraHeight / earthRadius, 0.f, earthRadius / 10)) * AppData::deltaT;
+			if(Input::isKeyPressed("+") || Input::getScroll() > 0) {
+				cameraHeight += vertSpeed;
+				if(cameraHeight > earthRadius * 2) cameraHeight = earthRadius * 2;
+			}
+			if(Input::isKeyPressed("-") || Input::getScroll() < 0) {
+				cameraHeight -= vertSpeed;
+				if(cameraHeight < 0) cameraHeight = 0;
+			}
 
-		const float sinx = std::sin(3.1415f/180 * cameraPos.x);
-		const float cosx = std::cos(3.1415f/180 * cameraPos.x);
-		const float siny = std::sin(3.1415f/180 * cameraPos.y);
-		const float cosy = std::cos(3.1415f/180 * cameraPos.y);
-		auto dirFromCenter = glm::vec3{cosy * cosx, siny, -cosy * sinx};
-		camera.position = (earthRadius + cameraHeight) * dirFromCenter;
-		camera.up = dirFromCenter;
+			const float sinx = std::sin(3.1415f/180 * cameraPos.x);
+			const float cosx = std::cos(3.1415f/180 * cameraPos.x);
+			const float siny = std::sin(3.1415f/180 * cameraPos.y);
+			const float cosy = std::cos(3.1415f/180 * cameraPos.y);
+			auto dirFromCenter = glm::vec3{cosy * cosx, siny, -cosy * sinx};
+			camera.position = (earthRadius + cameraHeight) * dirFromCenter;
+			camera.up = dirFromCenter;
 
-		camera.update();
+			camera.update();
+
+			// render area
+			horizont = std::sqrt((earthRadius + cameraHeight) * (earthRadius + cameraHeight) - earthRadius * earthRadius) +
+				std::sqrt((earthRadius + 9.f) * (earthRadius + 9.f) - earthRadius * earthRadius);
+
+			const float bonus = std::acos(earthRadius / (earthRadius + 9.f));
+			const float tanDist = std::acos(earthRadius / (earthRadius + cameraHeight));
+			const float totalDistDeg = (tanDist + bonus) * 180 / 3.1415f;
+
+			areaXmin = static_cast<int>( std::floor(cameraPos.x - totalDistDeg) ) + 180 - 1;
+			if(areaXmin < 0) areaXmin += 360;
+			areaXmax = static_cast<int>( std::ceil(cameraPos.x + totalDistDeg) ) + 180 + 1;
+			if(areaXmax >= 360) areaXmax -= 360;
+
+			areaYmin = static_cast<int>( std::floor(cameraPos.y - totalDistDeg) ) + 90 - 1;
+			if(areaYmin < 0) {
+				areaYmin = 0;
+				areaXmin = 0;
+				areaXmax = 359;
+			}
+			if(areaYmin >= 180) areaYmin = 179;
+			areaYmax = static_cast<int>( std::ceil(cameraPos.y + totalDistDeg) ) + 90 + 1;
+			if(areaYmax < 0) areaYmax = 0;
+			if(areaYmax >= 180) {
+				areaYmax = 179;
+				areaXmin = 0;
+				areaXmax = 359;
+			}
+
+			if(cameraHeight > 15.f) {
+				camera.nearPlane = 1.f;
+				camera.farPlane = 500000.f;
+			} else {
+				camera.nearPlane = 0.01f;
+				camera.farPlane = 10000.f;
+			}
+		}
 	}
 
 	// LOD control (kontrola nad lodem)
@@ -198,13 +292,16 @@ void MainScene::render() {
 	for(int x = areaXmin; x != areaXmax; x++) {
 		if(x == 360) { x = -1; continue; }
 		for(int y = areaYmin; y != areaYmax; y++) {
-
 			auto& c = chunks[static_cast<std::size_t>(x)][static_cast<std::size_t>(y)];
 			if(c.state != HeightMap::State::LOADED) continue;
 			shader->setUniform("position", x-180, y-90);
 			c.render();
 		}
 	}
+
+	HeightMap::GenerateRequestedBuffers();
+	HeightMap::UnloadRequestedMaps();
+	HeightMap::LoadRequestedMaps();
 }
 
 void MainScene::atResize(int width, int height) {

@@ -24,7 +24,10 @@ struct BufferRequest {
 };
 
 static std::queue<BufferRequest> bufferRequests;
-static std::mutex requestsMutex;
+static std::mutex bufferRequestsMutex;
+static std::queue<HeightMap*> loadRequests;
+static std::queue<HeightMap*> unloadRequests;
+static std::mutex loadRequestsMutex;
 
 
 
@@ -35,9 +38,23 @@ HeightMap::~HeightMap() {
 	if(state == State::LOADED) unload();
 }
 
-void HeightMap::load() {
+void HeightMap::requestLoad() {
 	if(state != State::UNLOADED) return;
 
+	state = State::REQUESTED;
+	std::lock_guard<std::mutex> lock(loadRequestsMutex);
+	loadRequests.push(this);
+}
+
+void HeightMap::requestUnload() {
+	if(state != State::LOADED) return;
+
+	state = State::MARKED;
+	std::lock_guard<std::mutex> lock(loadRequestsMutex);
+	unloadRequests.push(this);
+}
+
+void HeightMap::load() {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glGenBuffers(1, &vbo);
@@ -48,6 +65,7 @@ void HeightMap::load() {
 		std::cerr << "Error: insufficient memory to load " << sourceFile << "\n";
 		glDeleteVertexArrays(1, &vao);
 		glDeleteBuffers(1, &vbo);
+		state = State::UNLOADED;
 		return;
 	}
 	glVertexAttribIPointer(0, 1, GL_SHORT, 0, reinterpret_cast<void*>(0));
@@ -74,15 +92,13 @@ void HeightMap::load() {
 			data[i] = processBytes(data[i]);
 
 		{
-			std::lock_guard<std::mutex> lock(requestsMutex);
+			std::lock_guard<std::mutex> lock(bufferRequestsMutex);
 			bufferRequests.push({this, std::move(data)});
 		}
 	}).detach();
 }
 
 void HeightMap::unload() {
-	if(state != State::LOADED) return;
-
 	glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
 
@@ -149,6 +165,20 @@ void HeightMap::DeleteEbos() {
 }
 
 
+void HeightMap::LoadRequestedMaps() {
+	std::lock_guard<std::mutex> lock(loadRequestsMutex);
+	if(loadRequests.empty()) return;
+	loadRequests.front()->load();
+	loadRequests.pop();
+}
+
+void HeightMap::UnloadRequestedMaps() {
+	std::lock_guard<std::mutex> lock(loadRequestsMutex);
+	while(!unloadRequests.empty()) {
+		unloadRequests.front()->unload();
+		unloadRequests.pop();
+	}
+}
 
 void HeightMap::GenerateRequestedBuffers() {
 	while(!bufferRequests.empty()) {

@@ -3,6 +3,7 @@
 
 #include "core/window.hpp"
 #include <array>
+#include <glm/ext/vector_float3.hpp>
 #include <string>
 
 struct HeightMap {
@@ -16,15 +17,18 @@ struct HeightMap {
 	static inline std::size_t lod = LODS / 2;
 
 	enum class State {
-		LOADED, LOADING, UNLOADED, UNAVAIBLE
+		LOADED, LOADING, REQUESTED, MARKED, UNLOADED, UNAVAIBLE 
 	} state;
 	GLuint vao;
 	GLuint vbo;
 	std::string sourceFile;
+	glm::vec3 worldPos;
 
 	HeightMap();
 	~HeightMap();
 
+	void requestLoad();
+	void requestUnload();
 	void load();
 	void unload();
 	void render();
@@ -32,6 +36,8 @@ struct HeightMap {
 	static void CreateEbos();
 	static void DeleteEbos();
 
+	static void LoadRequestedMaps();
+	static void UnloadRequestedMaps();
 	static void GenerateRequestedBuffers();
 };
 

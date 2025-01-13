@@ -22,7 +22,7 @@ public:
 	float fov{70.f};
 	float aspectRatio{1.f};
 	float nearPlane{0.001f};
-	float farPlane{20000.f};
+	float farPlane{200000.f};
 };
 
 #endif

@@ -3,6 +3,8 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/trigonometric.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/vector_angle.hpp>
 
 void Camera::update() {
 	constexpr float sensitivity = 0.01f;
@@ -16,6 +18,15 @@ void Camera::update() {
 	auto[mouseX, mouseY] = Input::getMousePos();
 	if(mouseX != 0) rotateYaw(-mouseX * sensitivity);
 	if(mouseY != 0) rotatePitch(-mouseY * sensitivity);
+
+	float angle = glm::angle(up, direction);
+	const float pitchLow = 3.1415f / 2.f - glm::radians(75.f);
+	const float pitchHigh = 3.1415f / 2.f + glm::radians(75.f);
+	if (angle < pitchLow) {
+		rotatePitch(angle - pitchLow);
+    } else if (angle > pitchHigh) {
+		rotatePitch(angle - pitchHigh);
+    }
 }
 
 glm::mat4 Camera::getViewMatrix() const {
