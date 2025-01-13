@@ -10,6 +10,7 @@
 #include <queue>
 #include <array>
 #include <thread>
+#include <algorithm>
 
 inline static constexpr uint16_t processBytes(uint16_t v) {
 	uint16_t val = (v >> 8) | (v << 8);
@@ -25,8 +26,8 @@ struct BufferRequest {
 
 static std::queue<BufferRequest> bufferRequests;
 static std::mutex bufferRequestsMutex;
-static std::queue<HeightMap*> loadRequests;
-static std::queue<HeightMap*> unloadRequests;
+static std::deque<HeightMap*> loadRequests;
+static std::deque<HeightMap*> unloadRequests;
 static std::mutex loadRequestsMutex;
 
 
@@ -43,15 +44,24 @@ void HeightMap::requestLoad() {
 
 	state = State::REQUESTED;
 	std::lock_guard<std::mutex> lock(loadRequestsMutex);
-	loadRequests.push(this);
+	loadRequests.push_back(this);
 }
 
 void HeightMap::requestUnload() {
+	if(state == State::REQUESTED) {
+		std::lock_guard<std::mutex> lock(loadRequestsMutex);
+		auto it = std::find(loadRequests.begin(), loadRequests.end(), this);
+		if (it != loadRequests.end()) {
+			loadRequests.erase(it);
+			state = State::UNLOADED;
+		}
+		return;
+	}
 	if(state != State::LOADED) return;
 
 	state = State::MARKED;
 	std::lock_guard<std::mutex> lock(loadRequestsMutex);
-	unloadRequests.push(this);
+	unloadRequests.push_back(this);
 }
 
 void HeightMap::load() {
@@ -169,14 +179,14 @@ void HeightMap::LoadRequestedMaps() {
 	std::lock_guard<std::mutex> lock(loadRequestsMutex);
 	if(loadRequests.empty()) return;
 	loadRequests.front()->load();
-	loadRequests.pop();
+	loadRequests.pop_front();
 }
 
 void HeightMap::UnloadRequestedMaps() {
 	std::lock_guard<std::mutex> lock(loadRequestsMutex);
 	while(!unloadRequests.empty()) {
 		unloadRequests.front()->unload();
-		unloadRequests.pop();
+		unloadRequests.pop_front();
 	}
 }
 
