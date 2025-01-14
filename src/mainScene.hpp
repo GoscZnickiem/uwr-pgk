@@ -26,6 +26,8 @@ public:
 	bool runChunkUpdater{true};
 	std::thread chunkUpdater;
 
+	GLuint sphereVao;
+
 	bool view2D{true};
 	enum class Projection {
 		ORTOGONAL, EQUIRECTANGULAR, SIMPLE

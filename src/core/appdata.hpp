@@ -21,6 +21,7 @@ struct AppData {
 		const Shader map2Dequirect;
 		const Shader map2Dsimple;
 		const Shader map3D;
+		const Shader globe;
 	} shaders;
 
 	void atResize(int width, int height);

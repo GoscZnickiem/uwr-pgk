@@ -43,5 +43,6 @@ AppData::AppData([[maybe_unused]] Token t) :
 		.map2Dort {"assets/shaders/map2Dort.glsl"},
 		.map2Dequirect {"assets/shaders/map2Dequirect.glsl"},
 		.map2Dsimple {"assets/shaders/map2Dsimple.glsl"},
-		.map3D {"assets/shaders/map3D.glsl"}
+		.map3D {"assets/shaders/map3D.glsl"},
+		.globe {"assets/shaders/globe.glsl"}
 	} { }

@@ -18,15 +18,6 @@ void Camera::update() {
 	auto[mouseX, mouseY] = Input::getMousePos();
 	if(mouseX != 0) rotateYaw(-mouseX * sensitivity);
 	if(mouseY != 0) rotatePitch(-mouseY * sensitivity);
-
-	float angle = glm::angle(up, direction);
-	const float pitchLow = 3.1415f / 2.f - glm::radians(75.f);
-	const float pitchHigh = 3.1415f / 2.f + glm::radians(75.f);
-	if (angle < pitchLow) {
-		rotatePitch(angle - pitchLow);
-    } else if (angle > pitchHigh) {
-		rotatePitch(angle - pitchHigh);
-    }
 }
 
 glm::mat4 Camera::getViewMatrix() const {
@@ -38,10 +29,13 @@ glm::mat4 Camera::getProjectionMatrix() const {
 }
 
 void Camera::rotatePitch(float rad) {
-	// constexpr float limitup = 0.3f;
-	// constexpr float limitdown = -0.6f;
-	// if((rad > 0 && direction.y >= limitup) || (rad < 0 && direction.y <= limitdown)) return;
-	direction = glm::rotate(glm::mat4(1.f), rad, glm::normalize(glm::cross(direction, up))) * glm::vec4(direction, 1.f);
+	float currentPitch = glm::asin(glm::dot(direction, up));
+    float newPitch = currentPitch + rad;
+
+    if (newPitch > glm::half_pi<float>() || newPitch < -glm::half_pi<float>()) return;
+
+    direction = glm::rotate(glm::mat4(1.f), rad, glm::normalize(glm::cross(direction, up))) * glm::vec4(direction, 1.f);
+    direction = glm::normalize(direction);
 }
 
 void Camera::rotateYaw(float rad) {

@@ -16,6 +16,7 @@ void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source, [[maybe_unused]]
 int main (int argc, char** argv) {
 	std::pair<int, int> latitude{-90,90};
 	std::pair<int, int> longitude{-180,180};
+	std::pair<float, float> pos{0,0};
 	std::size_t lod = 0;
 	std::string directory;
 
@@ -70,6 +71,22 @@ int main (int argc, char** argv) {
 			if(lod > HeightMap::LODS) end();
 			argIndex ++;
 		}
+		else if(argString == "-pos") {
+			auto end = [&](){
+				std::cerr << "Error: Option usage: -pos <latitude> <longitude>\n"
+					"Values are expected in range [-90, 90] and [-180, 180] respectively\n";
+				exit(2);
+			};
+			if(argIndex + 2 >= argc) end();
+			try {
+				pos.second = std::stof(argv[argIndex + 1]);
+				pos.first = std::stof(argv[argIndex + 2]);
+			} catch (std::invalid_argument& e) {
+				end();
+			}
+			if(pos.first > 90 || pos.first < -90 || pos.second > 180 || pos.second < -180) end();
+			argIndex += 2;
+		}
 		else if(!directory.empty()) {
 			std::cerr << "Error: Two directories provided - one expected\n";
 			return 1;
@@ -84,8 +101,8 @@ int main (int argc, char** argv) {
 	AppData::lonBounds = {longitude.first + 180, longitude.second + 180};
 	AppData::lod = lod;
 	AppData::Init();
+	AppData::Data().mainScene.cameraPos = {pos.first, pos.second};
 	AppData::Data().window.uselessMethod();
-	// AppData::Data().mainScene.cameraPos = 
 
 	glDebugMessageCallback(MessageCallback, nullptr);
 

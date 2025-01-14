@@ -136,8 +136,8 @@ struct Lod {
 			for(GLuint x = 0; x < Side; x++) {
 				const GLuint i = y * Side + x;
 				(*arr)[i*6]		= ((y + 0) * D + x + 0) * S;
-				(*arr)[i*6+1]	= ((y + 0) * D + x + 1) * S;
-				(*arr)[i*6+2]	= ((y + 1) * D + x + 0) * S;
+				(*arr)[i*6+1]	= ((y + 1) * D + x + 0) * S;
+				(*arr)[i*6+2]	= ((y + 0) * D + x + 1) * S;
 				(*arr)[i*6+3]	= ((y + 1) * D + x + 0) * S;
 				(*arr)[i*6+4]	= ((y + 1) * D + x + 1) * S;
 				(*arr)[i*6+5]	= ((y + 0) * D + x + 1) * S;

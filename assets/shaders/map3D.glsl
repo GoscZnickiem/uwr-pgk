@@ -27,10 +27,10 @@ void main() {
     gl_Position = projection * view * vec4(pos, 1.0);
 
 	vec3 colorVec;
-	if      (ht < 0  )   colorVec = vec3(0.,       0.,        1.);			//blue
-	else if (ht < 0.5)   colorVec = vec3(0.,       ht*2,      0.);			//->green
-	else if (ht < 1)     colorVec = vec3(ht*2-1,   1.,        0.);			//->yellow
-	else if (ht < 2)     colorVec = vec3(1.,       2.-ht,     0.);			//->red
+	if      (ht <= 0  )   colorVec = vec3(0.,       0.,        0.6);			//blue
+	else if (ht <= 0.5)   colorVec = vec3(0.,       ht*2,      0.);			//->green
+	else if (ht <= 1)     colorVec = vec3(ht*2-1,   1.,        0.);			//->yellow
+	else if (ht <= 2)     colorVec = vec3(1.,       2.-ht,     0.);			//->red
 	else                 colorVec = vec3(1.,       ht/2-1 ,ht/2-1);			//->white
 	color = vec4(colorVec, 1.0);
 }

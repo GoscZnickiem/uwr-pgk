@@ -103,6 +103,8 @@ MainScene::MainScene() {
 
 	camera.direction = {-1, 0, 0};
 	cameraHeight = 50.0f;
+
+	glGenVertexArrays(1, &sphereVao);
 }
 
 MainScene::~MainScene() {
@@ -111,6 +113,7 @@ MainScene::~MainScene() {
 		runChunkUpdater = false;
 	}
 	chunkUpdater.join();
+	glDeleteVertexArrays(1, &sphereVao);
 }
 
 void MainScene::update() {
@@ -161,7 +164,7 @@ void MainScene::update() {
 		} else {
 			// camera movement
 			glm::vec3 dir{0, 0, 0};
-			auto a = camera.direction - project(camera.direction, camera.up);
+			auto a = glm::normalize(camera.direction - project(camera.direction, camera.up));
 			if(Input::isKeyPressed("W")) { dir += a; }
 			if(Input::isKeyPressed("S")) { dir -= a;}
 			if(Input::isKeyPressed("A")) { dir += glm::cross(camera.up, a); }
@@ -171,9 +174,10 @@ void MainScene::update() {
 				auto up = glm::vec3{0,1,0};
 				auto b = project(dir, up);
 
-				const float spdFactor = AppData::deltaT * std::lerp(0.1f, 150.f, std::clamp(cameraHeight / earthRadius, 0.f, earthRadius / 10));
+				const float spdFactor = AppData::deltaT * std::lerp(0.1f, 15.f, std::clamp(cameraHeight / earthRadius, 0.f, earthRadius / 10));
 				float longitudeSpeed = b.y * spdFactor;
 				float latitudeSpeed = glm::dot(glm::cross(up, camera.up), dir) * spdFactor / std::cos(radians(cameraPos.y));
+				std::cout << longitudeSpeed << " " << latitudeSpeed << "\n";
 
 				cameraPos.y += longitudeSpeed; 
 				cameraPos.x += latitudeSpeed; 
@@ -183,15 +187,21 @@ void MainScene::update() {
 			if(cameraPos.x < -180) cameraPos.x += 360; 
 			if(cameraPos.x >= 180) cameraPos.x -= 360; 
 
-			const float vertSpeed = std::lerp(10.f, 1000.f, std::clamp(cameraHeight / earthRadius, 0.f, earthRadius / 10)) * AppData::deltaT;
-			if(Input::isKeyPressed("+") || Input::getScroll() > 0) {
+			const float vertSpeed = std::lerp(1.f, 2000.f, std::clamp(cameraHeight / earthRadius, 0.f, earthRadius / 50));
+			if(Input::isKeyPressed("+")) {
+				cameraHeight += vertSpeed * AppData::deltaT;
+			}
+			if(Input::getScroll() > 0) {
 				cameraHeight += vertSpeed;
-				if(cameraHeight > earthRadius * 2) cameraHeight = earthRadius * 2;
 			}
-			if(Input::isKeyPressed("-") || Input::getScroll() < 0) {
+			if(Input::isKeyPressed("-")) {
+				cameraHeight -= vertSpeed * AppData::deltaT;
+			}
+			if(Input::getScroll() < 0) {
 				cameraHeight -= vertSpeed;
-				if(cameraHeight < 0) cameraHeight = 0;
 			}
+			if(cameraHeight < 0) cameraHeight = 0;
+			if(cameraHeight > earthRadius * 2) cameraHeight = earthRadius * 2;
 
 			const float sinx = std::sin(radians(cameraPos.x));
 			const float cosx = std::cos(radians(cameraPos.x));
@@ -261,7 +271,6 @@ void MainScene::update() {
 		const float cosy = std::cos(radians(cameraPos.y));
 		auto dirFromCenter = glm::vec3{cosy * cosx, siny, -cosy * sinx};
 		camera.direction = glm::normalize(-dirFromCenter + (std::abs(dirFromCenter.y) == 1 ? glm::vec3{0,0,1} : glm::vec3{0,1,0}));
-		std::cout << camera.direction.x << " " << camera.direction.y << " " << camera.direction.z << "\n";
 		view2D = !view2D;
 	}
 }
@@ -278,12 +287,23 @@ void MainScene::render() {
 		shader->setUniform("cameraPos", cameraPos);
 		shader->setUniform("scale", aspectRatio * scale);
 	} else {
+		const auto& globeShader = &AppData::Data().shaders.globe;
+		globeShader->bind();
+		globeShader->setUniform("camInverse", glm::inverse(camera.getProjectionMatrix() * camera.getViewMatrix()));
+		globeShader->setUniform("camPos", camera.position);
+		auto[winx, winy] = AppData::Data().window.getWindowSize();
+		globeShader->setUniform("resolution", winx, winy);
+		glBindVertexArray(sphereVao);
+		glDepthMask(GL_FALSE);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDepthMask(GL_TRUE);
+		glBindVertexArray(0);
+
 		shader = &AppData::Data().shaders.map3D;
 		shader->bind();
 		shader->setUniform("projection", camera.getProjectionMatrix());
 		shader->setUniform("view", camera.getViewMatrix());
 	}
-
 	for(int x = areaXmin; x != areaXmax; x++) {
 		if(x == 360) { x = -1; continue; }
 		for(int y = areaYmin; y != areaYmax; y++) {
