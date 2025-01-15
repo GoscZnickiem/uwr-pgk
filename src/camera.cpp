@@ -32,7 +32,8 @@ void Camera::rotatePitch(float rad) {
 	float currentPitch = glm::asin(glm::dot(direction, up));
     float newPitch = currentPitch + rad;
 
-    if (newPitch > glm::half_pi<float>() || newPitch < -glm::half_pi<float>()) return;
+	constexpr float epsilon = 0.1f;
+    if (newPitch > glm::half_pi<float>() - epsilon || newPitch < -glm::half_pi<float>() + epsilon) return;
 
     direction = glm::rotate(glm::mat4(1.f), rad, glm::normalize(glm::cross(direction, up))) * glm::vec4(direction, 1.f);
     direction = glm::normalize(direction);

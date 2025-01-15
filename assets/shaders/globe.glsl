@@ -65,7 +65,7 @@ void main() {
 	float lonLine = 1.0 - smoothstep(0.0, 0.01, lonProximity);
 	float colorBonus = (latLine + lonLine) / 2;
 
-	float fade = smoothstep(0.0, 1.0, clamp((length(camPos) - 16 - earthRadius) / 10.0, 0.0, 1.0));
+	float fade = smoothstep(0.0, 1.0, clamp((length(camPos) - 16 - earthRadius) / 20.0, 0.0, 1.0));
 
 	fragColor = fade * (vec4(0.0, 0.0, 0.6, 1.0) + vec4(1.0, 1.0, 1.0, 1.0) * colorBonus);
 }

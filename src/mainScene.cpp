@@ -12,12 +12,6 @@
 #include <thread>
 
 
-static glm::vec3 project(const glm::vec3& a,const glm::vec3& b) {
-	float dotProduct = glm::dot(a, b);
-	float lengthSquared = glm::length(b) * glm::length(b);
-	return (dotProduct / lengthSquared) * b;
-};
-
 static float lenSqared(const glm::vec3& v) {
 	return v.x * v.x + v.y * v.y + v.z * v.z;
 }
@@ -190,7 +184,8 @@ void MainScene::update() {
 			// camera movement
 			const float heightFactor = std::clamp(cameraHeight / (earthRadius * 2), 0.f, 1.f);
 			glm::vec3 dir{0, 0, 0};
-			auto a = glm::normalize(camera.direction - project(camera.direction, camera.up));
+			const auto intermediate = glm::cross(camera.direction, camera.up);
+			const auto a = glm::normalize(glm::cross(intermediate, camera.direction));
 			if(Input::isKeyPressed("W")) { dir += a; }
 			if(Input::isKeyPressed("S")) { dir -= a; }
 			if(Input::isKeyPressed("A")) { dir += glm::cross(camera.up, a); }
