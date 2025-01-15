@@ -1,10 +1,12 @@
 #include "mainScene.hpp"
 #include "core/appdata.hpp"
 #include "core/input.hpp"
+#include <glm/ext/scalar_constants.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
-#include <glm/geometric.hpp>
 #include <iostream>
 #include <regex>
 #include <thread>
@@ -21,7 +23,26 @@ static float lenSqared(const glm::vec3& v) {
 }
 
 static constexpr float radians(float angle) {
-	return angle * 3.1415f/180;
+	return angle * glm::pi<float>()/180;
+}
+
+static constexpr float degrees(float angle) {
+	return angle * 180/glm::pi<float>();
+}
+
+static constexpr float atan(float y, float x) {
+	if (x > 0) {
+		return std::atan(y / x);
+	} else if (x < 0 && y >= 0) {
+		return std::atan(y / x) + glm::pi<float>();
+	} else if (x < 0 && y < 0) {
+		return std::atan(y / x) - glm::pi<float>();
+	} else if (x == 0 && y > 0) {
+		return glm::pi<float>() / 2;
+	} else if (x == 0 && y < 0) {
+		return -glm::pi<float>() / 2;
+	}
+	return 0.0;
 }
 
 MainScene::MainScene() {
@@ -163,31 +184,24 @@ void MainScene::update() {
 			}
 		} else {
 			// camera movement
+			const float heightFactor = std::clamp(cameraHeight / (earthRadius * 2), 0.f, 1.f);
 			glm::vec3 dir{0, 0, 0};
 			auto a = glm::normalize(camera.direction - project(camera.direction, camera.up));
 			if(Input::isKeyPressed("W")) { dir += a; }
-			if(Input::isKeyPressed("S")) { dir -= a;}
+			if(Input::isKeyPressed("S")) { dir -= a; }
 			if(Input::isKeyPressed("A")) { dir += glm::cross(camera.up, a); }
 			if(Input::isKeyPressed("D")) { dir -= glm::cross(camera.up, a); }
-			if(dir.x != 0 && dir.y != 0 && dir.z != 0) {
+			if(dir.x != 0 || dir.y != 0 || dir.z != 0) {
 				dir = glm::normalize(dir);
-				auto up = glm::vec3{0,1,0};
-				auto b = project(dir, up);
 
-				const float spdFactor = AppData::deltaT * std::lerp(0.1f, 15.f, std::clamp(cameraHeight / earthRadius, 0.f, earthRadius / 10));
-				float longitudeSpeed = b.y * spdFactor;
-				float latitudeSpeed = glm::dot(glm::cross(up, camera.up), dir) * spdFactor / std::cos(radians(cameraPos.y));
-				std::cout << longitudeSpeed << " " << latitudeSpeed << "\n";
-
-				cameraPos.y += longitudeSpeed; 
-				cameraPos.x += latitudeSpeed; 
+				const auto rotAxis = glm::normalize(glm::cross(camera.position, dir));
+				const float spdFactor = AppData::deltaT * std::lerp(0.0001f, 1.f, heightFactor);
+				const auto rotMat = glm::rotate(glm::mat4(1.f), spdFactor, rotAxis);
+				camera.up = glm::normalize(glm::vec3( rotMat * glm::vec4(camera.position, 1.f) )); 
+				camera.direction = glm::normalize(glm::vec3( rotMat * glm::vec4(camera.direction, 1.f) ));
 			}
-			if(cameraPos.y > 90) cameraPos.y = 90; 
-			if(cameraPos.y < -90) cameraPos.y = -90;
-			if(cameraPos.x < -180) cameraPos.x += 360; 
-			if(cameraPos.x >= 180) cameraPos.x -= 360; 
 
-			const float vertSpeed = std::lerp(1.f, 2000.f, std::clamp(cameraHeight / earthRadius, 0.f, earthRadius / 50));
+			const float vertSpeed = std::lerp(0.1f, 5000.f, heightFactor);
 			if(Input::isKeyPressed("+")) {
 				cameraHeight += vertSpeed * AppData::deltaT;
 			}
@@ -203,15 +217,12 @@ void MainScene::update() {
 			if(cameraHeight < 0) cameraHeight = 0;
 			if(cameraHeight > earthRadius * 2) cameraHeight = earthRadius * 2;
 
-			const float sinx = std::sin(radians(cameraPos.x));
-			const float cosx = std::cos(radians(cameraPos.x));
-			const float siny = std::sin(radians(cameraPos.y));
-			const float cosy = std::cos(radians(cameraPos.y));
-			auto dirFromCenter = glm::vec3{cosy * cosx, siny, -cosy * sinx};
-			camera.position = (earthRadius + cameraHeight) * dirFromCenter;
-			camera.up = dirFromCenter;
-
+			camera.position = (earthRadius + cameraHeight) * camera.up;
 			camera.update();
+
+			const float latitude = degrees(std::asin(camera.up.y));
+			const float longitude = -degrees(atan(camera.position.z, camera.position.x));
+			cameraPos = {longitude, latitude};
 
 			// render area
 			horizont = std::sqrt((earthRadius + cameraHeight) * (earthRadius + cameraHeight) - earthRadius * earthRadius) +
@@ -219,7 +230,7 @@ void MainScene::update() {
 
 			const float bonus = std::acos(earthRadius / (earthRadius + 9.f));
 			const float tanDist = std::acos(earthRadius / (earthRadius + cameraHeight));
-			const float totalDistDeg = (tanDist + bonus) * 180 / 3.1415f;
+			const float totalDistDeg = degrees(tanDist + bonus);
 
 			areaXmin = static_cast<int>( std::floor(cameraPos.x - totalDistDeg) ) + 180 - 1;
 			if(areaXmin < 0) areaXmin += 360;
@@ -271,6 +282,8 @@ void MainScene::update() {
 		const float cosy = std::cos(radians(cameraPos.y));
 		auto dirFromCenter = glm::vec3{cosy * cosx, siny, -cosy * sinx};
 		camera.direction = glm::normalize(-dirFromCenter + (std::abs(dirFromCenter.y) == 1 ? glm::vec3{0,0,1} : glm::vec3{0,1,0}));
+		camera.up = dirFromCenter;
+		camera.position = dirFromCenter * (earthRadius + cameraHeight);
 		view2D = !view2D;
 	}
 }
