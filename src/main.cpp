@@ -91,7 +91,7 @@ int main (int argc, char** argv) {
 		else if(argString == "-ht") {
 			auto end = [&](){
 				std::cerr << "Error: Option usage: -ht <height>\n"
-					"The value is expected to be in range [0, 6379]. It will only be used in 3D view.\n";
+					"The value is expected to be in range [0, 6378]. It will only be used in 3D view.\n";
 				exit(2);
 			};
 			if(argIndex + 1 >= argc) end();
@@ -100,7 +100,7 @@ int main (int argc, char** argv) {
 			} catch (std::invalid_argument& e) {
 				end();
 			}
-			if(height > 6379) end();
+			if(height > 6378) end();
 			argIndex ++;
 		}
 		else if(!directory.empty()) {
