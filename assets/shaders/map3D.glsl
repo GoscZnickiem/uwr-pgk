@@ -18,10 +18,10 @@ void main() {
 	float y = (side - gl_VertexID / side) / float(side - 1) + float(position.y);
 	float ht = float(height << 16 >> 16) * 0.001;
 
-	float sinx = sin(3.1415/180 * x);
-	float cosx = cos(3.1415/180 * x);
-	float siny = sin(3.1415/180 * y);
-	float cosy = cos(3.1415/180 * y);
+	float sinx = sin(radians(x));
+	float cosx = cos(radians(x));
+	float siny = sin(radians(y));
+	float cosy = cos(radians(y));
 	vec3 pos = (radius + ht) * vec3(cosy * cosx, siny, -1 * cosy * sinx);
 
     gl_Position = projection * view * vec4(pos, 1.0);

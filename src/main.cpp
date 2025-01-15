@@ -17,6 +17,7 @@ int main (int argc, char** argv) {
 	std::pair<int, int> latitude{-90,90};
 	std::pair<int, int> longitude{-180,180};
 	std::pair<float, float> pos{0,0};
+	float height = 200;
 	std::size_t lod = 0;
 	std::string directory;
 
@@ -87,8 +88,23 @@ int main (int argc, char** argv) {
 			if(pos.first > 90 || pos.first < -90 || pos.second > 180 || pos.second < -180) end();
 			argIndex += 2;
 		}
+		else if(argString == "-ht") {
+			auto end = [&](){
+				std::cerr << "Error: Option usage: -ht <height>\n"
+					"The value is expected to be in range [0, 6379]. It will only be used in 3D view.\n";
+				exit(2);
+			};
+			if(argIndex + 1 >= argc) end();
+			try {
+				height = std::stof(argv[argIndex + 1]);
+			} catch (std::invalid_argument& e) {
+				end();
+			}
+			if(height > 6379) end();
+			argIndex ++;
+		}
 		else if(!directory.empty()) {
-			std::cerr << "Error: Two directories provided - one expected\n";
+			std::cerr << "Error: Two directories provided - one expected.\n";
 			return 1;
 		}
 		else {
@@ -102,6 +118,7 @@ int main (int argc, char** argv) {
 	AppData::lod = lod;
 	AppData::Init();
 	AppData::Data().mainScene.cameraPos = {pos.first, pos.second};
+	AppData::Data().mainScene.cameraHeight = height;
 	AppData::Data().window.uselessMethod();
 
 	glDebugMessageCallback(MessageCallback, nullptr);
