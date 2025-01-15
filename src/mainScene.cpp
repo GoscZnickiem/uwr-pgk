@@ -147,6 +147,10 @@ void MainScene::update() {
 			if(Input::isKeyPressed("S")) cameraPos.y -= speed;
 			if(Input::isKeyPressed("A")) { cameraPos.x -= speed; if(cameraPos.x < -180) cameraPos.x += 360; }
 			if(Input::isKeyPressed("D")) { cameraPos.x += speed; if(cameraPos.x >= 180) cameraPos.x -= 360; }
+			if(cameraPos.x < -180) cameraPos.x = -180;
+			if(cameraPos.x > 180) cameraPos.x = 180;
+			if(cameraPos.y < -90) cameraPos.x = -90;
+			if(cameraPos.y > 90) cameraPos.x = 90;
 
 			if(Input::isKeyClicked("+") || Input::getScroll() > 0) {
 				scale *= 1.25f;
