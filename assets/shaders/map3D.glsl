@@ -16,7 +16,7 @@ const float radius = 6378;
 void main() {
 	float x = (gl_VertexID % side) / float(side - 1) + float(position.x);
 	float y = (side - gl_VertexID / side) / float(side - 1) + float(position.y);
-	float ht = float(height << 16 >> 16) * 0.001;
+	float ht = float(height) * 0.001;
 
 	float sinx = sin(radians(x));
 	float cosx = cos(radians(x));

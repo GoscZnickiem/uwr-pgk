@@ -22,7 +22,7 @@ void main() {
 
     gl_Position = vec4(pos, 0.0, 1.0);
 
-	float ht = float(height << 16 >> 16);
+	float ht = float(height);
 	vec3 colorVec;
 	if      (ht <= 0  )   colorVec = vec3(0.,       0.,        1.);			//blue
 	else if (ht <= 500)   colorVec = vec3(0.,       ht/500,    0.);			//->green

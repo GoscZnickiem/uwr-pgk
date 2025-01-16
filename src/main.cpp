@@ -30,7 +30,21 @@ int main (int argc, char** argv) {
 		auto argString = std::string_view(arg);
 
 		if(argString == "-h" || argString == "-help") {
-			std::cout << "SEND HELP. HEEEEEEELP.\n";
+			std::cout << "Usage: " << argv[0] << " read-directory [options]\n\n"
+				"Options:\n"
+				"-h \t\t\t\tDisplay this information.\n"
+				"-lat <min-value> <max-value> \tSet latitude display range.\n"
+				"-lon <min-value> <max-value> \tSet longitude display range.\n"
+				"-lod <value> \t\t\tSet level of detail (lower value = better quality)\n"
+				"-pos <lat> <lon> \t\tSet camera position\n"
+				"-ht <value> \t\t\tSet camera height above sea level (3D only)\n"
+				"\n"
+				"Controls:\n"
+				"WSAD - movement\n"
+				"+/- / scroll - zoom/height\n"
+				"mouse - camera rotation\n"
+				"TAB - change 2D/3D mode\n"
+				"SPACE - change 2D projection mode\n" ;
 			return 0;
 		}
 
