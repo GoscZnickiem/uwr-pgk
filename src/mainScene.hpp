@@ -31,7 +31,7 @@ public:
 	bool view2D{true};
 	enum class Projection {
 		ORTOGONAL, EQUIRECTANGULAR, SIMPLE
-	} projection{Projection::ORTOGONAL};
+	} projection{Projection::SIMPLE};
 
 	std::array<std::array<HeightMap, 180>, 360> chunks;
 	glm::vec2 cameraPos;
